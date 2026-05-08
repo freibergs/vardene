@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable, Iterator
+from dataclasses import dataclass
 
 from tezaurs.attributes import AttributeValues
 from tezaurs.variants import Variants
@@ -44,6 +45,97 @@ V_SUPERLATIVE = "Vispārākā"
 V_UNDESIRABLE = "Nevēlams"
 
 _VOWELS: frozenset[str] = frozenset("aāeēiīouū")
+
+
+# ---------------------------------------------------------------------------
+# Mija rule tables.
+#
+# Each rule is `SuffixRule(match, replace)` — when a stem ends with `match`,
+# strip those chars and append `replace`. Tables are *shared across cases*
+# whenever cases differ only in degree-handling or other wrapping; e.g.
+# `_3RD_AMS` is used by both case 27 (no degree) and case 33 (vis- prefix
+# with degree marker).
+#
+# Principle: "function says HOW; table says WHAT." If a function's elif-chain
+# does the same operation with different data, that data wants to be a list.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class SuffixRule:
+    """If celms ends with `match`, strip those chars and append `replace`."""
+    match: str
+    replace: str
+    note: str = ""  # documentation, kept with the data
+
+
+def _apply_first(celms: str, rules, *attrs) -> Iterator[Variants]:
+    """Yield ONE variant from the first matching rule."""
+    for r in rules:
+        if celms.endswith(r.match):
+            yield Variants(celms[:-len(r.match)] + r.replace, *attrs) if r.match \
+                else Variants(celms + r.replace, *attrs)
+            return
+
+
+def _apply_all(celms: str, rules, *attrs) -> Iterator[Variants]:
+    """Yield a variant for EVERY matching rule."""
+    for r in rules:
+        if celms.endswith(r.match):
+            yield Variants(celms[:-len(r.match)] + r.replace, *attrs) if r.match \
+                else Variants(celms + r.replace, *attrs)
+
+
+def _strip_vis(celms: str) -> tuple[str, str]:
+    """Split off the LV `vis-` superlative prefix; returns (stem, degree)."""
+    if celms.startswith("vis"):
+        return celms[3:], V_SUPERLATIVE
+    return celms, V_COMPARATIVE
+
+
+def _strip_vys(celms: str) -> tuple[str, str]:
+    """Split off the LTG `vys`/`vysu` superlative prefix."""
+    if celms.startswith("vysu"):
+        return celms[4:], V_SUPERLATIVE
+    if celms.startswith("vys"):
+        return celms[3:], V_SUPERLATIVE
+    return celms, V_COMPARATIVE
+
+
+# ---------------------------------------------------------------------------
+# Shared rule tables (LV)
+# ---------------------------------------------------------------------------
+
+# 3rd-conj -ams/-āms (cases 27 + 33-with-degree). Case 33 also has a special
+# "guļa" rule that overrides ļa here; we keep that case-local.
+_3RD_AMS = (
+    SuffixRule("kā", "cī",  "sacīt"),
+    SuffixRule("gā", "dzī", "slodzīt"),
+    SuffixRule("ka", "cē",  "mācēt -> mākam"),
+    SuffixRule("ža", "dē",  "sēdēt -> sēžam"),
+    SuffixRule("ļa", "lē",  "gulēt -> guļam"),
+    SuffixRule("ga", "dzē", "vajadzēt -> vajag"),
+)
+
+# 3rd-conj 3rd-person present (case 30, with vajadz/vajag exceptions).
+_3RD_3PS = (
+    SuffixRule("ka", "cī",  "sacīt"),
+    SuffixRule("ga", "dzī", "slodzīt -> sloga"),
+    SuffixRule("k",  "cē",  "mācēt -> māk"),
+    SuffixRule("ž",  "dē",  "sēdēt -> sēž"),
+    SuffixRule("ļ",  "lē",  "guļ -> gulēt"),
+)
+
+# 3rd-conj imperative / participle mija (cases 26, 32-with-degree). Multi-yield
+# for k/g (two stems each); case 26 also has gul/tec/loc/moc/urc specials.
+_3RD_IMP_MULTI = (
+    SuffixRule("k", "cī",  "saki -> sacīt"),
+    SuffixRule("k", "cē",  "māki -> mācēt"),
+    SuffixRule("g", "dzī", "slogi -> slodzīt"),
+    SuffixRule("g", "dzē", "vajag -> vajadzēt"),
+    SuffixRule("ž", "dē",  "sēdēt"),
+    SuffixRule("ļ", "lē",  "gulēt"),
+)
 
 
 # ---------------------------------------------------------------------------
@@ -547,23 +639,23 @@ def _case_13(celms: str, _proper_name: bool) -> Iterator[Variants]:
             yield Variants(celms[:-2], I_DEGREE, V_COMPARATIVE)
 
 
-_RULES_14 = [("ELIF", [
-    ("c",  [("-1+k",), ("-1+c",)]),
-    ("dz", [("-2+g",), ("",)]),
-    (None, ""),  # default: yield unchanged
-])]
 def _case_14(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """1st-conjugation -is form."""
-    yield from _run_case(celms, _RULES_14)
+    if celms.endswith("c"):
+        yield Variants(celms[:-1] + "k")  # raku -> racis
+        yield Variants(celms[:-1] + "c")  # veicu -> veicis
+    elif celms.endswith("dz"):
+        yield Variants(celms[:-2] + "g")  # sarūgu -> sarūdzis
+        yield Variants(celms)             # lūdzu -> lūdzis
+    else:
+        yield Variants(celms)
 
 
-_RULES_15 = [("MULTI", [
-    (None, ""),         # always yield unchanged
-    ("z",  "-1+s"),     # also yield s-variant if z stem
-])]
 def _case_15(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """pūst → pūzdams, nopūzdamies — s↔z mija."""
-    yield from _run_case(celms, _RULES_15)
+    yield Variants(celms)
+    if celms.endswith("z"):
+        yield Variants(celms[:-1] + "s")
 
 
 def _case_16(celms: str, _proper_name: bool) -> Iterator[Variants]:
@@ -641,91 +733,49 @@ def _case_25(celms: str, _proper_name: bool) -> Iterator[Variants]:
 def _case_26(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """3rd-conjugation mija forms — 2nd-person present, imperative."""
     if celms.endswith("gul"):
-        yield Variants(celms[:-1] + "lē")  # guli -> gulēt
+        yield Variants(celms[:-1] + "lē")
     if celms.endswith("tec"):
-        yield Variants(celms + "ē")  # teci -> tecēt
+        yield Variants(celms + "ē")
     elif celms.endswith("k") and not celms.endswith("tek"):
-        yield Variants(celms[:-1] + "cī")  # saki -> sacīt
-        yield Variants(celms[:-1] + "cē")  # māki -> mācēt
+        yield Variants(celms[:-1] + "cī")
+        yield Variants(celms[:-1] + "cē")
     elif celms.endswith("g"):
-        yield Variants(celms[:-1] + "dzī")  # slogi -> slodzīt
-        yield Variants(celms[:-1] + "dzē")  # vajag -> vajadzēt
+        yield Variants(celms[:-1] + "dzī")
+        yield Variants(celms[:-1] + "dzē")
     elif celms.endswith(("loc", "moc", "urc")):
-        yield Variants(celms + "ī")  # alternative form
+        yield Variants(celms + "ī")
     else:
-        yield Variants(celms + "ē")  # sēdies -> sēdēties
+        yield Variants(celms + "ē")
 
 
 def _case_27(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """-ams/-āms 3rd-conjugation mija + we/you forms."""
-    if celms.endswith("kā"):
-        yield Variants(celms[:-2] + "cī")  # sacīt
-    elif celms.endswith("gā"):
-        yield Variants(celms[:-2] + "dzī")  # slodzīt -> slogu
-    elif celms.endswith("ka"):
-        yield Variants(celms[:-2] + "cē")  # mācēt -> mākam
-    elif celms.endswith("ža"):
-        yield Variants(celms[:-2] + "dē")  # sēdēt -> sēžam
-    elif celms.endswith("ļa"):
-        yield Variants(celms[:-2] + "lē")  # gulēt -> guļam
-    elif celms.endswith("ga"):
-        yield Variants(celms[:-2] + "dzē")  # vajadzēt -> vajag
+    yield from _apply_first(celms, _3RD_AMS)
 
 
 def _case_30(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """3rd-conjugation 3rd-person present with mija."""
     if celms.endswith("vajadz"):
-        return  # exception: 'vajadzēt' -> 'vajag' is correct
-    if celms.endswith("ka"):
-        yield Variants(celms[:-2] + "cī")  # sacīt
-    elif celms.endswith("ga"):
-        yield Variants(celms[:-2] + "dzī")  # slodzīt -> sloga
-    elif celms.endswith("k"):
-        yield Variants(celms[:-1] + "cē")  # mācēt -> māk
-    elif celms.endswith("ž"):
-        yield Variants(celms[:-1] + "dē")  # sēdēt -> sēž
-    elif celms.endswith("ļ"):
-        yield Variants(celms[:-1] + "lē")  # 'guļ' -> 'gulēt'
-    elif celms.endswith("vajag"):
-        yield Variants(celms[:-1] + "dzē")  # vajadzēt -> vajag
+        return  # 'vajadzēt' -> 'vajag' is the only correct form
+    yield from _apply_first(celms, _3RD_3PS)
+    if celms.endswith("vajag"):
+        yield Variants(celms[:-1] + "dzē")  # vajadzēt -> vajag (special)
 
 
 def _case_32(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """Like case 20 but for comparative/superlative — visizsakošākais."""
-    pakape = V_COMPARATIVE
-    if celms.startswith("vis"):
-        pakape = V_SUPERLATIVE
-        celms = celms[3:]
-    if celms.endswith("k"):
-        yield Variants(celms[:-1] + "cī", I_DEGREE, pakape)  # sacīt -> sakošākais
-        yield Variants(celms[:-1] + "cē", I_DEGREE, pakape)  # mācēt -> mākošākais
-    elif celms.endswith("g"):
-        yield Variants(celms[:-1] + "dzī", I_DEGREE, pakape)  # slodzīt -> slogošākais
-        yield Variants(celms[:-1] + "dzē", I_DEGREE, pakape)  # vajadzēt -> vajagošākais
-    elif celms.endswith("ž"):
-        yield Variants(celms[:-1] + "dē", I_DEGREE, pakape)  # sēdēt -> sēžu
-    elif celms.endswith("ļ"):
-        yield Variants(celms[:-1] + "lē", I_DEGREE, pakape)  # gulēt -> guļošākais
+    celms, pakape = _strip_vis(celms)
+    yield from _apply_all(celms, _3RD_IMP_MULTI, I_DEGREE, pakape)
 
 
 def _case_33(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """Like case 27 but with comparative/superlative degrees for -amāks forms."""
-    pakape = V_COMPARATIVE
-    if celms.startswith("vis"):
-        pakape = V_SUPERLATIVE
-        celms = celms[3:]
-    if celms.endswith("kā"):
-        yield Variants(celms[:-2] + "cī", I_DEGREE, pakape)  # sacīt
-    elif celms.endswith("gā"):
-        yield Variants(celms[:-2] + "dzī", I_DEGREE, pakape)  # slodzīt -> slogu
-    elif celms.endswith("ka"):
-        yield Variants(celms[:-2] + "cē", I_DEGREE, pakape)  # mācēt -> mākam
-    elif celms.endswith("ga"):
-        yield Variants(celms[:-2] + "dzē", I_DEGREE, pakape)  # vajadzēt -> vajag
-    elif celms.endswith("ža"):
-        yield Variants(celms[:-2] + "dē", I_DEGREE, pakape)  # sēdēt -> sēžam
+    celms, pakape = _strip_vis(celms)
+    # _3RD_AMS minus the ļa rule (case 33 uses guļa instead).
+    if celms.endswith(("kā", "gā", "ka", "ga", "ža")):
+        yield from _apply_first(celms, _3RD_AMS, I_DEGREE, pakape)
     elif celms.endswith("guļa"):
-        yield Variants(celms[:-2] + "lē", I_DEGREE, pakape)  # gulēt -> guļam
+        yield Variants(celms[:-2] + "lē", I_DEGREE, pakape)
 
 
 def _case_34(celms: str, _proper_name: bool) -> Iterator[Variants]:
