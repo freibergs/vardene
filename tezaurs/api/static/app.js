@@ -21,37 +21,41 @@ function escapeHtml(s) {
   );
 }
 
-const CORE_ATTRS = [
-  "Vārdšķira",
-  "Lietvārda tips",
-  "Darbības vārda tips",
-  "Vietniekvārda tips",
-  "Dzimte",
-  "Skaitlis",
-  "Locījums",
-  "Persona",
-  "Laiks",
-  "Izteiksme",
-  "Pakāpe",
-  "Noliegums",
+const CORE_ATTRS_LV = [
+  "Vārdšķira", "Lietvārda tips", "Darbības vārda tips", "Vietniekvārda tips",
+  "Dzimte", "Skaitlis", "Locījums", "Persona",
+  "Laiks", "Izteiksme", "Pakāpe", "Noliegums",
 ];
 
-function renderReading(wf, isTop) {
-  const lemma = wf.lemma || "—";
-  const tag = wf.tag || "—";
-  const pos = wf.attributes && wf.attributes["Vārdšķira"];
-  const attrs = wf.attributes || {};
-  const attrPairs = CORE_ATTRS.filter((k) => attrs[k] !== undefined && attrs[k] !== "Nepiemīt")
+const CORE_ATTRS_EN = [
+  "Part of speech", "Noun type", "Verb type", "Pronoun type",
+  "Gender", "Number", "Case", "Person",
+  "Tense", "Mood", "Degree", "Negation",
+];
+
+function attrPairs(attrs, language = "lv") {
+  if (!attrs) return "";
+  const keys = language === "en" ? CORE_ATTRS_EN : CORE_ATTRS_LV;
+  return keys
+    .filter((k) => attrs[k] !== undefined && attrs[k] !== "Nepiemīt" && attrs[k] !== "Not applicable")
     .map((k) => `<span><strong>${escapeHtml(k)}:</strong> ${escapeHtml(attrs[k])}</span>`)
     .join("");
+}
+
+/**
+ * Card layout. `headPrimary` is the big bold word (lemma in analyse, surface
+ * form in inflect), `headSecondary` is the smaller annotation (e.g. "← rakt"
+ * for inflected forms, or POS for analysis readings).
+ */
+function renderCard({ primary, tag, secondary = "", attrsHtml = "", isTop = false }) {
   return `
     <div class="reading-card ${isTop ? "top" : ""}">
       <div class="reading-head">
-        <span class="reading-lemma">${escapeHtml(lemma)}</span>
-        <span class="reading-tag">${escapeHtml(tag)}</span>
-        ${pos ? `<span class="reading-pos">${escapeHtml(pos)}</span>` : ""}
+        <span class="reading-lemma">${escapeHtml(primary)}</span>
+        <span class="reading-tag">${escapeHtml(tag || "—")}</span>
+        ${secondary ? `<span class="reading-pos">${escapeHtml(secondary)}</span>` : ""}
       </div>
-      ${attrPairs ? `<div class="reading-attrs">${attrPairs}</div>` : ""}
+      ${attrsHtml ? `<div class="reading-attrs">${attrsHtml}</div>` : ""}
     </div>`;
 }
 
@@ -59,31 +63,66 @@ function renderError(msg) {
   return `<div class="error">${escapeHtml(msg)}</div>`;
 }
 
-// Single-word analysis
+/**
+ * Deduplicate readings by (lemma, tag). The lexicon ships multiple entries
+ * for the same word (e.g. "raksts" appears in both `tezaurs` and `valerijs`
+ * source files), and they surface as identical-looking cards. Keep the first
+ * occurrence.
+ */
+function dedupReadings(readings) {
+  const seen = new Set();
+  const out = [];
+  for (const wf of readings) {
+    const key = `${wf.lemma}|${wf.tag}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(wf);
+  }
+  return out;
+}
+
+// ---- Analyse ---------------------------------------------------------------
+
 async function analyzeWord() {
   const input = document.getElementById("word-input");
   const output = document.getElementById("analyze-output");
+  const enToggle = document.getElementById("analyze-en");
   const word = input.value.trim();
   if (!word) {
     output.innerHTML = renderError("Enter a word.");
     return;
   }
+  const language = enToggle.checked ? "en" : "lv";
+  const url = language === "en"
+    ? `/api/analyze/en/${encodeURIComponent(word)}`
+    : `/api/analyze/${encodeURIComponent(word)}`;
   output.innerHTML = "<em>Analysing…</em>";
   try {
-    const data = await fetchJson(`/api/analyze/${encodeURIComponent(word)}`);
-    if (!data.wordforms.length) {
+    const data = await fetchJson(url);
+    const unique = dedupReadings(data.wordforms || []);
+    if (!unique.length) {
       output.innerHTML = renderError(`No analysis for "${word}".`);
       return;
     }
-    output.innerHTML = data.wordforms
-      .map((wf, i) => renderReading(wf, i === 0))
+    const posKey = language === "en" ? "Part of speech" : "Vārdšķira";
+    output.innerHTML = unique
+      .map((wf, i) =>
+        renderCard({
+          primary: wf.lemma || "—",
+          tag: wf.tag,
+          secondary: (wf.attributes && wf.attributes[posKey]) || "",
+          attrsHtml: attrPairs(wf.attributes, language),
+          isTop: i === 0,
+        }),
+      )
       .join("");
   } catch (e) {
     output.innerHTML = renderError(e.message);
   }
 }
 
-// Sentence analysis
+// ---- Sentence --------------------------------------------------------------
+
 async function analyzeSentence() {
   const input = document.getElementById("sentence-input");
   const output = document.getElementById("sentence-output");
@@ -101,12 +140,12 @@ async function analyzeSentence() {
         if (!best) {
           return `<div class="token-block"><span class="token">${escapeHtml(t.token)}</span><span class="best">— no analysis</span></div>`;
         }
-        const lemma = best.lemma || "—";
-        const tag = best.tag || "—";
         return `
           <div class="token-block">
             <span class="token">${escapeHtml(t.token)}</span>
-            <span class="best">→ ${escapeHtml(lemma)} <span class="reading-tag">${escapeHtml(tag)}</span></span>
+            <span class="best">→ ${escapeHtml(best.lemma || "—")}
+              <span class="reading-tag">${escapeHtml(best.tag || "—")}</span>
+            </span>
           </div>`;
       })
       .join("");
@@ -115,7 +154,8 @@ async function analyzeSentence() {
   }
 }
 
-// Inflection
+// ---- Inflect ---------------------------------------------------------------
+
 async function inflectLemma() {
   const input = document.getElementById("lemma-input");
   const output = document.getElementById("inflect-output");
@@ -131,28 +171,64 @@ async function inflectLemma() {
       output.innerHTML = renderError(`No forms for "${lemma}".`);
       return;
     }
+    // For inflected forms the user wants to see the actual surface form
+    // (`token`) prominently, with the lemma as a smaller annotation.
     const total = data.forms.length;
-    const shown = data.forms.slice(0, 50);
-    const more = total > 50 ? `<p style="color:var(--muted)">…and ${total - 50} more.</p>` : "";
+    const shown = data.forms.slice(0, 100);
+    const more = total > 100
+      ? `<p style="color:var(--muted);margin-top:1rem">…and ${total - 100} more.</p>`
+      : "";
     output.innerHTML =
-      shown.map((f) => renderReading(f, false)).join("") + more;
+      shown
+        .map((f) =>
+          renderCard({
+            primary: f.token || "—",
+            tag: f.tag,
+            secondary: f.lemma && f.lemma !== f.token ? `← ${f.lemma}` : "",
+            attrsHtml: attrPairs(f.attributes),
+          }),
+        )
+        .join("") + more;
   } catch (e) {
     output.innerHTML = renderError(e.message);
   }
 }
 
-// Wire up
-document.getElementById("analyze-btn").addEventListener("click", analyzeWord);
-document.getElementById("word-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") analyzeWord();
-});
+// ---- Tokenize --------------------------------------------------------------
 
-document.getElementById("sentence-btn").addEventListener("click", analyzeSentence);
-document.getElementById("sentence-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") analyzeSentence();
-});
+async function tokenize() {
+  const input = document.getElementById("tokenize-input");
+  const output = document.getElementById("tokenize-output");
+  const text = input.value.trim();
+  if (!text) {
+    output.innerHTML = renderError("Enter text.");
+    return;
+  }
+  output.innerHTML = "<em>Tokenising…</em>";
+  try {
+    const data = await fetchJson(`/api/tokenize/${encodeURIComponent(text)}`);
+    output.innerHTML = `
+      <div class="token-list">
+        ${data.tokens.map((t) => `<span class="token-chip">${escapeHtml(t)}</span>`).join("")}
+      </div>
+      <p style="color:var(--muted);margin-top:0.75rem;font-size:0.85em">
+        ${data.tokens.length} tokens — using regex fallback (Splitting.java port pending)
+      </p>`;
+  } catch (e) {
+    output.innerHTML = renderError(e.message);
+  }
+}
 
-document.getElementById("inflect-btn").addEventListener("click", inflectLemma);
-document.getElementById("lemma-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") inflectLemma();
-});
+// ---- Wire up ---------------------------------------------------------------
+
+function bind(inputId, btnId, handler) {
+  document.getElementById(btnId).addEventListener("click", handler);
+  document.getElementById(inputId).addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handler();
+  });
+}
+
+bind("word-input", "analyze-btn", analyzeWord);
+bind("sentence-input", "sentence-btn", analyzeSentence);
+bind("lemma-input", "inflect-btn", inflectLemma);
+bind("tokenize-input", "tokenize-btn", tokenize);

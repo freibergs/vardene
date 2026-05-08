@@ -233,6 +233,40 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   border-radius: 4px;
 }
 
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: -0.5rem 0 1.25rem;
+  cursor: pointer;
+}
+.checkbox input { cursor: pointer; }
+
+.hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: -0.5rem 0 1rem;
+}
+
+.token-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.token-chip {
+  background: var(--code-bg);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  border: 1px solid var(--border);
+}
+
 @media (prefers-color-scheme: dark) {
   .error { background: #2c1010; border-color: #5a2424; color: #ffaaaa; }
 }

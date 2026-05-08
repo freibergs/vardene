@@ -17,6 +17,7 @@
       <button class="tab active" data-tab="analyze">Analyse</button>
       <button class="tab" data-tab="sentence">Sentence</button>
       <button class="tab" data-tab="inflect">Inflect</button>
+      <button class="tab" data-tab="tokenize">Tokenise</button>
       <button class="tab" data-tab="api">API</button>
     </nav>
 
@@ -26,6 +27,10 @@
         <input id="word-input" type="text" placeholder="rakstu" autocomplete="off">
         <button id="analyze-btn" class="primary">Analyse</button>
       </div>
+      <label class="checkbox">
+        <input type="checkbox" id="analyze-en">
+        <span>Translate attribute names to English</span>
+      </label>
       <div id="analyze-output" class="output"></div>
     </section>
 
@@ -35,6 +40,7 @@
         <input id="sentence-input" type="text" placeholder="Māte sēd uz galda." autocomplete="off">
         <button id="sentence-btn" class="primary">Analyse</button>
       </div>
+      <p class="hint">Returns the top reading per token after CRF + classifier + Viterbi disambiguation.</p>
       <div id="sentence-output" class="output"></div>
     </section>
 
@@ -44,7 +50,17 @@
         <input id="lemma-input" type="text" placeholder="rakt" autocomplete="off">
         <button id="inflect-btn" class="primary">Inflect</button>
       </div>
+      <p class="hint">Generates every inflected form. Verb lemmas can produce 500+ forms across tenses, persons, moods, and participles.</p>
       <div id="inflect-output" class="output"></div>
+    </section>
+
+    <section id="tab-tokenize" class="panel">
+      <label for="tokenize-input">Text</label>
+      <div class="input-row">
+        <input id="tokenize-input" type="text" placeholder="Māte sēd uz galda, vai ne?" autocomplete="off">
+        <button id="tokenize-btn" class="primary">Tokenise</button>
+      </div>
+      <div id="tokenize-output" class="output"></div>
     </section>
 
     <section id="tab-api" class="panel">
