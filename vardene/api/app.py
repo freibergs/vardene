@@ -80,25 +80,35 @@ def create_app() -> Flask:
 
     # ----- analysis ---------------------------------------------------------
 
+    def _filter_proper_for_lowercase(word, wordforms):
+        """If the query is all-lowercase, drop Īpašvārds (proper-noun) readings.
+        Matches `api.tezaurs.lv` behaviour: lowercase `rakstu` returns 3
+        readings, not the 4 our engine produces (the extra one is `Raksti`,
+        a place-name, which the user clearly did not mean)."""
+        if word != word.lower():
+            return list(wordforms)
+        return [
+            wf for wf in wordforms
+            if not wf.is_matching_strong("Lietvārda tips", "Īpašvārds")
+        ]
+
     @app.route("/api/analyze/<word>")
     def analyze_word(word: str):
         result = analyzer.analyze(word)
-        return jsonify(
-            {
-                "word": word,
-                "wordforms": [wordform_to_dict(wf) for wf in result.wordforms],
-            }
-        )
+        wfs = _filter_proper_for_lowercase(word, result.wordforms)
+        return jsonify({
+            "word": word,
+            "wordforms": [wordform_to_dict(wf) for wf in wfs],
+        })
 
     @app.route("/api/analyze/en/<word>")
     def analyze_word_en(word: str):
         result = analyzer.analyze(word)
-        return jsonify(
-            {
-                "word": word,
-                "wordforms": [wordform_to_dict(wf, language="en") for wf in result.wordforms],
-            }
-        )
+        wfs = _filter_proper_for_lowercase(word, result.wordforms)
+        return jsonify({
+            "word": word,
+            "wordforms": [wordform_to_dict(wf, language="en") for wf in wfs],
+        })
 
     @app.route("/api/analyzesentence/<path:query>")
     def analyze_sentence(query: str):

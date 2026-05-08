@@ -106,15 +106,22 @@ async function analyzeWord() {
     }
     const posKey = language === "en" ? "Part of speech" : "Vārdšķira";
     output.innerHTML = unique
-      .map((wf, i) =>
-        renderCard({
-          primary: wf.lemma || "—",
+      .map((wf, i) => {
+        // Show the surface form (what the user typed) prominently, with
+        // the lemma as a small "← raksts" annotation. Mirrors how
+        // api.tezaurs.lv distinguishes Vārds (form) from Pamatforma (lemma).
+        const surface = wf.token || word;
+        const lemmaAnno = wf.lemma && wf.lemma !== surface ? `← ${wf.lemma}` : "";
+        const pos = (wf.attributes && wf.attributes[posKey]) || "";
+        const secondary = lemmaAnno ? (pos ? `${lemmaAnno} · ${pos}` : lemmaAnno) : pos;
+        return renderCard({
+          primary: surface,
           tag: wf.tag,
-          secondary: (wf.attributes && wf.attributes[posKey]) || "",
+          secondary,
           attrsHtml: attrPairs(wf.attributes, language),
           isTop: i === 0,
-        }),
-      )
+        });
+      })
       .join("");
   } catch (e) {
     output.innerHTML = renderError(e.message);
