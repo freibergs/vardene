@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: pip install -e '.[dev,api]'
+      - name: Lint (ruff)
+        run: ruff check vardene tests
+      - name: Run tests
+        run: pytest tests/test_unit.py -v
+      - name: Smoke-test the API
+        run: |
+          python -m vardene.api --port 5757 &
+          API_PID=$!
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:5757/api/health > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:5757/api/analyze/kaķis | python -c "import sys,json; d=json.loads(sys.stdin.read()); assert d['wordforms']"
+          curl -sf http://127.0.0.1:5757/api/inflect_phrase/sarkanā%20māja | python -c "import sys,json; d=json.loads(sys.stdin.read()); assert d['Akuzatīvs'] == 'sarkano māju'"
+          curl -sf http://127.0.0.1:5757/api/verbs/mācīt | python -c "import sys,json; d=json.loads(sys.stdin.read()); assert sorted(d) == ['Inf', 'V1', 'V2', 'V3']"
+          kill $API_PID || true

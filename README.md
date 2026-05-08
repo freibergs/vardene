@@ -4,6 +4,7 @@
 
 **Latvian morphological analysis library — a complete Python port of the LU MII Java engine**
 
+[![CI](https://github.com/freibergs/vardene/actions/workflows/test.yml/badge.svg)](https://github.com/freibergs/vardene/actions/workflows/test.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Tests](https://img.shields.io/badge/tests-65%2F65%20passing-brightgreen.svg)](#testing)
@@ -84,6 +85,12 @@ forms = Inflector().inflect("rakt")    # 974 forms incl. negation, debitive, par
 pip install -e '.[api]'
 python -m vardene.api                  # http://127.0.0.1:5000
 ```
+
+<p align="center">
+  <img src="docs/screenshots/ui-analyze-light.png" alt="vardene demo UI — analyse tab" width="640">
+</p>
+<p align="center"><sub>The demo UI shows every candidate reading per word with full attribute set; tabs cover all 16 endpoints (light + dark mode aware).</sub></p>
+
 
 The demo UI has nine tabs covering every upstream endpoint:
 

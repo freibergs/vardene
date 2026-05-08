@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+title: "vardene: a Python port of the LU MII Latvian morphological analyser"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - given-names: "Rihards Aleksandrs"
+    family-names: "Freibergs"
+repository-code: "https://github.com/freibergs/vardene"
+license: GPL-3.0-or-later
+version: "0.1.0"
+date-released: "2026-05-08"
+keywords:
+  - "Latvian"
+  - "morphology"
+  - "natural-language-processing"
+  - "tokenization"
+  - "morphological-tagging"
+  - "lemmatization"
+  - "conditional-random-field"
+  - "python-port"
+preferred-citation:
+  type: report
+  title: "A Python Port of the LU MII Latvian Morphological Analyser: Performance, Accuracy, and Engineering Trade-offs"
+  authors:
+    - given-names: "Rihards Aleksandrs"
+      family-names: "Freibergs"
+  year: 2026
+  url: "https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf"
+  institution: "Independent"
+references:
+  - type: software
+    title: "Latvian Morphological Analyser"
+    authors:
+      - given-names: "Pēteris"
+        family-names: "Paikens"
+      - given-names: "Lauma"
+        family-names: "Pretkalniņa"
+      - given-names: "Laura"
+        family-names: "Rituma"
+    repository-code: "https://github.com/PeterisP/morphology"
+    license: GPL-3.0-or-later
+  - type: software
+    title: "LUMII-AILab/Webservices: Morphology and transliteration HTTP services"
+    authors:
+      - name: "LU MII AI Lab"
+    repository-code: "https://github.com/LUMII-AILab/Webservices"
+    license: GPL-3.0-or-later
