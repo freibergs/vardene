@@ -28,7 +28,6 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from lxml import etree
 
-
 # Per-source language and label. Order = priority for de-duplication later.
 XML_SOURCES: tuple[tuple[str, str, str], ...] = (
     # (filename, source_label, language)
@@ -74,9 +73,7 @@ class LemmaSynthesizer:
                     break
         return cls(mapping)
 
-    def synthesize(
-        self, language: str, paradigm_id: int | None, stem1: str | None
-    ) -> str | None:
+    def synthesize(self, language: str, paradigm_id: int | None, stem1: str | None) -> str | None:
         if stem1 is None:
             return None
         ending = (
@@ -90,8 +87,18 @@ class LemmaSynthesizer:
 # Output column buffers (one list each — written as a single Parquet table at end).
 class _Buffers:
     __slots__ = (
-        "lexeme_id", "entry_id", "human_id", "paradigm_id", "paradigm_name",
-        "lemma", "stem1", "stem2", "stem3", "attributes_json", "source", "language",
+        "attributes_json",
+        "entry_id",
+        "human_id",
+        "language",
+        "lemma",
+        "lexeme_id",
+        "paradigm_id",
+        "paradigm_name",
+        "source",
+        "stem1",
+        "stem2",
+        "stem3",
     )
 
     def __init__(self) -> None:
@@ -198,9 +205,7 @@ def _stream_xml_lexemes(
             elem.clear()
 
 
-def _stream_jsonl(
-    jsonl_path: Path, source: str, language: str, buf: _Buffers
-) -> None:
+def _stream_jsonl(jsonl_path: Path, source: str, language: str, buf: _Buffers) -> None:
     with jsonl_path.open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()

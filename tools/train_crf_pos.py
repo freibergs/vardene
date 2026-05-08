@@ -17,7 +17,6 @@ import sklearn_crfsuite
 
 from tools.train_crf_tagger import load_sentences, sentence_features
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "reference" / "src" / "main" / "resources" / "train.txt"
 DEFAULT_MODEL = REPO_ROOT / "tezaurs" / "data" / "crf_pos.crfsuite"

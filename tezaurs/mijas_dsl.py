@@ -6,13 +6,13 @@ The pattern: `SuffixRule` rows are *data*, `_apply_first` / `_apply_all` are
 the *engine*. A case function says HOW (single yield, multi-yield, with or
 without degree wrapping); a rule table says WHAT (which suffix becomes which).
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator
 from dataclasses import dataclass
 
 from tezaurs.variants import Variants
-
 
 # Tag-attribute names + value names referenced by both language modules.
 I_DEGREE = "Pakāpe"
@@ -29,6 +29,7 @@ _VOWELS: frozenset[str] = frozenset("aāeēiīouū")
 @dataclass(frozen=True, slots=True)
 class SuffixRule:
     """If a stem ends with `match`, strip those chars and append `replace`."""
+
     match: str
     replace: str
     note: str = ""  # documentation, kept with the data
@@ -38,7 +39,7 @@ def _apply_first(celms: str, rules, *attrs) -> Iterator[Variants]:
     """Yield ONE variant from the first matching rule."""
     for r in rules:
         if celms.endswith(r.match):
-            new = celms[:-len(r.match)] + r.replace if r.match else celms + r.replace
+            new = celms[: -len(r.match)] + r.replace if r.match else celms + r.replace
             yield Variants(new, *attrs)
             return
 
@@ -47,7 +48,7 @@ def _apply_all(celms: str, rules, *attrs) -> Iterator[Variants]:
     """Yield a variant for EVERY matching rule."""
     for r in rules:
         if celms.endswith(r.match):
-            new = celms[:-len(r.match)] + r.replace if r.match else celms + r.replace
+            new = celms[: -len(r.match)] + r.replace if r.match else celms + r.replace
             yield Variants(new, *attrs)
 
 

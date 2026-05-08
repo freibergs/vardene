@@ -14,6 +14,7 @@ Compression notes:
   * `_ltg_super_emit` covers the "comparative + optional vys-/vysu-
     superlatives" emission that appears in 12 inflection-direction cases.
 """
+
 from __future__ import annotations
 
 import re
@@ -24,16 +25,14 @@ from tezaurs.mijas_dsl import (
     I_DEGREE,
     I_MIJA,
     I_NORMATIVE,
-    SuffixRule,
     V_COMPARATIVE,
     V_POSITIVE,
     V_SUPERLATIVE,
     V_UNDESIRABLE,
-    _apply_first,
+    SuffixRule,
     _strip_vys,
 )
 from tezaurs.variants import Variants
-
 
 # ---------------------------------------------------------------------------
 # Latgalian vowel and consonant alternations.
@@ -96,14 +95,14 @@ _LTG_BURTU_REV = (
 def _ltg_burtu_mija(celms: str) -> str:
     for r in _LTG_BURTU_FWD:
         if celms.endswith(r.match):
-            return celms[:-len(r.match)] + r.replace
+            return celms[: -len(r.match)] + r.replace
     return celms
 
 
 def _ltg_burtu_mija_atpakal_viennoz(celms: str) -> str:
     for r in _LTG_BURTU_REV:
         if celms.endswith(r.match):
-            return celms[:-len(r.match)] + r.replace
+            return celms[: -len(r.match)] + r.replace
     return celms
 
 
@@ -126,7 +125,9 @@ def _ltg_super_emit(stem: str, add_superlative: bool) -> Iterator[Variants]:
         yield Variants("vysu" + stem, attributes=_ltg_degree_flags(V_SUPERLATIVE))
 
 
-def _ltg_emit_uok_with_degree(celms: str, transform: Callable[[str], str] | None = None) -> Iterator[Variants]:
+def _ltg_emit_uok_with_degree(
+    celms: str, transform: Callable[[str], str] | None = None
+) -> Iterator[Variants]:
     """Cases 103/104/106/108 share the `vys-/vysu- prefix + -uok suffix +
     degree-tagged emit` kernel; the only knob is whether a transform (e.g.
     `_ltg_burtu_mija`) is applied to the stem first."""
@@ -145,12 +146,12 @@ def _ltg_emit_uok_with_degree(celms: str, transform: Callable[[str], str] | None
 
 # Cases 122 (no degree) and 123 (with degree) — 3rd-conj -eit consonant mija.
 _LTG_3RD_EIT_MIJA = (
-    SuffixRule("ld", "ļdei",  "ļdei -> ld"),
-    SuffixRule("nd", "ņdei",  "ņdei -> nd"),
-    SuffixRule("g",  "dzei",  "dzei -> g"),
-    SuffixRule("k",  "cei",   "cei -> k"),
-    SuffixRule("ļ",  "lei",   "lei -> ļ"),
-    SuffixRule("ņ",  "nei",   "nei -> ņ"),
+    SuffixRule("ld", "ļdei", "ļdei -> ld"),
+    SuffixRule("nd", "ņdei", "ņdei -> nd"),
+    SuffixRule("g", "dzei", "dzei -> g"),
+    SuffixRule("k", "cei", "cei -> k"),
+    SuffixRule("ļ", "lei", "lei -> ļ"),
+    SuffixRule("ņ", "nei", "nei -> ņ"),
 )
 
 # Cases 122/123 inflection direction (reverse of above).
@@ -158,9 +159,9 @@ _LTG_3RD_EIT_MIJA_REV = (
     SuffixRule("ļdei", "ld"),
     SuffixRule("ņdei", "nd"),
     SuffixRule("dzei", "g"),
-    SuffixRule("cei",  "k"),
-    SuffixRule("lei",  "ļ"),
-    SuffixRule("nei",  "ņ"),
+    SuffixRule("cei", "k"),
+    SuffixRule("lei", "ļ"),
+    SuffixRule("nei", "ņ"),
 )
 
 
@@ -272,8 +273,9 @@ def _case_104(celms: str, _proper_name: bool) -> Iterator[Variants]:
     if celms.endswith("uok") and len(celms) > 3:
         yield from _ltg_emit_uok_with_degree(celms)
     else:
-        yield Variants(_ltg_burtu_mija_atpakal_viennoz(celms),
-                       attributes=_ltg_degree_flags(V_POSITIVE))
+        yield Variants(
+            _ltg_burtu_mija_atpakal_viennoz(celms), attributes=_ltg_degree_flags(V_POSITIVE)
+        )
 
 
 def _case_105(celms: str, _proper_name: bool) -> Iterator[Variants]:
@@ -367,7 +369,7 @@ def _case_115(celms: str, _proper_name: bool) -> Iterator[Variants]:
     stem, degree = _strip_vys(celms)
     if stem.endswith("e"):
         yield Variants(stem[:-1] + "ei", attributes=_ltg_degree_flags(degree))
-        yield Variants(stem[:-1] + "ē",  attributes=_ltg_degree_flags(degree))
+        yield Variants(stem[:-1] + "ē", attributes=_ltg_degree_flags(degree))
     elif stem.endswith("o"):
         yield Variants(stem[:-1] + "uo", attributes=_ltg_degree_flags(degree))
 
@@ -423,7 +425,7 @@ def _case_122(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """LTG 3rd-conj standard -eit, present with consonant mija."""
     for r in _LTG_3RD_EIT_MIJA:
         if celms.endswith(r.match):
-            yield Variants(celms[:-len(r.match)] + r.replace, I_MIJA, r.note)
+            yield Variants(celms[: -len(r.match)] + r.replace, I_MIJA, r.note)
             return
 
 
@@ -432,8 +434,7 @@ def _case_123(celms: str, _proper_name: bool) -> Iterator[Variants]:
     stem, degree = _strip_vys(celms)
     for r in _LTG_3RD_EIT_MIJA:
         if stem.endswith(r.match):
-            yield Variants(stem[:-len(r.match)] + r.replace,
-                           attributes=_ltg_degree_flags(degree))
+            yield Variants(stem[: -len(r.match)] + r.replace, attributes=_ltg_degree_flags(degree))
             return
 
 
@@ -456,8 +457,7 @@ def _case_126(celms: str, _proper_name: bool) -> Iterator[Variants]:
 def _case_127(celms: str, _proper_name: bool) -> Iterator[Variants]:
     """LTG 3rd-conj -ēt with inverse letter mija + participle superlative."""
     stem, degree = _strip_vys(celms)
-    yield Variants(_ltg_burtu_mija(stem) + "ē",
-                   attributes=_ltg_degree_flags(degree))
+    yield Variants(_ltg_burtu_mija(stem) + "ē", attributes=_ltg_degree_flags(degree))
 
 
 # ===========================================================================
@@ -495,9 +495,7 @@ def _inf_101(celms: str, _t: str, _s: bool, _p: bool) -> Iterator[Variants]:
         yield Variants(celms[:-1] + "č")
     elif celms.endswith("d"):
         yield Variants(celms[:-1] + "ž")
-    elif celms.endswith("s"):
-        yield Variants(celms[:-1] + "š")
-    elif celms.endswith("t"):
+    elif celms.endswith("s") or celms.endswith("t"):
         yield Variants(celms[:-1] + "š")
     elif celms.endswith("z"):
         yield Variants(celms[:-1] + "ž")
@@ -531,13 +529,9 @@ def _inf_102(celms: str, _t: str, _s: bool, _p: bool) -> Iterator[Variants]:
         yield Variants(celms[:-2] + "nn")
     elif celms.endswith("c"):
         yield Variants(celms[:-1] + "č")
-    elif celms.endswith("s"):
+    elif celms.endswith("s") or celms.endswith("t"):
         yield Variants(celms[:-1] + "š")
-    elif celms.endswith("t"):
-        yield Variants(celms[:-1] + "š")
-    elif celms.endswith("z"):
-        yield Variants(celms[:-1] + "ž")
-    elif celms.endswith("d"):
+    elif celms.endswith("z") or celms.endswith("d"):
         yield Variants(celms[:-1] + "ž")
     elif celms.endswith("ļ"):
         yield Variants(celms[:-1] + "l")
@@ -703,7 +697,7 @@ def _inf_3rd_eit_base(celms: str) -> str | None:
     """Common stem extraction for cases 122/123 inflection."""
     for r in _LTG_3RD_EIT_MIJA_REV:
         if celms.endswith(r.match):
-            return celms[:-len(r.match)] + r.replace
+            return celms[: -len(r.match)] + r.replace
     return None
 
 
@@ -744,19 +738,65 @@ def _inf_127(celms: str, _t: str, supr: bool, _p: bool) -> Iterator[Variants]:
 # ---------------------------------------------------------------------------
 
 LTG_HANDLERS_VARIANTS: dict[int, Callable[[str, bool], Iterator[Variants]]] = {
-    99: _case_99, 100: _case_100, 101: _case_101, 102: _case_102, 103: _case_103,
-    104: _case_104, 105: _case_105, 106: _case_106, 107: _case_107, 108: _case_108,
-    109: _case_109, 110: _case_110, 111: _case_111, 112: _case_112, 113: _case_113,
-    114: _case_114, 115: _case_115, 116: _case_116, 117: _case_117, 118: _case_118,
-    119: _case_119, 120: _case_120, 121: _case_121, 122: _case_122, 123: _case_123,
-    124: _case_124, 125: _case_125, 126: _case_126, 127: _case_127,
+    99: _case_99,
+    100: _case_100,
+    101: _case_101,
+    102: _case_102,
+    103: _case_103,
+    104: _case_104,
+    105: _case_105,
+    106: _case_106,
+    107: _case_107,
+    108: _case_108,
+    109: _case_109,
+    110: _case_110,
+    111: _case_111,
+    112: _case_112,
+    113: _case_113,
+    114: _case_114,
+    115: _case_115,
+    116: _case_116,
+    117: _case_117,
+    118: _case_118,
+    119: _case_119,
+    120: _case_120,
+    121: _case_121,
+    122: _case_122,
+    123: _case_123,
+    124: _case_124,
+    125: _case_125,
+    126: _case_126,
+    127: _case_127,
 }
 
 LTG_HANDLERS_INFLECTION: dict[int, Callable[[str, str, bool, bool], Iterator[Variants]]] = {
-    99: _inf_99, 100: _inf_100, 101: _inf_101, 102: _inf_102, 103: _inf_103,
-    104: _inf_104, 105: _inf_105, 106: _inf_106, 107: _inf_107, 108: _inf_108,
-    109: _inf_109, 110: _inf_110, 111: _inf_111, 112: _inf_112, 113: _inf_113,
-    114: _inf_114, 115: _inf_115, 116: _inf_116, 117: _inf_117, 118: _inf_118,
-    119: _inf_119, 120: _inf_120, 121: _inf_121, 122: _inf_122, 123: _inf_123,
-    124: _inf_124, 125: _inf_125, 126: _inf_126, 127: _inf_127,
+    99: _inf_99,
+    100: _inf_100,
+    101: _inf_101,
+    102: _inf_102,
+    103: _inf_103,
+    104: _inf_104,
+    105: _inf_105,
+    106: _inf_106,
+    107: _inf_107,
+    108: _inf_108,
+    109: _inf_109,
+    110: _inf_110,
+    111: _inf_111,
+    112: _inf_112,
+    113: _inf_113,
+    114: _inf_114,
+    115: _inf_115,
+    116: _inf_116,
+    117: _inf_117,
+    118: _inf_118,
+    119: _inf_119,
+    120: _inf_120,
+    121: _inf_121,
+    122: _inf_122,
+    123: _inf_123,
+    124: _inf_124,
+    125: _inf_125,
+    126: _inf_126,
+    127: _inf_127,
 }

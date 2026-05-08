@@ -18,7 +18,7 @@ from collections.abc import Iterable
 from tezaurs.attributes import AttributeValues
 from tezaurs.lexicon import Lexeme, Lexicon
 from tezaurs.mijas import mija_for_inflection
-from tezaurs.paradigm import Ending, Paradigm, ParadigmCatalog, StemType
+from tezaurs.paradigm import Ending, ParadigmCatalog, StemType
 from tezaurs.wordform import Wordform
 
 
@@ -106,7 +106,9 @@ class Inflector:
 
         third_stem = lexeme.stems.get(StemType.PAST, "")
         proper_name = lexeme.own_attributes.is_matching_strong("Lietvārda tips", "Īpašvārds")
-        lexeme_pos = lexeme.own_attributes.get("Vārdšķira") or paradigm.own_attributes.get("Vārdšķira")
+        lexeme_pos = lexeme.own_attributes.get("Vārdšķira") or paradigm.own_attributes.get(
+            "Vārdšķira"
+        )
         negation_prefix = self._negation_prefix(paradigm.language)
         if negation and third_stem:
             third_stem = negation_prefix + third_stem
@@ -125,10 +127,9 @@ class Inflector:
             if negation:
                 stem_for_mija = negation_prefix + stem_for_mija
 
-            add_superlative = (
-                ending.attributes.is_matching_strong("Noteiktība", "Noteiktā")
-                or ending.attributes.is_matching_strong("Vārdšķira", "Apstākļa vārds")
-            )
+            add_superlative = ending.attributes.is_matching_strong(
+                "Noteiktība", "Noteiktā"
+            ) or ending.attributes.is_matching_strong("Vārdšķira", "Apstākļa vārds")
 
             stem_variants = mija_for_inflection(
                 stem_for_mija, ending.mija, third_stem, add_superlative, proper_name
@@ -170,14 +171,12 @@ def _is_valid_form(wf: Wordform, ending: Ending) -> bool:
     """Filter: drop ending.do_not_generate forms and singularia/pluralia conflicts."""
     if ending.do_not_generate:
         return False
-    if (
-        wf.is_matching_strong("Skaitlis 2", "Vienskaitlinieks")
-        and wf.is_matching_strong("Skaitlis", "Daudzskaitlis")
+    if wf.is_matching_strong("Skaitlis 2", "Vienskaitlinieks") and wf.is_matching_strong(
+        "Skaitlis", "Daudzskaitlis"
     ):
         return False
-    if (
-        wf.is_matching_strong("Skaitlis 2", "Daudzskaitlinieks")
-        and wf.is_matching_strong("Skaitlis", "Vienskaitlis")
+    if wf.is_matching_strong("Skaitlis 2", "Daudzskaitlinieks") and wf.is_matching_strong(
+        "Skaitlis", "Vienskaitlis"
     ):
         return False
     return True

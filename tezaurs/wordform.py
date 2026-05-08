@@ -17,7 +17,7 @@ from tezaurs.paradigm import Ending
 class Wordform(AttributeValues):
     """A single morphological reading of a token."""
 
-    __slots__ = ("token", "ending", "lexeme")
+    __slots__ = ("ending", "lexeme", "token")
 
     def __init__(
         self,
@@ -47,7 +47,7 @@ class Wordform(AttributeValues):
 class Word:
     """A surface token together with all candidate Wordform analyses."""
 
-    __slots__ = ("token", "wordforms", "_correct_wordform")
+    __slots__ = ("_correct_wordform", "token", "wordforms")
 
     def __init__(self, token: str) -> None:
         self.token: str = token

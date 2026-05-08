@@ -29,14 +29,12 @@ from collections.abc import Callable, Iterator
 from tezaurs.mijas_dsl import (
     I_DEGREE,
     I_MIJA,
-    I_NORMATIVE,
-    SuffixRule,
     V_COMPARATIVE,
     V_POSITIVE,
     V_SUPERLATIVE,
-    V_UNDESIRABLE,
-    _apply_first,
+    SuffixRule,
     _apply_all,
+    _apply_first,
     _strip_vis,
     syllables,
 )
@@ -47,7 +45,6 @@ from tezaurs.mijas_ltg import (
     _ltg_patskanu_mija_locisanai,
 )
 from tezaurs.variants import Variants
-
 
 # ---------------------------------------------------------------------------
 # Mija rule tables.
@@ -70,35 +67,33 @@ from tezaurs.variants import Variants
 # 3rd-conj -ams/-āms (cases 27 + 33-with-degree). Case 33 also has a special
 # "guļa" rule that overrides ļa here; we keep that case-local.
 _3RD_AMS = (
-    SuffixRule("kā", "cī",  "sacīt"),
+    SuffixRule("kā", "cī", "sacīt"),
     SuffixRule("gā", "dzī", "slodzīt"),
-    SuffixRule("ka", "cē",  "mācēt -> mākam"),
-    SuffixRule("ža", "dē",  "sēdēt -> sēžam"),
-    SuffixRule("ļa", "lē",  "gulēt -> guļam"),
+    SuffixRule("ka", "cē", "mācēt -> mākam"),
+    SuffixRule("ža", "dē", "sēdēt -> sēžam"),
+    SuffixRule("ļa", "lē", "gulēt -> guļam"),
     SuffixRule("ga", "dzē", "vajadzēt -> vajag"),
 )
 
 # 3rd-conj 3rd-person present (case 30, with vajadz/vajag exceptions).
 _3RD_3PS = (
-    SuffixRule("ka", "cī",  "sacīt"),
+    SuffixRule("ka", "cī", "sacīt"),
     SuffixRule("ga", "dzī", "slodzīt -> sloga"),
-    SuffixRule("k",  "cē",  "mācēt -> māk"),
-    SuffixRule("ž",  "dē",  "sēdēt -> sēž"),
-    SuffixRule("ļ",  "lē",  "guļ -> gulēt"),
+    SuffixRule("k", "cē", "mācēt -> māk"),
+    SuffixRule("ž", "dē", "sēdēt -> sēž"),
+    SuffixRule("ļ", "lē", "guļ -> gulēt"),
 )
 
 # 3rd-conj imperative / participle mija (cases 26, 32-with-degree). Multi-yield
 # for k/g (two stems each); case 26 also has gul/tec/loc/moc/urc specials.
 _3RD_IMP_MULTI = (
-    SuffixRule("k", "cī",  "saki -> sacīt"),
-    SuffixRule("k", "cē",  "māki -> mācēt"),
+    SuffixRule("k", "cī", "saki -> sacīt"),
+    SuffixRule("k", "cē", "māki -> mācēt"),
     SuffixRule("g", "dzī", "slogi -> slodzīt"),
     SuffixRule("g", "dzē", "vajag -> vajadzēt"),
-    SuffixRule("ž", "dē",  "sēdēt"),
-    SuffixRule("ļ", "lē",  "gulēt"),
+    SuffixRule("ž", "dē", "sēdēt"),
+    SuffixRule("ļ", "lē", "gulēt"),
 )
-
-
 
 
 # ---------------------------------------------------------------------------
@@ -118,10 +113,10 @@ _3RD_IMP_MULTI = (
 
 _PREFIX_REDIRECTS: dict[int, tuple[str | None, int, int, bool]] = {
     # LV debitive: jā- prefix, 4-char minimum, redirect to underlying mija
-    4:  ("jā", 4, 0,  False),
-    5:  ("jā", 4, 9,  False),
-    12: ("jā", 4, 8,  False),
-    19: ("jā", 4, 2,  False),
+    4: ("jā", 4, 0, False),
+    5: ("jā", 4, 9, False),
+    12: ("jā", 4, 8, False),
+    19: ("jā", 4, 2, False),
     28: ("jā", 4, 20, False),
     29: ("jā", 4, 27, False),
     31: ("jā", 4, 30, False),
@@ -155,7 +150,7 @@ def _resolve_redirect(stem: str, stem_change: int) -> tuple[str, int] | None:
         return _ltg_patskanu_mija_atpakal_locisanai(stem), target
     # Prefix strip with min-length guard (cases 4-37 LV, 150-153 LTG)
     if stem.startswith(prefix) and len(stem) >= min_len:
-        residue = stem[len(prefix):]
+        residue = stem[len(prefix) :]
         if vowel_mija:
             residue = _ltg_patskanu_mija_atpakal_locisanai(residue)
         return residue, target
@@ -254,7 +249,9 @@ def _case_7_or_23(celms: str, _proper_name: bool, mija: int) -> Iterator[Variant
     if celms.endswith("s"):
         yield Variants(celms[:-1] + "š")  # pievēršu -> pievērs
         yield Variants(celms)  # atnest -> atnes
-    elif mija == 7 and celms.endswith(("odi", "ūdi", "opi", "ūpi", "oti", "ūti", "īti", "ieti", "sti")):
+    elif mija == 7 and celms.endswith(
+        ("odi", "ūdi", "opi", "ūpi", "oti", "ūti", "īti", "ieti", "sti")
+    ):
         yield Variants(celms[:-1])
     elif mija == 23 and celms.endswith(("od", "ūd", "op", "ūp", "ot", "ūt", "īt", "st")):
         yield Variants(celms)
@@ -345,7 +342,7 @@ def _case_14(celms: str, _proper_name: bool) -> Iterator[Variants]:
         yield Variants(celms[:-1] + "c")  # veicu -> veicis
     elif celms.endswith("dz"):
         yield Variants(celms[:-2] + "g")  # sarūgu -> sarūdzis
-        yield Variants(celms)             # lūdzu -> lūdzis
+        yield Variants(celms)  # lūdzu -> lūdzis
     else:
         yield Variants(celms)
 
@@ -716,17 +713,14 @@ def _inf_6(celms: str, third_stem: str, _supr: bool, _proper: bool) -> Iterator[
         yield Variants(celms)
 
 
-def _inf_7_or_23(
-    celms: str, third_stem: str, mija: int
-) -> Iterator[Variants]:
+def _inf_7_or_23(celms: str, third_stem: str, mija: int) -> Iterator[Variants]:
     """1st-conjugation 2nd-person present (mija=7 short, mija=23 long-ending like -iet)."""
     if celms.endswith("š") and third_stem.endswith("s"):
         yield Variants(celms[:-1] + "s")
     elif celms.endswith("š") and third_stem.endswith("t"):
         yield Variants(celms[:-1] + "t")
-    elif (
-        (celms.endswith("od") and not celms.endswith("dod"))
-        or celms.endswith(("ūd", "op", "ūp", "ot", "ūt", "īt", "iet", "st"))
+    elif (celms.endswith("od") and not celms.endswith("dod")) or celms.endswith(
+        ("ūd", "op", "ūp", "ot", "ūt", "īt", "iet", "st")
     ):
         if mija == 7:
             yield Variants(celms + "i")
@@ -756,9 +750,7 @@ def _inf_8(celms: str, _third: str, _supr: bool, _proper: bool) -> Iterator[Vari
         yield Variants(celms, "Garā", "ā")
     elif celms.endswith("ī"):
         yield Variants(celms[:-1] + "ā", "Garā", "ā")
-    elif celms.endswith("ē"):
-        yield Variants(celms[:-1] + "a")
-    elif celms.endswith("ā"):
+    elif celms.endswith("ē") or celms.endswith("ā"):
         yield Variants(celms[:-1] + "a")
     else:
         yield Variants(celms)
@@ -871,9 +863,7 @@ def _inf_25(celms: str, _third: str, add_superlative: bool, _proper: bool) -> It
         yield Variants(celms, I_DEGREE, V_COMPARATIVE)
     elif celms.endswith("ī"):
         yield Variants(celms[:-1] + "ā", I_DEGREE, V_COMPARATIVE)
-    elif celms.endswith("ē"):
-        yield Variants(celms[:-1] + "a", I_DEGREE, V_COMPARATIVE)
-    elif celms.endswith("ā"):
+    elif celms.endswith("ē") or celms.endswith("ā"):
         yield Variants(celms[:-1] + "a", I_DEGREE, V_COMPARATIVE)
     else:
         yield Variants(celms, I_DEGREE, V_COMPARATIVE)
@@ -882,9 +872,7 @@ def _inf_25(celms: str, _third: str, add_superlative: bool, _proper: bool) -> It
             yield Variants("vis" + celms, I_DEGREE, V_SUPERLATIVE)
         elif celms.endswith("ī"):
             yield Variants("vis" + celms[:-1] + "ā", I_DEGREE, V_SUPERLATIVE)
-        elif celms.endswith("ē"):
-            yield Variants("vis" + celms[:-1] + "a", I_DEGREE, V_SUPERLATIVE)
-        elif celms.endswith("ā"):
+        elif celms.endswith("ē") or celms.endswith("ā"):
             yield Variants("vis" + celms[:-1] + "a", I_DEGREE, V_SUPERLATIVE)
         else:
             yield Variants("vis" + celms, I_DEGREE, V_SUPERLATIVE)
@@ -953,9 +941,7 @@ def _inf_32(celms: str, _third: str, add_superlative: bool, _proper: bool) -> It
     if add_superlative:
         if celms.endswith(("cī", "cē")):
             yield Variants("vis" + celms[:-2] + "k", I_DEGREE, V_SUPERLATIVE)
-        elif celms.endswith("vajadzē"):
-            yield Variants("vis" + celms[:-3] + "g", I_DEGREE, V_SUPERLATIVE)
-        elif celms.endswith(("dzī", "dzē")):
+        elif celms.endswith("vajadzē") or celms.endswith(("dzī", "dzē")):
             yield Variants("vis" + celms[:-3] + "g", I_DEGREE, V_SUPERLATIVE)
         elif celms.endswith("dē"):
             yield Variants("vis" + celms[:-2] + "ž", I_DEGREE, V_SUPERLATIVE)
@@ -1030,8 +1016,6 @@ def _inf_38(celms: str, _third: str, add_superlative: bool, _proper: bool) -> It
         yield Variants("vis" + base + "āk", I_DEGREE, V_SUPERLATIVE)
 
 
-
-
 def _inf_7(celms: str, third_stem: str, _supr: bool, _proper: bool) -> Iterator[Variants]:
     return _inf_7_or_23(celms, third_stem, mija=7)
 
@@ -1040,14 +1024,37 @@ def _inf_23(celms: str, third_stem: str, _supr: bool, _proper: bool) -> Iterator
     return _inf_7_or_23(celms, third_stem, mija=23)
 
 
-_HANDLERS_INFLECTION: dict[
-    int, Callable[[str, str, bool, bool], Iterator[Variants]]
-] = {
-    0: _inf_0, 1: _inf_1, 2: _inf_2, 3: _inf_3, 6: _inf_6, 7: _inf_7,
-    8: _inf_8, 9: _inf_9, 10: _inf_10, 11: _inf_11, 13: _inf_13, 14: _inf_14,
-    15: _inf_15, 16: _inf_16, 17: _inf_17, 20: _inf_20, 21: _inf_21, 22: _inf_22,
-    23: _inf_23, 24: _inf_24, 25: _inf_25, 26: _inf_26, 27: _inf_27, 30: _inf_30,
-    32: _inf_32, 33: _inf_33, 34: _inf_34, 35: _inf_35, 36: _inf_36, 38: _inf_38,
+_HANDLERS_INFLECTION: dict[int, Callable[[str, str, bool, bool], Iterator[Variants]]] = {
+    0: _inf_0,
+    1: _inf_1,
+    2: _inf_2,
+    3: _inf_3,
+    6: _inf_6,
+    7: _inf_7,
+    8: _inf_8,
+    9: _inf_9,
+    10: _inf_10,
+    11: _inf_11,
+    13: _inf_13,
+    14: _inf_14,
+    15: _inf_15,
+    16: _inf_16,
+    17: _inf_17,
+    20: _inf_20,
+    21: _inf_21,
+    22: _inf_22,
+    23: _inf_23,
+    24: _inf_24,
+    25: _inf_25,
+    26: _inf_26,
+    27: _inf_27,
+    30: _inf_30,
+    32: _inf_32,
+    33: _inf_33,
+    34: _inf_34,
+    35: _inf_35,
+    36: _inf_36,
+    38: _inf_38,
     **LTG_HANDLERS_INFLECTION,  # cases 99-127 from `mijas_ltg`
 }
 

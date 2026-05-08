@@ -16,7 +16,6 @@ from tests.parity import evaluate, load_corpus, sample_words
 from tezaurs.analyzer import Analyzer
 from tezaurs.inflector import Inflector
 
-
 # Baseline numbers locked in 2026-05-08 after the hierarchical CRF stack +
 # pronoun attribute fills (hardcoded forms for personal/demonstrative pronouns,
 # adjective-like ending inference) and the Pamatforma-aware lemma lookup.
@@ -65,7 +64,9 @@ def test_corpus_parity_1000(analyzer: Analyzer, corpus: list[tuple[str, str, str
         ("draugam", "draugs", "n"),
     ],
 )
-def test_canonical_words(analyzer: Analyzer, word: str, expected_lemma: str, expected_pos_char: str) -> None:
+def test_canonical_words(
+    analyzer: Analyzer, word: str, expected_lemma: str, expected_pos_char: str
+) -> None:
     """Sanity check on a fixed list of well-known Latvian words."""
     result = analyzer.analyze(word)
     assert result.is_recognized(), f"{word!r} not recognized"
@@ -87,7 +88,8 @@ def test_inflector_round_trip_via_api_format() -> None:
         forms = inf.inflect(lemma)
         # Exclude negation and superlative forms — they don't always round-trip cleanly
         forms = [
-            f for f in forms
+            f
+            for f in forms
             if not f.is_matching_strong("Noliegums", "Jā")
             and not f.is_matching_strong("Pakāpe", "Vispārākā")
         ]

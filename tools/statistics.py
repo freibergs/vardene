@@ -34,7 +34,7 @@ def parse_statistics(xml_path: Path) -> Statistics:
     if ending_block is not None:
         for key, val in ending_block.attrib.items():
             if key.startswith(_ENDING_PREFIX):
-                ending_freq[int(key[len(_ENDING_PREFIX):])] = int(val)
+                ending_freq[int(key[len(_ENDING_PREFIX) :])] = int(val)
 
     lex_block = root.find("Leksēmu_biežums")
     lex_freq: dict[int, int] = {}

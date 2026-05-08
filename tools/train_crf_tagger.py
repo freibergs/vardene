@@ -26,7 +26,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import sklearn_crfsuite
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
 DEFAULT_MODEL = REPO_ROOT / "tezaurs" / "data" / "crf_tagger.crfsuite"

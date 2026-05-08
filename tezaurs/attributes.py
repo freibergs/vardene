@@ -195,7 +195,7 @@ class TagSet:
     _DEFAULT_FILENAME: ClassVar[str] = "tagset.json"
     _instance: ClassVar[TagSet | None] = None
 
-    __slots__ = ("attributes", "_by_lv", "_pos_to_attrs", "free_attributes")
+    __slots__ = ("_by_lv", "_pos_to_attrs", "attributes", "free_attributes")
 
     def __init__(
         self,

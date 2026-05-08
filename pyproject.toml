@@ -34,3 +34,20 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+ignore = [
+    # Long lines: most are Latvian rule comments / data tables where wrapping
+    # would split a semantic unit (e.g. an inline mija note in mijas.py).
+    "E501",
+    # sklearn convention: X is a feature matrix, y is a label vector.
+    "N803", "N806",
+    # `l` for lemma is fine in lemma-comparison helpers; renaming hurts clarity.
+    "E741",
+    # Ambiguous Unicode warnings: we deliberately use Latvian and IPA
+    # characters in docstrings, comments, and string constants
+    # (ē/ā, en-dash for typography, × for multiplication, etc.).
+    "RUF001", "RUF002", "RUF003",
+    # Loop-tuple unpacks where some elements are documentation, not code.
+    "B007",
+    # Style preferences — fine but not worth churn:
+    "SIM102", "SIM103", "SIM108",
+]

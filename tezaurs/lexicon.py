@@ -10,8 +10,7 @@ so cold-start cost stays minimal when consumers only need columnar access.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
 from typing import ClassVar
@@ -46,7 +45,9 @@ class Lexeme:
 
     @property
     def merged_attributes(self) -> AttributeValues:
-        merged = AttributeValues(self.paradigm.own_attributes) if self.paradigm else AttributeValues()
+        merged = (
+            AttributeValues(self.paradigm.own_attributes) if self.paradigm else AttributeValues()
+        )
         merged.add_all(self.own_attributes)
         return merged
 
@@ -65,11 +66,11 @@ class Lexicon:
     _instance: ClassVar[Lexicon | None] = None
 
     __slots__ = (
-        "paradigms",
-        "_table",
-        "_by_lexeme_id",
         "_by_lemma",
+        "_by_lexeme_id",
         "_by_paradigm_name",
+        "_table",
+        "paradigms",
     )
 
     def __init__(self, paradigms: ParadigmCatalog, table: pa.Table) -> None:
@@ -161,7 +162,11 @@ class Lexicon:
         own = AttributeValues(json.loads(attrs_json) if attrs_json else {})
 
         stems: dict[StemType, str] = {}
-        for st, col in ((StemType.BASE, "stem1"), (StemType.PRESENT, "stem2"), (StemType.PAST, "stem3")):
+        for st, col in (
+            (StemType.BASE, "stem1"),
+            (StemType.PRESENT, "stem2"),
+            (StemType.PAST, "stem3"),
+        ):
             v = t.column(col)[row].as_py()
             if v is not None:
                 stems[st] = v

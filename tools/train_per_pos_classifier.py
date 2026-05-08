@@ -24,7 +24,6 @@ from sklearn.linear_model import LogisticRegression
 
 from tools.train_crf_tagger import load_sentences, sentence_features
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
 DEFAULT_OUT = REPO_ROOT / "tezaurs" / "data" / "per_pos_clf.pkl"

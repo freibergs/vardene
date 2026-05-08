@@ -17,7 +17,6 @@ import sklearn_crfsuite
 
 from tools.train_crf_tagger import load_sentences, sentence_features
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "reference" / "src" / "main" / "resources" / "train.txt"
 DEFAULT_MODEL = REPO_ROOT / "tezaurs" / "data" / "crf_subtag.crfsuite"
@@ -31,10 +30,7 @@ def train(prefix_len: int = 5, corpus: Path = DEFAULT_CORPUS, out: Path = DEFAUL
     print(f"Features (truncating tags to first {prefix_len} chars)...")
     t0 = time.perf_counter()
     X = [sentence_features(s) for s in sentences]
-    y = [
-        [(tag[:prefix_len] if tag else "-") for _, tag, _ in s]
-        for s in sentences
-    ]
+    y = [[(tag[:prefix_len] if tag else "-") for _, tag, _ in s] for s in sentences]
     unique_labels = {label for seq in y for label in seq}
     print(f"  done in {time.perf_counter() - t0:.1f}s, unique labels: {len(unique_labels)}")
 

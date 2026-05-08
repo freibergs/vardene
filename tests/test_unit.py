@@ -23,10 +23,8 @@ from tezaurs.mijas import (
     syllables,
     verify_back_inflection,
 )
-from tezaurs.paradigm import ParadigmCatalog, StemType
+from tezaurs.paradigm import ParadigmCatalog
 from tezaurs.trie import Trie
-from tezaurs.variants import Variants
-
 
 # ---------------------------------------------------------------------------
 # Mijas — core linguistic engine
@@ -226,26 +224,30 @@ class TestParadigmAndLexicon:
 class TestMarkup:
     def test_to_tag_known_examples(self) -> None:
         # tēvs → ncmsn1 (Noun, Common, Masculine, Singular, Nominative, Decl 1)
-        av = AttributeValues({
-            "Vārdšķira": "Lietvārds",
-            "Lietvārda tips": "Sugas vārds",
-            "Dzimte": "Vīriešu",
-            "Skaitlis": "Vienskaitlis",
-            "Locījums": "Nominatīvs",
-            "Deklinācija": "1",
-        })
+        av = AttributeValues(
+            {
+                "Vārdšķira": "Lietvārds",
+                "Lietvārda tips": "Sugas vārds",
+                "Dzimte": "Vīriešu",
+                "Skaitlis": "Vienskaitlis",
+                "Locījums": "Nominatīvs",
+                "Deklinācija": "1",
+            }
+        )
         assert to_tag(av) == "ncmsn1"
 
     def test_to_tag_feminine_5th_decl(self) -> None:
         # māte → ncfsn5
-        av = AttributeValues({
-            "Vārdšķira": "Lietvārds",
-            "Lietvārda tips": "Sugas vārds",
-            "Dzimte": "Sieviešu",
-            "Skaitlis": "Vienskaitlis",
-            "Locījums": "Nominatīvs",
-            "Deklinācija": "5",
-        })
+        av = AttributeValues(
+            {
+                "Vārdšķira": "Lietvārds",
+                "Lietvārda tips": "Sugas vārds",
+                "Dzimte": "Sieviešu",
+                "Skaitlis": "Vienskaitlis",
+                "Locījums": "Nominatīvs",
+                "Deklinācija": "5",
+            }
+        )
         assert to_tag(av) == "ncfsn5"
 
     def test_from_tag_round_trip(self) -> None:
@@ -296,7 +298,9 @@ class TestAnalyzer:
         word = analyzer.analyze("aizrakt")
         assert word.is_recognized()
         # Lemma should be 'aizrakt' (with prefix preserved)
-        lemmas = {w.get("Pamatforma") or (w.lexeme.lemma if w.lexeme else "") for w in word.wordforms}
+        lemmas = {
+            w.get("Pamatforma") or (w.lexeme.lemma if w.lexeme else "") for w in word.wordforms
+        }
         assert "aizrakt" in lemmas
 
     def test_negation_prefix(self, analyzer: Analyzer) -> None:

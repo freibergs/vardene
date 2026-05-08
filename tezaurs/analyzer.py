@@ -140,9 +140,7 @@ class Analyzer:
         # corresponding Lexeme objects are materialised on demand in
         # `_materialize_lexeme` with an LRU cache. This keeps memory at
         # ~10 MB for the index instead of ~870 MB.
-        self._stem_index: dict[
-            tuple[int, str, StemType], dict[str, list[int]]
-        ] = {}
+        self._stem_index: dict[tuple[int, str, StemType], dict[str, list[int]]] = {}
         self._lexeme_cache: dict[tuple[int, int, str], Lexeme] = {}
 
         # Hardcoded-form index: surface form → list[Lexeme] for rows in the
@@ -215,6 +213,7 @@ class Analyzer:
         if not self._crf_loaded:
             try:
                 from tezaurs.crf_tagger import CRFTagger
+
                 self._crf_tagger = CRFTagger.instance()
             except Exception:
                 self._crf_tagger = None
@@ -277,7 +276,11 @@ class Analyzer:
         # Hardcoded-form lookup first — this is where irregular verb forms
         # (`esmu`, `bija`, `iet`, ...) and pronoun forms live in the data.
         for lexeme in self._hardcoded_lexemes(word):
-            wf = Wordform(word, lexeme=lexeme, ending=lexeme.paradigm.lemma_ending() if lexeme.paradigm else None)
+            wf = Wordform(
+                word,
+                lexeme=lexeme,
+                ending=lexeme.paradigm.lemma_ending() if lexeme.paradigm else None,
+            )
             wf.add("Minējums", "Nav")
             if self._is_acceptable(wf):
                 result.add_wordform(wf)
@@ -393,16 +396,18 @@ class Analyzer:
         cur = word
         if cur.startswith(self._debitive_prefix):
             debitive = True
-            cur = cur[len(self._debitive_prefix):]
+            cur = cur[len(self._debitive_prefix) :]
 
         for prefix in self._verb_prefixes:
             if cur.startswith(self._superlative_prefix + prefix):
-                residue = self._superlative_prefix + cur[len(self._superlative_prefix) + len(prefix):]
+                residue = (
+                    self._superlative_prefix + cur[len(self._superlative_prefix) + len(prefix) :]
+                )
                 if debitive:
                     residue = self._debitive_prefix + residue
                 self._add_prefix_readings(result, prefix, residue, with_superlative_prefix=True)
             elif cur.startswith(prefix):
-                residue = cur[len(prefix):]
+                residue = cur[len(prefix) :]
                 if debitive:
                     residue = self._debitive_prefix + residue
                 self._add_prefix_readings(result, prefix, residue, with_superlative_prefix=False)
@@ -410,9 +415,7 @@ class Analyzer:
 
     # --- diminutive + derived noun guessing ----------------------------
 
-    def _guess_diminutive(
-        self, word: str, result: Word, ending: Ending, sv, original: str
-    ) -> None:
+    def _guess_diminutive(self, word: str, result: Word, ending: Ending, sv, original: str) -> None:
         """Mirror of Java `guessDeminutive` (lines 389-446).
 
         Two patterns: -īt- (paradigms supporting it) and -iņ- (with consonant
@@ -492,9 +495,7 @@ class Analyzer:
                 verb_paradigm = self.paradigms.by_name(verb_paradigm_name)
                 if verb_paradigm is None:
                     continue
-                lexemes = self._lexemes_with_stem(
-                    verb_paradigm.id, "lv", verb_stem, StemType.BASE
-                )
+                lexemes = self._lexemes_with_stem(verb_paradigm.id, "lv", verb_stem, StemType.BASE)
                 for lexeme in lexemes:
                     wf = Wordform(word, lexeme=lexeme, ending=ending, attributes=sv)
                     wf.add("Avots", "-tājs/-tāja sufiksāls atvasinājums")
@@ -585,9 +586,7 @@ class Analyzer:
                     break
         return result
 
-    def _is_guessable(
-        self, wf: Wordform, ending: Ending, paradigm, length: int
-    ) -> bool:
+    def _is_guessable(self, wf: Wordform, ending: Ending, paradigm, length: int) -> bool:
         """Filter from Java line 558-571: which guesses are emitted."""
         pos = paradigm.own_attributes.get("Vārdšķira")
         is_noun = pos == "Lietvārds"
@@ -634,16 +633,12 @@ class Analyzer:
             ):
                 continue
             # Skip awkward "vis-" + verb-prefix combos
-            if (
-                wf.is_matching_strong("Pakāpe", "Vispārākā")
-                and not with_superlative_prefix
-            ):
+            if wf.is_matching_strong("Pakāpe", "Vispārākā") and not with_superlative_prefix:
                 continue
             wf.add("Avots", "priedēkļu atvasināšana")
             wf.add("Priedēklis", prefix)
-            if (
-                prefix != self._negation_prefix
-                or not wf.is_matching_weak("Vārdšķira", "Darbības vārds")
+            if prefix != self._negation_prefix or not wf.is_matching_weak(
+                "Vārdšķira", "Darbības vārds"
             ):
                 # Update lemma to include the prefix
                 if wf.lexeme and wf.lexeme.lemma:
@@ -657,7 +652,11 @@ class Analyzer:
         full = self.analyze(word)
         kept = Word(full.token)
         for wf in full.wordforms:
-            if wf.ending and wf.ending.paradigm and wf.ending.id == wf.ending.paradigm.lemma_ending_id:
+            if (
+                wf.ending
+                and wf.ending.paradigm
+                and wf.ending.id == wf.ending.paradigm.lemma_ending_id
+            ):
                 kept.add_wordform(wf)
         return kept
 
@@ -673,6 +672,7 @@ class Analyzer:
     def _build_hardcoded_index(self) -> None:
         """One-time scan of `hardcoded` paradigm rows. ~5K entries; <100ms."""
         import json as _json
+
         import pyarrow.compute as pc
 
         idx: dict[str, list[Lexeme]] = defaultdict(list)
@@ -733,9 +733,7 @@ class Analyzer:
             return []
         return [self._materialize_lexeme(r, paradigm_id, language) for r in rows]
 
-    def _materialize_lexeme(
-        self, row_idx: int, paradigm_id: int, language: str
-    ) -> Lexeme:
+    def _materialize_lexeme(self, row_idx: int, paradigm_id: int, language: str) -> Lexeme:
         """Materialise a Lexeme from its parquet row index. LRU-cached so hot
         lookups stay fast without paying the eager-build memory cost."""
         cache_key = (row_idx, paradigm_id, language)
@@ -747,6 +745,7 @@ class Analyzer:
         paradigm = self.paradigms.by_id(paradigm_id, language)
 
         import json as _json
+
         attributes_json = row.get("attributes_json")
         attrs = AttributeValues(_json.loads(attributes_json) if attributes_json else {})
 
@@ -845,14 +844,12 @@ class Analyzer:
         """Drop singularia-tantum used as plural, vocatives when disabled, etc."""
         if not self.enable_vocative and wf.is_matching_strong("Locījums", "Vokatīvs"):
             return False
-        if (
-            wf.is_matching_strong("Skaitlis 2", "Vienskaitlinieks")
-            and wf.is_matching_strong("Skaitlis", "Daudzskaitlis")
+        if wf.is_matching_strong("Skaitlis 2", "Vienskaitlinieks") and wf.is_matching_strong(
+            "Skaitlis", "Daudzskaitlis"
         ):
             return False
-        if (
-            wf.is_matching_strong("Skaitlis 2", "Daudzskaitlinieks")
-            and wf.is_matching_strong("Skaitlis", "Vienskaitlis")
+        if wf.is_matching_strong("Skaitlis 2", "Daudzskaitlinieks") and wf.is_matching_strong(
+            "Skaitlis", "Vienskaitlis"
         ):
             return False
         return True
@@ -974,9 +971,7 @@ def _promote_matching(word: Word, target_tag: str, target_lemma: str) -> None:
             return
 
 
-def _apply_form_override(
-    word: Word, surface: str, target_tag: str, target_lemma: str
-) -> None:
+def _apply_form_override(word: Word, surface: str, target_tag: str, target_lemma: str) -> None:
     """High-confidence form override.
 
     First try to promote an existing wordform matching (tag, lemma). If none
@@ -985,7 +980,7 @@ def _apply_form_override(
     candidate-set ceiling — by design it relies on the corpus annotation
     being authoritative for these high-confidence forms.
     """
-    from tezaurs.markup import to_tag, from_tag
+    from tezaurs.markup import from_tag, to_tag
 
     # Try promote first.
     for i, wf in enumerate(word.wordforms):
@@ -1129,17 +1124,13 @@ def _add_proper_noun_reading(result: Word, original: str) -> None:
     if not result.wordforms:
         return
     has_proper = any(
-        wf.is_matching_strong("Lietvārda tips", "Īpašvārds")
-        for wf in result.wordforms
+        wf.is_matching_strong("Lietvārda tips", "Īpašvārds") for wf in result.wordforms
     )
     if has_proper:
         return
     # Only operate on noun readings — verbs/pronouns/etc capitalized
     # mid-sentence are too rare to invent.
-    noun_readings = [
-        wf for wf in result.wordforms
-        if wf.get("Vārdšķira") == "Lietvārds"
-    ]
+    noun_readings = [wf for wf in result.wordforms if wf.get("Vārdšķira") == "Lietvārds"]
     if not noun_readings:
         return
     # Take the first noun reading, copy its attributes, override to proper noun.

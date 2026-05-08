@@ -36,7 +36,7 @@ class _SparseLRClassifier:
     accuracy impact when the threshold is tuned (we keep |coef| ≥ 0.01).
     """
 
-    __slots__ = ("classes_", "_coef_sparse", "_intercept", "_n_classes")
+    __slots__ = ("_coef_sparse", "_intercept", "_n_classes", "classes_")
 
     def __init__(self, classes_, intercept, coef_sparse) -> None:
         self.classes_ = classes_
@@ -44,7 +44,7 @@ class _SparseLRClassifier:
         self._coef_sparse = coef_sparse  # CSR (n_classes, n_features)
         self._n_classes = len(classes_)
 
-    def predict_log_proba(self, X) -> "object":
+    def predict_log_proba(self, X) -> object:
         # X: (n_samples, n_features) sparse — output of DictVectorizer
         import numpy as np
         from scipy.special import logsumexp
@@ -59,7 +59,7 @@ class _SparseLRClassifier:
         # column 0 = log P(neg), column 1 = log P(pos). We replicate that.
         if scores.shape[1] == 1 and self._n_classes == 2:
             log_p1 = -np.logaddexp(0, -scores)  # log(sigmoid(s))
-            log_p0 = -np.logaddexp(0, scores)   # log(1 - sigmoid(s))
+            log_p0 = -np.logaddexp(0, scores)  # log(1 - sigmoid(s))
             return np.hstack([log_p0, log_p1])
 
         # Multiclass: log-softmax along class axis.
@@ -114,9 +114,11 @@ class CRFTagger:
     _BIGRAM_MODEL_NAME: ClassVar[str] = "tag_bigrams.json"
     _instance: ClassVar[CRFTagger | None] = None
 
-    __slots__ = ("_pos_crf", "_subtag_crf", "_subtag_len", "_per_pos_clf", "_bigrams")
+    __slots__ = ("_bigrams", "_per_pos_clf", "_pos_crf", "_subtag_crf", "_subtag_len")
 
-    def __init__(self, pos_crf, subtag_crf, subtag_len: int, per_pos_clf=None, bigrams=None) -> None:
+    def __init__(
+        self, pos_crf, subtag_crf, subtag_len: int, per_pos_clf=None, bigrams=None
+    ) -> None:
         self._pos_crf = pos_crf
         self._subtag_crf = subtag_crf
         self._subtag_len = subtag_len
@@ -129,7 +131,7 @@ class CRFTagger:
     @classmethod
     def load(cls) -> CRFTagger | None:
         try:
-            import sklearn_crfsuite  # noqa: F401
+            import sklearn_crfsuite
         except ImportError:
             return None
         pos_path = cls._model_path(cls._POS_MODEL_NAME)
@@ -141,13 +143,12 @@ class CRFTagger:
 
         pos_crf = sklearn_crfsuite.CRF(model_filename=str(pos_path))
         subtag_crf = (
-            sklearn_crfsuite.CRF(model_filename=str(subtag_path))
-            if subtag_path.exists()
-            else None
+            sklearn_crfsuite.CRF(model_filename=str(subtag_path)) if subtag_path.exists() else None
         )
         per_pos_clf: dict = {}
         if per_pos_path.exists():
             import pickle
+
             with per_pos_path.open("rb") as f:
                 per_pos_clf = pickle.load(f)
             # Detect format: sparse-format dicts have 'coef_sparse' key.
@@ -158,6 +159,7 @@ class CRFTagger:
         bigrams: dict[str, dict[str, float]] = {}
         if bigrams_path.exists():
             import json as _json
+
             with bigrams_path.open(encoding="utf-8") as f:
                 bigrams = _json.load(f)
         return cls(pos_crf, subtag_crf, subtag_len=4, per_pos_clf=per_pos_clf, bigrams=bigrams)
@@ -231,9 +233,7 @@ class CRFTagger:
             log_probs = clf.predict_log_proba(X)
             classes = clf.classes_
             for row_idx, token_idx in enumerate(indices):
-                tag_distributions[token_idx] = dict(
-                    zip(classes, log_probs[row_idx], strict=True)
-                )
+                tag_distributions[token_idx] = dict(zip(classes, log_probs[row_idx], strict=True))
 
         if self._bigrams:
             self._viterbi_rescore(sentence_words, pos_seq, subtag_seq, tag_distributions)
@@ -292,7 +292,9 @@ class CRFTagger:
             candidates.append(scored[:BEAM])
 
         # Forward Viterbi.
-        prev_states: list[dict[int, tuple[float, int]]] = []  # idx_in_cands → (score, prev_idx_in_cands)
+        prev_states: list[
+            dict[int, tuple[float, int]]
+        ] = []  # idx_in_cands → (score, prev_idx_in_cands)
         for t in range(n):
             cur: dict[int, tuple[float, int]] = {}
             cands = candidates[t]
@@ -339,9 +341,7 @@ class CRFTagger:
                     # Best path starts at t — earlier tokens use independent best.
                     for u in range(t - 1, -1, -1):
                         if prev_states[u]:
-                            path[u] = max(
-                                prev_states[u].items(), key=lambda kv: kv[1][0]
-                            )[0]
+                            path[u] = max(prev_states[u].items(), key=lambda kv: kv[1][0])[0]
                     break
                 path[t - 1] = prev_idx
 
@@ -356,9 +356,7 @@ class CRFTagger:
             if wf_idx == 0:
                 continue
             best = word.wordforms[wf_idx]
-            word.wordforms = [best] + [
-                w for j, w in enumerate(word.wordforms) if j != wf_idx
-            ]
+            word.wordforms = [best] + [w for j, w in enumerate(word.wordforms) if j != wf_idx]
 
     def _trans_score(self, prev_state: str, cur_state: str) -> float:
         row = self._bigrams.get(prev_state)
@@ -493,6 +491,7 @@ class CRFTagger:
         # and avoids underflow when scoring many tags.
         log_probs = clf.predict_log_proba(X)[0]
         return dict(zip(clf.classes_, log_probs, strict=True))
+
 
 def _token_features(words: list[str], i: int) -> dict[str, object]:
     """Produces the same feature dict the trainer used. Must stay in sync with

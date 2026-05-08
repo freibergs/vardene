@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from tezaurs.attributes import AttributeValues, TagSet, TagAttribute, TagValue
+from tezaurs.attributes import AttributeValues, TagAttribute, TagSet
 
 POS_LV = "Vārdšķira"
 
@@ -89,10 +89,7 @@ def to_tag(av: AttributeValues | Mapping[str, str], tagset: TagSet | None = None
     # participle-specific attribute layout (Lokāmība/Dzimte/Skaitlis/...).
     # This mirrors Java's `POS_BASED_SEMTI` exception in TagSet.toTag.
     layout_pos = pos_value
-    is_participle = (
-        pos_value == "Darbības vārds"
-        and av.get("Izteiksme") == "Divdabis"
-    )
+    is_participle = pos_value == "Darbības vārds" and av.get("Izteiksme") == "Divdabis"
     if is_participle:
         layout_pos = "Divdabis"
 

@@ -5,6 +5,7 @@ Usage:
     python -m tools.benchmark --train      # report on full corpus
     python -m tools.benchmark --no-overrides --no-viterbi  # ablations
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,9 +17,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from tools.train_crf_tagger import load_sentences  # noqa: E402
 from tezaurs.analyzer import Analyzer  # noqa: E402
 from tezaurs.markup import to_tag  # noqa: E402
+from tools.train_crf_tagger import load_sentences  # noqa: E402
 
 CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
 
@@ -45,9 +46,7 @@ def evaluate_seed(analyzer: Analyzer, test_set, seed: int, n: int = 200):
                 continue
             wf = result.wordforms[0]
             our_tag = to_tag(wf)
-            our_lemma = wf.get("Pamatforma") or (
-                wf.lexeme.lemma if wf.lexeme else "-"
-            )
+            our_lemma = wf.get("Pamatforma") or (wf.lexeme.lemma if wf.lexeme else "-")
             if our_lemma.casefold() == gl.casefold():
                 lemma += 1
             if our_tag == gt:
@@ -69,12 +68,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seeds", type=int, nargs="+", default=[1, 7, 42, 100, 2024])
     parser.add_argument("--n", type=int, default=200, help="sentences per seed")
-    parser.add_argument("--train", action="store_true",
-                        help="evaluate on full corpus (not held-out)")
-    parser.add_argument("--no-overrides", action="store_true",
-                        help="disable per-form corpus overrides")
-    parser.add_argument("--no-viterbi", action="store_true",
-                        help="disable bigram-Viterbi rescoring")
+    parser.add_argument(
+        "--train", action="store_true", help="evaluate on full corpus (not held-out)"
+    )
+    parser.add_argument(
+        "--no-overrides", action="store_true", help="disable per-form corpus overrides"
+    )
+    parser.add_argument(
+        "--no-viterbi", action="store_true", help="disable bigram-Viterbi rescoring"
+    )
     args = parser.parse_args()
 
     print(f"Loading corpus from {CORPUS}…")
@@ -94,6 +96,7 @@ def main() -> int:
     if args.no_overrides:
         # Empty out the form-overrides table at runtime.
         from tezaurs import analyzer as _a
+
         _a._FORM_STRONG_OVERRIDES = {}
         _a._VERB_TRANSITIVITY = {}
         _a._VERB_TYPE = {}
@@ -101,6 +104,7 @@ def main() -> int:
         print("  Overrides DISABLED")
     if args.no_viterbi:
         from tezaurs import crf_tagger as _c
+
         # Hack: empty bigrams forces the per-token greedy rescore path.
         if analyzer._get_crf_tagger() is not None:
             tagger = _c.CRFTagger.instance()
@@ -111,14 +115,16 @@ def main() -> int:
     # Warm up.
     analyzer.analyze("tēvs")
 
-    print(f"\nseed   N      Lemma     Tag      POS     tok/s")
-    print(f"------------------------------------------------")
+    print("\nseed   N      Lemma     Tag      POS     tok/s")
+    print("------------------------------------------------")
     rows = []
     for seed in args.seeds:
         m = evaluate_seed(analyzer, test, seed, args.n)
         rows.append(m)
-        print(f"{seed:5d} {m['n']:5d}  {m['lemma_pct']:6.2f}%  "
-              f"{m['tag_pct']:6.2f}%  {m['pos_pct']:6.2f}%  {m['tok_per_sec']:6.0f}")
+        print(
+            f"{seed:5d} {m['n']:5d}  {m['lemma_pct']:6.2f}%  "
+            f"{m['tag_pct']:6.2f}%  {m['pos_pct']:6.2f}%  {m['tok_per_sec']:6.0f}"
+        )
 
     if len(rows) > 1:
         n_seeds = len(rows)
@@ -126,7 +132,7 @@ def main() -> int:
         avg_t = sum(r["tag_pct"] for r in rows) / n_seeds
         avg_p = sum(r["pos_pct"] for r in rows) / n_seeds
         avg_s = sum(r["tok_per_sec"] for r in rows) / n_seeds
-        print(f"------------------------------------------------")
+        print("------------------------------------------------")
         print(f"avg          {avg_l:6.2f}%  {avg_t:6.2f}%  {avg_p:6.2f}%  {avg_s:6.0f}")
 
     return 0

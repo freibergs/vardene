@@ -55,7 +55,9 @@ class Ending:
     ending: str
     mija: int  # stem-change ID (0 = no alternation)
     stem_type: StemType
-    lemma_ending_id: int | None  # which ending in this paradigm is the lemma form, if not the paradigm default
+    lemma_ending_id: (
+        int | None
+    )  # which ending in this paradigm is the lemma form, if not the paradigm default
     do_not_generate: bool
     language_normalization: str | None
     own_attributes: AttributeValues  # attributes specific to this ending (combined with paradigm's at lookup time)
@@ -64,7 +66,9 @@ class Ending:
     @property
     def attributes(self) -> AttributeValues:
         """Effective attributes: paradigm-level merged with this ending's own."""
-        merged = AttributeValues(self.paradigm.own_attributes) if self.paradigm else AttributeValues()
+        merged = (
+            AttributeValues(self.paradigm.own_attributes) if self.paradigm else AttributeValues()
+        )
         merged.add_all(self.own_attributes)
         return merged
 
@@ -144,7 +148,7 @@ class ParadigmCatalog:
     _DEFAULT_FILENAME: ClassVar[str] = "paradigms.json"
     _instance: ClassVar[ParadigmCatalog | None] = None
 
-    __slots__ = ("paradigms", "prefixes", "core_files", "_by_lang_id", "_by_name")
+    __slots__ = ("_by_lang_id", "_by_name", "core_files", "paradigms", "prefixes")
 
     def __init__(
         self,
@@ -155,7 +159,9 @@ class ParadigmCatalog:
         self.paradigms = paradigms
         self.prefixes = prefixes
         self.core_files = core_files
-        self._by_lang_id: dict[tuple[str, int], Paradigm] = {(p.language, p.id): p for p in paradigms}
+        self._by_lang_id: dict[tuple[str, int], Paradigm] = {
+            (p.language, p.id): p for p in paradigms
+        }
         self._by_name: dict[str, Paradigm] = {p.name: p for p in paradigms if p.name is not None}
 
     @classmethod
@@ -216,7 +222,9 @@ def _ending_from_json(d: Mapping[str, object]) -> Ending:
         stem_type=StemType.from_id(int(d["stem_id"])),  # type: ignore[arg-type]
         lemma_ending_id=int(le) if le is not None else None,  # type: ignore[arg-type]
         do_not_generate=bool(d["do_not_generate"]),
-        language_normalization=str(d["language_normalization"]) if d["language_normalization"] is not None else None,
+        language_normalization=str(d["language_normalization"])
+        if d["language_normalization"] is not None
+        else None,
         own_attributes=own,
     )
 
@@ -232,7 +240,9 @@ def _paradigm_from_json(d: Mapping[str, object]) -> Paradigm:
         lemma_ending_id=int(d["lemma_ending_id"]),  # type: ignore[arg-type]
         description=str(d["description"]) if d["description"] is not None else None,
         description_en=str(d["description_en"]) if d["description_en"] is not None else None,
-        allowed_guess_endings=str(d["allowed_guess_endings"]) if d["allowed_guess_endings"] is not None else None,
+        allowed_guess_endings=str(d["allowed_guess_endings"])
+        if d["allowed_guess_endings"] is not None
+        else None,
         own_attributes=own,
         endings=endings,
     )

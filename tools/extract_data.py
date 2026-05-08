@@ -32,7 +32,6 @@ from tools import statistics as statistics_mod
 from tools import tagset as tagset_mod
 from tools import tokenizer as tokenizer_mod
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_RESOURCES = REPO_ROOT / "reference" / "src" / "main" / "resources"
 DEFAULT_JAVA_SRC = REPO_ROOT / "reference" / "src" / "main" / "java" / "lv" / "semti" / "morphology"
@@ -66,7 +65,10 @@ def extract_paradigms(resources: Path, data_out: Path) -> None:
 
 
 def extract_tagset(resources: Path, data_out: Path) -> None:
-    for src_name, dst_name in (("TagSet.xml", "tagset.json"), ("TagSet_Tilde.xml", "tagset_tilde.json")):
+    for src_name, dst_name in (
+        ("TagSet.xml", "tagset.json"),
+        ("TagSet_Tilde.xml", "tagset_tilde.json"),
+    ):
         src = resources / src_name
         dst = data_out / dst_name
         _say(f"tagset: {src.name} → {dst.relative_to(REPO_ROOT)}")
@@ -121,15 +123,27 @@ SECTIONS = {
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument(
-        "sections", nargs="*", choices=[*SECTIONS, "all"],
+        "sections",
+        nargs="*",
+        choices=[*SECTIONS, "all"],
         help="which sections to extract (default: all)",
     )
-    parser.add_argument("--resources", type=Path, default=DEFAULT_RESOURCES,
-                        help=f"upstream resources dir (default: {DEFAULT_RESOURCES})")
-    parser.add_argument("--out", type=Path, default=DEFAULT_DATA_OUT,
-                        help=f"output data dir (default: {DEFAULT_DATA_OUT})")
+    parser.add_argument(
+        "--resources",
+        type=Path,
+        default=DEFAULT_RESOURCES,
+        help=f"upstream resources dir (default: {DEFAULT_RESOURCES})",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=DEFAULT_DATA_OUT,
+        help=f"output data dir (default: {DEFAULT_DATA_OUT})",
+    )
     args = parser.parse_args(argv)
 
     if not args.resources.exists():

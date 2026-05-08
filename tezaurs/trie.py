@@ -30,7 +30,7 @@ class Node:
     is the alternative at the current position. Cycles are allowed (e.g. a
     digit loop)."""
 
-    __slots__ = ("first_child", "next_sibling", "can_end", "automaton_name")
+    __slots__ = ("automaton_name", "can_end", "first_child", "next_sibling")
 
     def __init__(self) -> None:
         self.first_child: Node | None = None
@@ -147,9 +147,7 @@ def n2_a_clock() -> Node:
     root.first_child.first_child.first_child = StringNode("012345")
     root.first_child.first_child.first_child.first_child = DigitNode()
     root.first_child.first_child.first_child.first_child.can_end = True
-    root.first_child.first_child.first_child.first_child.first_child = (
-        root.first_child.first_child
-    )
+    root.first_child.first_child.first_child.first_child.first_child = root.first_child.first_child
     root.next_sibling = StringNode("2")
     root.next_sibling.first_child = StringNode("0123")
     root.next_sibling.first_child.first_child = root.first_child.first_child
@@ -263,7 +261,9 @@ def n3_email() -> Node:
     root.first_child.next_sibling = StringNode("@")
     root.first_child.next_sibling.first_child = LetterOrDigitNode()
     root.first_child.next_sibling.first_child.can_end = True
-    root.first_child.next_sibling.first_child.first_child = root.first_child.next_sibling.first_child
+    root.first_child.next_sibling.first_child.first_child = (
+        root.first_child.next_sibling.first_child
+    )
     root.first_child.next_sibling.first_child.next_sibling = StringNode("_-.")
     root.first_child.next_sibling.first_child.next_sibling.first_child = (
         root.first_child.next_sibling.first_child
@@ -295,7 +295,9 @@ def n4a_url() -> Node:
     root.next_sibling.next_sibling.first_child = StringNode("wW")
     root.next_sibling.next_sibling.first_child.first_child = StringNode("wW")
     root.next_sibling.next_sibling.first_child.first_child.first_child = StringNode(".")
-    root.next_sibling.next_sibling.first_child.first_child.first_child.first_child = LetterOrDigitNode("/")
+    root.next_sibling.next_sibling.first_child.first_child.first_child.first_child = (
+        LetterOrDigitNode("/")
+    )
     root.next_sibling.next_sibling.first_child.first_child.first_child.first_child.can_end = True
     # Stitch the http(s):// path onto the same body that www. uses
     root.first_child.first_child.first_child.first_child.first_child.first_child.first_child = (
@@ -377,8 +379,8 @@ class Trie:
     __slots__ = (
         "_branch_list",
         "_exception_root",
-        "_iterator",
         "_is_first",
+        "_iterator",
         "branch_iterator",
     )
 

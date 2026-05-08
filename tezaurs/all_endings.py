@@ -19,7 +19,7 @@ from tezaurs.paradigm import Ending
 
 
 class _Node:
-    __slots__ = ("symbol", "first_child", "next_sibling", "endings")
+    __slots__ = ("endings", "first_child", "next_sibling", "symbol")
 
     def __init__(self, symbol: str) -> None:
         self.symbol: str = symbol
@@ -31,7 +31,7 @@ class _Node:
 class AllEndings:
     """Suffix-trie index from any prefix-of-an-ending → list of matching endings."""
 
-    __slots__ = ("_root", "_endings", "_by_id")
+    __slots__ = ("_by_id", "_endings", "_root")
 
     def __init__(self, endings: Iterable[Ending]) -> None:
         self._root = _Node(" ")

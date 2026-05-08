@@ -97,4 +97,3 @@ class Statistics:
         return sorted(
             wordforms, key=lambda wf: self.score(wf, prefer_proper=prefer_proper), reverse=True
         )
-

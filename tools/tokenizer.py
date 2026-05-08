@@ -28,7 +28,12 @@ _DOUBLE_QUOTE = '"'
 
 # Capture: String separators=" \t...";
 _SEPARATORS_RE = re.compile(
-    r'String\s+separators\s*=\s*' + _DOUBLE_QUOTE + r'(?P<sep>(?:[^' + _DOUBLE_QUOTE + r'\\]|\\.)*)' + _DOUBLE_QUOTE
+    r"String\s+separators\s*=\s*"
+    + _DOUBLE_QUOTE
+    + r"(?P<sep>(?:[^"
+    + _DOUBLE_QUOTE
+    + r"\\]|\\.)*)"
+    + _DOUBLE_QUOTE
 )
 
 

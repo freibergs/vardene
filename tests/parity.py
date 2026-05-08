@@ -22,7 +22,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tezaurs.analyzer import Analyzer
 from tezaurs.markup import to_tag
 
-
 CORPUS = Path(__file__).resolve().parent.parent / "tools" / "data" / "train.txt"
 
 
@@ -42,7 +41,9 @@ def load_corpus(path: Path = CORPUS) -> list[tuple[str, str, str]]:
     return rows
 
 
-def sample_words(rows: list[tuple[str, str, str]], n: int, *, seed: int = 42) -> list[tuple[str, str, str]]:
+def sample_words(
+    rows: list[tuple[str, str, str]], n: int, *, seed: int = 42
+) -> list[tuple[str, str, str]]:
     rng = random.Random(seed)
     return rng.sample(rows, n)
 
@@ -64,7 +65,9 @@ def evaluate(
     tag_hits = 0
     pos_hits = 0
     no_analysis = 0
-    failures: list[tuple[str, str, str, str, str]] = []  # (word, gold_tag, gold_lemma, our_tag, our_lemma)
+    failures: list[
+        tuple[str, str, str, str, str]
+    ] = []  # (word, gold_tag, gold_lemma, our_tag, our_lemma)
 
     t0 = time.perf_counter()
     for word, gold_tag, gold_lemma in sample:
