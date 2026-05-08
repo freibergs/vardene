@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.python-version
+
+# Build artefacts
+dist/
+build/
+*.whl
+
+# Tooling caches
+.venv/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# LaTeX intermediates (keep .tex and .pdf)
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.toc
+paper/*.bbl
+paper/*.blg
+
+# Local-only / not shipped
+.claude/
+reference/
+*.pkg
+*.bak
+*.full_corpus.bak
+
+# Override global ignores: ship our classifier pickle and trained models.
+!tezaurs/data/per_pos_clf.pkl
+!tezaurs/data/*.crfsuite
+!tezaurs/data/*.parquet
+!tezaurs/data/*.json

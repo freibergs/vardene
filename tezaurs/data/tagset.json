@@ -1,0 +1,4693 @@
+{
+  "attributes": [
+    {
+      "lv": "Vārdšķira",
+      "en": "Part of speech",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": 0,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Lietvārds",
+          "en": "Noun",
+          "tag": "n",
+          "default_tags": "nc____",
+          "gf": null
+        },
+        {
+          "lv": "Darbības vārds",
+          "en": "Verb",
+          "tag": "v",
+          "default_tags": "vm_________",
+          "gf": null
+        },
+        {
+          "lv": "Īpašības vārds",
+          "en": "Adjective",
+          "tag": "a",
+          "default_tags": "af_____",
+          "gf": null
+        },
+        {
+          "lv": "Vietniekvārds",
+          "en": "Pronoun",
+          "tag": "p",
+          "default_tags": "p_____n",
+          "gf": null
+        },
+        {
+          "lv": "Apstākļa vārds",
+          "en": "Adverb",
+          "tag": "r",
+          "default_tags": "r_n",
+          "gf": null
+        },
+        {
+          "lv": "Prievārds",
+          "en": "Preposition",
+          "tag": "s",
+          "default_tags": "sp__",
+          "gf": null
+        },
+        {
+          "lv": "Saiklis",
+          "en": "Conjunction",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Skaitļa vārds",
+          "en": "Numeral",
+          "tag": "m",
+          "default_tags": "m_____",
+          "gf": null
+        },
+        {
+          "lv": "Izsauksmes vārds",
+          "en": "Interjection",
+          "tag": "i",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Saīsinājums",
+          "en": "Abbreviation",
+          "tag": "y",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Partikula",
+          "en": "Particle",
+          "tag": "q",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pieturzīme",
+          "en": "Punctuation",
+          "tag": "z",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Reziduālis",
+          "en": "Residual",
+          "tag": "x",
+          "default_tags": "xx",
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Lietvārda tips",
+      "en": "Noun type",
+      "description": "Īpašvārds vai sugas vārds?",
+      "part_of_speech": "Lietvārds",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Īpašvārds",
+          "en": "Proper noun",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sugas vārds",
+          "en": "Common noun",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Dzimte",
+      "en": "Gender",
+      "description": null,
+      "part_of_speech": "Lietvārds",
+      "markup_pos": 2,
+      "gf": "gend",
+      "values": [
+        {
+          "lv": "Vīriešu",
+          "en": "Masculine",
+          "tag": "m",
+          "default_tags": null,
+          "gf": "Masc"
+        },
+        {
+          "lv": "Sieviešu",
+          "en": "Feminine",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "Fem"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Lietvārds",
+      "markup_pos": 3,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis 2",
+      "en": "Number-special",
+      "description": null,
+      "part_of_speech": "Lietvārds",
+      "markup_pos": 3,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vienskaitlinieks",
+          "en": "Singulare tantum",
+          "tag": "v",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Daudzskaitlinieks",
+          "en": "Plurare tantum",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Gandrīz daudzskaitlinieks",
+          "en": "Almost plurare tantum",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Locījums",
+      "en": "Case",
+      "description": null,
+      "part_of_speech": "Lietvārds",
+      "markup_pos": 4,
+      "gf": "Case",
+      "values": [
+        {
+          "lv": "Nominatīvs",
+          "en": "Nominative",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Nom"
+        },
+        {
+          "lv": "Ģenitīvs",
+          "en": "Genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": "Gen"
+        },
+        {
+          "lv": "Datīvs",
+          "en": "Dative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": "Dat"
+        },
+        {
+          "lv": "Akuzatīvs",
+          "en": "Accusative",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Acc"
+        },
+        {
+          "lv": "Lokatīvs",
+          "en": "Locative",
+          "tag": "l",
+          "default_tags": null,
+          "gf": "Loc"
+        },
+        {
+          "lv": "Vokatīvs",
+          "en": "Vocative",
+          "tag": "v",
+          "default_tags": null,
+          "gf": "Voc"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Deklinācija",
+      "en": "Declension",
+      "description": null,
+      "part_of_speech": "Lietvārds",
+      "markup_pos": 5,
+      "gf": "Declension",
+      "values": [
+        {
+          "lv": "1",
+          "en": "1",
+          "tag": "1",
+          "default_tags": null,
+          "gf": "D1"
+        },
+        {
+          "lv": "2",
+          "en": "2",
+          "tag": "2",
+          "default_tags": null,
+          "gf": "D2"
+        },
+        {
+          "lv": "3",
+          "en": "3",
+          "tag": "3",
+          "default_tags": null,
+          "gf": "D3"
+        },
+        {
+          "lv": "4",
+          "en": "4",
+          "tag": "4",
+          "default_tags": null,
+          "gf": "D4"
+        },
+        {
+          "lv": "5",
+          "en": "5",
+          "tag": "5",
+          "default_tags": null,
+          "gf": "D5"
+        },
+        {
+          "lv": "6",
+          "en": "6",
+          "tag": "6",
+          "default_tags": null,
+          "gf": "D6"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": "D0"
+        },
+        {
+          "lv": "Atgriezenisks",
+          "en": "Reflexive",
+          "tag": "r",
+          "default_tags": null,
+          "gf": "DR"
+        },
+        {
+          "lv": "Ģenitīvenis",
+          "en": "Inflexible genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": "DG"
+        }
+      ]
+    },
+    {
+      "lv": "Darbības vārda tips",
+      "en": "Verb type",
+      "description": "patstāvīgs vai palīg d.v ?",
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Patstāvīgs darbības vārds",
+          "en": "Main",
+          "tag": "m",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Modāls modificētājs",
+          "en": "Modal modifier",
+          "tag": "o",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fāzes modificētājs",
+          "en": "Phasal modifier",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Izpausmes modificētājs",
+          "en": "Expression",
+          "tag": "e",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Palīgverbs 'būt'",
+          "en": "'to be' as auxiliary or copula",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Saitiņa",
+          "en": "Other copulas",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Palīgverbs",
+          "en": "Other auxiliaries",
+          "tag": "a",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Atgriezeniskums",
+      "en": "Reflexive",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 2,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Izteiksme",
+      "en": "Mood",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 3,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Īstenības",
+          "en": "Indicative",
+          "tag": "i",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Atstāstījuma",
+          "en": "Relative",
+          "tag": "r",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vēlējuma",
+          "en": "Conditional",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vajadzības",
+          "en": "Debitive",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vajadzības, atstāstījuma paveids",
+          "en": "Debitive",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pavēles",
+          "en": "Imperative",
+          "tag": "m",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nenoteiksme",
+          "en": "Infinitive",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Supīns",
+          "en": "Supine",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Divdabis",
+          "en": "Participle",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Laiks",
+      "en": "Tense",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 4,
+      "gf": "Tense",
+      "values": [
+        {
+          "lv": "Tagadne",
+          "en": "Present",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pres"
+        },
+        {
+          "lv": "Pagātne",
+          "en": "Past",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Past"
+        },
+        {
+          "lv": "Nākotne",
+          "en": "Future",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "Fut"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Transitivitāte",
+      "en": "Transitivity",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 5,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Transitīvs",
+          "en": "Transitive",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Intransitīvs",
+          "en": "Intransitive",
+          "tag": "i",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Transitīvs un intransitīvs",
+          "en": "Transitive or intransitive",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Konjugācija",
+      "en": "Conjugation",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 6,
+      "gf": "Conjugation",
+      "values": [
+        {
+          "lv": "1",
+          "en": "1",
+          "tag": "1",
+          "default_tags": null,
+          "gf": "C1"
+        },
+        {
+          "lv": "2",
+          "en": "2",
+          "tag": "2",
+          "default_tags": null,
+          "gf": "C2"
+        },
+        {
+          "lv": "3",
+          "en": "3",
+          "tag": "3",
+          "default_tags": null,
+          "gf": "C3"
+        },
+        {
+          "lv": "Nekārtns",
+          "en": "Irregular",
+          "tag": "i",
+          "default_tags": null,
+          "gf": "CI"
+        }
+      ]
+    },
+    {
+      "lv": "Persona",
+      "en": "Person",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 7,
+      "gf": "Person",
+      "values": [
+        {
+          "lv": "1",
+          "en": "1",
+          "tag": "1",
+          "default_tags": null,
+          "gf": "P1"
+        },
+        {
+          "lv": "2",
+          "en": "2",
+          "tag": "2",
+          "default_tags": null,
+          "gf": "P2"
+        },
+        {
+          "lv": "3",
+          "en": "3",
+          "tag": "3",
+          "default_tags": null,
+          "gf": "P3"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 8,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Kārta",
+      "en": "Voice",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 9,
+      "gf": "Voice",
+      "values": [
+        {
+          "lv": "Darāmā",
+          "en": "Active",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Act"
+        },
+        {
+          "lv": "Ciešamā",
+          "en": "Passive",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pass"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Noliegums",
+      "en": "Negation",
+      "description": null,
+      "part_of_speech": "Darbības vārds",
+      "markup_pos": 10,
+      "gf": "Polarity",
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": "Neg"
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Pos"
+        }
+      ]
+    },
+    {
+      "lv": "Darbības vārda tips",
+      "en": "Verb type",
+      "description": "patstāvīgs vai palīg d.v ?",
+      "part_of_speech": "Divdabis",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Patstāvīgs darbības vārds",
+          "en": "Main",
+          "tag": "m",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Modāls modificētājs",
+          "en": "Modal modifier",
+          "tag": "o",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fāzes modificētājs",
+          "en": "Phasal modifier",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Izpausmes modificētājs",
+          "en": "Expression",
+          "tag": "e",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Palīgverbs 'būt'",
+          "en": "'to be' as auxiliary or copula",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Saitiņa",
+          "en": "Other copulas",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Palīgverbs",
+          "en": "Other auxiliaries",
+          "tag": "a",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Atgriezeniskums",
+      "en": null,
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 2,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Izteiksme",
+      "en": "Mood",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 3,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Īstenības",
+          "en": "Indicative",
+          "tag": "i",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Atstāstījuma",
+          "en": "Relative",
+          "tag": "r",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vēlējuma",
+          "en": "Conditional",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vajadzības",
+          "en": "Debitive",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pavēles",
+          "en": "Imperative",
+          "tag": "m",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nenoteiksme",
+          "en": "Infinitive",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Divdabis",
+          "en": "Participle",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Lokāmība",
+      "en": "Declinability",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 4,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Lokāms",
+          "en": "Declinable",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Daļēji lokāms",
+          "en": "Partly declinable",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nelokāms",
+          "en": "Undeclinable",
+          "tag": "u",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Dzimte",
+      "en": "Gender",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 5,
+      "gf": "Gender",
+      "values": [
+        {
+          "lv": "Vīriešu",
+          "en": "Masculine",
+          "tag": "m",
+          "default_tags": null,
+          "gf": "Masc"
+        },
+        {
+          "lv": "Sieviešu",
+          "en": "Feminine",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "Fem"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 6,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Locījums",
+      "en": "Case",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 7,
+      "gf": "Case",
+      "values": [
+        {
+          "lv": "Nominatīvs",
+          "en": "Nominative",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Nom"
+        },
+        {
+          "lv": "Ģenitīvs",
+          "en": "Genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": "Gen"
+        },
+        {
+          "lv": "Datīvs",
+          "en": "Dative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": "Dat"
+        },
+        {
+          "lv": "Akuzatīvs",
+          "en": "Accusative",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Acc"
+        },
+        {
+          "lv": "Lokatīvs",
+          "en": "Locative",
+          "tag": "l",
+          "default_tags": null,
+          "gf": "Loc"
+        },
+        {
+          "lv": "Vokatīvs",
+          "en": "Vocative",
+          "tag": "v",
+          "default_tags": null,
+          "gf": "Voc"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Kārta",
+      "en": "Voice",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 8,
+      "gf": "Voice",
+      "values": [
+        {
+          "lv": "Darāmā",
+          "en": "Active",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Act"
+        },
+        {
+          "lv": "Ciešamā",
+          "en": "Passive",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pass"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Laiks",
+      "en": "Tense",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 9,
+      "gf": "Tense",
+      "values": [
+        {
+          "lv": "Tagadne",
+          "en": "Present",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pres"
+        },
+        {
+          "lv": "Pagātne",
+          "en": "Past",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Past"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Noteiktība",
+      "en": "Definiteness",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 10,
+      "gf": "Definiteness",
+      "values": [
+        {
+          "lv": "Nenoteiktā",
+          "en": "Indefinite",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Indef"
+        },
+        {
+          "lv": "Noteiktā",
+          "en": "Definite",
+          "tag": "y",
+          "default_tags": null,
+          "gf": "Def"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Pakāpe",
+      "en": "Degree",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 11,
+      "gf": "Degree",
+      "values": [
+        {
+          "lv": "Pamata",
+          "en": "Positive",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Posit"
+        },
+        {
+          "lv": "Pārākā",
+          "en": "Comparative",
+          "tag": "c",
+          "default_tags": null,
+          "gf": "Compar"
+        },
+        {
+          "lv": "Vispārākā",
+          "en": "Superlative",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Superl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Noliegums",
+      "en": "Negation",
+      "description": null,
+      "part_of_speech": "Divdabis",
+      "markup_pos": 12,
+      "gf": "Polarity",
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": "Neg"
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Pos"
+        }
+      ]
+    },
+    {
+      "lv": "Īpašības vārda tips",
+      "en": "Adjective type",
+      "description": null,
+      "part_of_speech": "Īpašības vārds",
+      "markup_pos": 1,
+      "gf": "AType",
+      "values": [
+        {
+          "lv": "Kādības",
+          "en": "Qualificative",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "AQual"
+        },
+        {
+          "lv": "Attieksmes",
+          "en": "Relative",
+          "tag": "r",
+          "default_tags": null,
+          "gf": "ARel"
+        }
+      ]
+    },
+    {
+      "lv": "Dzimte",
+      "en": "Gender",
+      "description": null,
+      "part_of_speech": "Īpašības vārds",
+      "markup_pos": 2,
+      "gf": "Gender",
+      "values": [
+        {
+          "lv": "Vīriešu",
+          "en": "Masculine",
+          "tag": "m",
+          "default_tags": null,
+          "gf": "Masc"
+        },
+        {
+          "lv": "Sieviešu",
+          "en": "Feminine",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "Fem"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Īpašības vārds",
+      "markup_pos": 3,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Locījums",
+      "en": "Case",
+      "description": null,
+      "part_of_speech": "Īpašības vārds",
+      "markup_pos": 4,
+      "gf": "Case",
+      "values": [
+        {
+          "lv": "Nominatīvs",
+          "en": "Nominative",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Nom"
+        },
+        {
+          "lv": "Ģenitīvs",
+          "en": "Genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": "Gen"
+        },
+        {
+          "lv": "Datīvs",
+          "en": "Dative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": "Dat"
+        },
+        {
+          "lv": "Akuzatīvs",
+          "en": "Accusative",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Acc"
+        },
+        {
+          "lv": "Lokatīvs",
+          "en": "Locative",
+          "tag": "l",
+          "default_tags": null,
+          "gf": "Loc"
+        },
+        {
+          "lv": "Vokatīvs",
+          "en": "Vocative",
+          "tag": "v",
+          "default_tags": null,
+          "gf": "Voc"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Noteiktība",
+      "en": "Definiteness",
+      "description": null,
+      "part_of_speech": "Īpašības vārds",
+      "markup_pos": 5,
+      "gf": "Definiteness",
+      "values": [
+        {
+          "lv": "Nenoteiktā",
+          "en": "Indefinite",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Indef"
+        },
+        {
+          "lv": "Noteiktā",
+          "en": "Definite",
+          "tag": "y",
+          "default_tags": null,
+          "gf": "Def"
+        }
+      ]
+    },
+    {
+      "lv": "Pakāpe",
+      "en": "Degree",
+      "description": null,
+      "part_of_speech": "Īpašības vārds",
+      "markup_pos": 6,
+      "gf": "Degree",
+      "values": [
+        {
+          "lv": "Pamata",
+          "en": "Positive",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Posit"
+        },
+        {
+          "lv": "Pārākā",
+          "en": "Comparative",
+          "tag": "c",
+          "default_tags": null,
+          "gf": "Compar"
+        },
+        {
+          "lv": "Vispārākā",
+          "en": "Superlative",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Superl"
+        }
+      ]
+    },
+    {
+      "lv": "Vietniekvārda tips",
+      "en": "Pronoun type",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Personas",
+          "en": "Personal",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Atgriezeniskais",
+          "en": "Reflexive",
+          "tag": "x",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Piederības",
+          "en": "Possesive",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Norādāmais",
+          "en": "Demonstrative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nenoteiktais",
+          "en": "Indefinite",
+          "tag": "i",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Jautājamais",
+          "en": "Interrogative",
+          "tag": "q",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Attieksmes",
+          "en": "Relative",
+          "tag": "r",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Noteiktais",
+          "en": "Definite",
+          "tag": "g",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Persona",
+      "en": "Person",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": 2,
+      "gf": "Person",
+      "values": [
+        {
+          "lv": "1",
+          "en": "1",
+          "tag": "1",
+          "default_tags": null,
+          "gf": "P1"
+        },
+        {
+          "lv": "2",
+          "en": "2",
+          "tag": "2",
+          "default_tags": null,
+          "gf": "P2"
+        },
+        {
+          "lv": "3",
+          "en": "3",
+          "tag": "3",
+          "default_tags": null,
+          "gf": "P3"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Dzimte",
+      "en": "Gender",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": 3,
+      "gf": "Gender",
+      "values": [
+        {
+          "lv": "Vīriešu",
+          "en": "Masculine",
+          "tag": "m",
+          "default_tags": null,
+          "gf": "Masc"
+        },
+        {
+          "lv": "Sieviešu",
+          "en": "Feminine",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "Fem"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": 4,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Locījums",
+      "en": "Case",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": 5,
+      "gf": "Case",
+      "values": [
+        {
+          "lv": "Nominatīvs",
+          "en": "Nominative",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Nom"
+        },
+        {
+          "lv": "Ģenitīvs",
+          "en": "Genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": "Gen"
+        },
+        {
+          "lv": "Datīvs",
+          "en": "Dative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": "Dat"
+        },
+        {
+          "lv": "Akuzatīvs",
+          "en": "Accusative",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Acc"
+        },
+        {
+          "lv": "Lokatīvs",
+          "en": "Locative",
+          "tag": "l",
+          "default_tags": null,
+          "gf": "Loc"
+        }
+      ]
+    },
+    {
+      "lv": "Noliegums",
+      "en": "Negation",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": 6,
+      "gf": "Polarity",
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": "Neg"
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Pos"
+        }
+      ]
+    },
+    {
+      "lv": "Anafora",
+      "en": "Anaphora",
+      "description": null,
+      "part_of_speech": "Vietniekvārds",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Aizstāj adjektīvu",
+          "en": "Replaces adjective",
+          "tag": "a",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Aizstāj substantīvu",
+          "en": "Replaces substantive/nominal",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Pakāpe",
+      "en": "Degree",
+      "description": null,
+      "part_of_speech": "Apstākļa vārds",
+      "markup_pos": 1,
+      "gf": "Degree",
+      "values": [
+        {
+          "lv": "Pamata",
+          "en": "Positive",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Posit"
+        },
+        {
+          "lv": "Pārākā",
+          "en": "Comparative",
+          "tag": "c",
+          "default_tags": null,
+          "gf": "Compar"
+        },
+        {
+          "lv": "Vispārākā",
+          "en": "Superlative",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Superl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Prievārdiskais apstākļa vārds",
+      "en": "Prepositional adverb",
+      "description": null,
+      "part_of_speech": "Apstākļa vārds",
+      "markup_pos": 2,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Apstākļa vārda semantiskais tips",
+      "en": "Adverb type",
+      "description": null,
+      "part_of_speech": "Apstākļa vārds",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Mēra",
+          "en": "Quantitative",
+          "tag": "q",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Veida",
+          "en": "Manner",
+          "tag": "m",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vietas",
+          "en": "Place",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Laika",
+          "en": "Time",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Cēloņa/nolūka",
+          "en": "Causative",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Novietojums",
+      "en": "Position",
+      "description": null,
+      "part_of_speech": "Prievārds",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Prepozitīvs",
+          "en": "Preposition",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Postpozitīvs",
+          "en": "Postposition",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Prievārds",
+      "markup_pos": 2,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Rekcija",
+      "en": "FeatureGovernmentSystem",
+      "description": null,
+      "part_of_speech": "Prievārds",
+      "markup_pos": 3,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Ģenitīvs",
+          "en": "Genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Datīvs",
+          "en": "Dative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Akuzatīvs",
+          "en": "Accusative",
+          "tag": "a",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Vietas apstākļa nozīme",
+      "en": "Usable as location adverb",
+      "description": null,
+      "part_of_speech": "Prievārds",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": "y",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Saikļa sintaktiskā funkcija",
+      "en": "Conjunction syntactic function",
+      "description": null,
+      "part_of_speech": "Saiklis",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Sakārtojuma",
+          "en": "Coordinating",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pakārtojuma",
+          "en": "Subordinating",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Uzbūve",
+      "en": "Structure",
+      "description": null,
+      "part_of_speech": "Saiklis",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vienkāršs",
+          "en": "Simple",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Salikts",
+          "en": "Compound",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Divkāršs",
+          "en": "Double",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Atkārtots",
+          "en": "Repeated",
+          "tag": "r",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Saikļa semantiskais tips",
+      "en": "Conjunction semantic type",
+      "description": null,
+      "part_of_speech": "Saiklis",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vienojuma",
+          "en": "Cumulative",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pretstatījuma",
+          "en": "Adversative",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitļa vārda tips",
+      "en": "Numeral type",
+      "description": null,
+      "part_of_speech": "Skaitļa vārds",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Pamata",
+          "en": "Cardinal",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kārtas",
+          "en": "Ordinal",
+          "tag": "o",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Daļskaitlis",
+          "en": "Fraction",
+          "tag": "f",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Uzbūve",
+      "en": "Structure",
+      "description": null,
+      "part_of_speech": "Skaitļa vārds",
+      "markup_pos": 2,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vienkāršs",
+          "en": "Simple",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Salikts",
+          "en": "Compound",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vairākvārdu",
+          "en": "Conjunction",
+          "tag": "j",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Dzimte",
+      "en": "Gender",
+      "description": null,
+      "part_of_speech": "Skaitļa vārds",
+      "markup_pos": 3,
+      "gf": "Gender",
+      "values": [
+        {
+          "lv": "Vīriešu",
+          "en": "Masculine",
+          "tag": "m",
+          "default_tags": null,
+          "gf": "Masc"
+        },
+        {
+          "lv": "Sieviešu",
+          "en": "Feminine",
+          "tag": "f",
+          "default_tags": null,
+          "gf": "Fem"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitlis",
+      "en": "Number",
+      "description": null,
+      "part_of_speech": "Skaitļa vārds",
+      "markup_pos": 4,
+      "gf": "Number",
+      "values": [
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": "s",
+          "default_tags": null,
+          "gf": "Sg"
+        },
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": "p",
+          "default_tags": null,
+          "gf": "Pl"
+        }
+      ]
+    },
+    {
+      "lv": "Locījums",
+      "en": "Case",
+      "description": null,
+      "part_of_speech": "Skaitļa vārds",
+      "markup_pos": 5,
+      "gf": "Case",
+      "values": [
+        {
+          "lv": "Nominatīvs",
+          "en": "Nominative",
+          "tag": "n",
+          "default_tags": null,
+          "gf": "Nom"
+        },
+        {
+          "lv": "Ģenitīvs",
+          "en": "Genitive",
+          "tag": "g",
+          "default_tags": null,
+          "gf": "Gen"
+        },
+        {
+          "lv": "Datīvs",
+          "en": "Dative",
+          "tag": "d",
+          "default_tags": null,
+          "gf": "Dat"
+        },
+        {
+          "lv": "Akuzatīvs",
+          "en": "Accusative",
+          "tag": "a",
+          "default_tags": null,
+          "gf": "Acc"
+        },
+        {
+          "lv": "Lokatīvs",
+          "en": "Locative",
+          "tag": "l",
+          "default_tags": null,
+          "gf": "Loc"
+        },
+        {
+          "lv": "Nepiemīt",
+          "en": "Not applicable",
+          "tag": "0",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitļu kārta",
+      "en": "Numeral order",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vieni",
+          "en": "Ones",
+          "tag": "v",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Padsmiti",
+          "en": "Teens",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Desmiti",
+          "en": "Tens",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Simti",
+          "en": "Hundreds",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Tūkstoši",
+          "en": "Thousands",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Miljoni",
+          "en": "Millions",
+          "tag": "m",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Miljardi",
+          "en": "Milliards",
+          "tag": "r",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Uzbūve",
+      "en": "Structure",
+      "description": null,
+      "part_of_speech": "Izsauksmes vārds",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vienkāršs",
+          "en": "Simple",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Salikts",
+          "en": "Compound",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Uzbūve",
+      "en": "Structure",
+      "description": null,
+      "part_of_speech": "Partikula",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vienkāršs",
+          "en": "Simple",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Salikts",
+          "en": "Compound",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Pieturzīmes tips",
+      "en": "Punctuation type",
+      "description": null,
+      "part_of_speech": "Pieturzīme",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Komats",
+          "en": "Comma",
+          "tag": "c",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pēdiņa",
+          "en": "Quote",
+          "tag": "q",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Punkts",
+          "en": "Stop",
+          "tag": "s",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Iekava",
+          "en": "Bracket",
+          "tag": "b",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Domuzīme",
+          "en": "Dash/hyphen",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kols",
+          "en": "Colon",
+          "tag": "o",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Cita",
+          "en": "Other",
+          "tag": "x",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Reziduāļa tips",
+      "en": "Residual type",
+      "description": null,
+      "part_of_speech": "Reziduālis",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vārds svešvalodā",
+          "en": "Foreign material",
+          "tag": "f",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Drukas kļūda",
+          "en": "Typo",
+          "tag": "t",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Skaitlis cipariem",
+          "en": "Numeral",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kārtas skaitlis cipariem",
+          "en": "Ordinal",
+          "tag": "o",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Apzīmējums ar burtiem un cipariem",
+          "en": "Alphanumeric designation",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "URI",
+          "en": "URI",
+          "tag": "u",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Cits",
+          "en": "Other",
+          "tag": "x",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Saīsinājuma tips",
+      "en": "Abbreviation type",
+      "description": null,
+      "part_of_speech": "Saīsinājums",
+      "markup_pos": 1,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Sugasvārds",
+          "en": "Common noun",
+          "tag": "n",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Īpašvārds",
+          "en": "Proper noun",
+          "tag": "p",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Īpašības vārds",
+          "en": "Adjective",
+          "tag": "a",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Verbāls",
+          "en": "Verbal",
+          "tag": "v",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Apstāklis",
+          "en": "Adverb",
+          "tag": "r",
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Diskursa iezīmētāji",
+          "en": "discourse",
+          "tag": "d",
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Ģenerēt",
+      "en": "Generate",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Minēšana",
+      "en": "Derivation",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Nav",
+          "en": "From lexicon",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Deminutīvu atvasināšana",
+          "en": "Deminutive derivation",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Priedēkļu atvasināšana",
+          "en": "Prefix derivation",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Minēšana pēc galotnes",
+          "en": "Guess based on endings",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Paradigmai atļautie atvasinājumi",
+      "en": "Paradigm supported derivations",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "-tājs, -ējs, -tāja, -ēja",
+          "en": "-tājs, -ējs, -tāja, -ēja",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Deminutīvs -īt",
+          "en": "Diminutive -īt",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Deminutīvs -iņ",
+          "en": "Diminutive -iņ",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Īpašvārda veids",
+      "en": "Proper noun type",
+      "description": null,
+      "part_of_speech": "Lietvārds",
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Priekšvārds",
+          "en": "Given name",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Uzvārds",
+          "en": "Surname",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vietvārds",
+          "en": "Toponym",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Personvārds",
+          "en": "Person name",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Vispārīgais lietojuma biežums",
+      "en": "Usage frequency",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Reti",
+          "en": "Rare",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Retāk",
+          "en": "Rarer",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pareti",
+          "en": "Rarish",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Lietojuma biežums",
+      "en": "Usage frequency",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Reti",
+          "en": "Rare",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Valodas normēšana",
+      "en": "Normative",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Ieteicams",
+          "en": "Preffered",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nevēlams",
+          "en": "Undesirable",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Lietojums",
+      "en": "Usage",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Novecojis",
+          "en": "Dated",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sens, reti lietots vārds",
+          "en": "Old, rarely used",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Apvidvārds",
+          "en": "Regional",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Neaktuāls",
+          "en": "Obsolete",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vēsturisks",
+          "en": "Historical",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sarunvaloda",
+          "en": "Colloquial",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nevēlams",
+          "en": "Undesirable",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Neliterārs",
+          "en": "Colloquial",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Žargonisms",
+          "en": "Slang",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Slengs",
+          "en": "Slang",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vulgārisms",
+          "en": "Vulgar",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Barbarisms",
+          "en": "Barbaric",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Biblisms",
+          "en": "Bible",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Jaunvārds",
+          "en": "Neologism",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Īsziņās",
+          "en": "SMS",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Bērnu valoda",
+          "en": "Children",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Eifēmisms",
+          "en": "Euphemism",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Dialektisms",
+          "en": "Dialect",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Okazionālisms",
+          "en": "Nonce",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Stils",
+      "en": "Style",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Nievājoša ekspresīvā nokrāsa",
+          "en": "Derogatory",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nicinoša ekspresīvā nokrāsa",
+          "en": "Derogatory",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ironiska ekspresīvā nokrāsa",
+          "en": "Ironic",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Humoristiska ekspresīvā nokrāsa",
+          "en": "Jocular",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Poētiska stilistiskā nokrāsa",
+          "en": "Poetic",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Folkloras valodai raksturīga stilistiskā nokrāsa",
+          "en": "Folklore",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vienkāršrunas stilistiskā nokrāsa",
+          "en": "Simplistic",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sirsnīga emocionālā nokrāsa",
+          "en": "Hearty",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mīlinājuma nokrāsa",
+          "en": "Affective",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pārnestā nozīmē",
+          "en": "Figurative",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sarunvaloda",
+          "en": "Colloquial",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vienkāršruna",
+          "en": "Low colloquial",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vulgārisms",
+          "en": "Vulgarism",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Personvārda veids",
+      "en": "Person name type",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Priekšvārds",
+          "en": "Given name",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Uzvārds",
+          "en": "Surname",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Sociālais lietojums",
+      "en": "Social usage",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Profesionālisms",
+          "en": "Professional slang",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Joma",
+      "en": "Domain",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Pārtika",
+          "en": "Food",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kulinārija",
+          "en": "Culinary",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Medicīna",
+          "en": "Medicine",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Anatomija",
+          "en": "Anatomy",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fizioloģija",
+          "en": "Physiology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Veterinārija",
+          "en": "Veterinary",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Farmakoloģija",
+          "en": "Pharmacology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ģenētika",
+          "en": "Genetics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Bioķīmija",
+          "en": "Biochemistry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fizika",
+          "en": "Physics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mehānika",
+          "en": "Mechanics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Meteoroloģija",
+          "en": "Meteorology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ķīmija",
+          "en": "Chemistry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ķīmijas tehnoloģija",
+          "en": "Chemistry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Materiālzinātne",
+          "en": "Material science",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Bioloģija",
+          "en": "Biology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Zooloģija",
+          "en": "Zoology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Botānika",
+          "en": "Botany",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ornitoloģija",
+          "en": "Ornitology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Entomoloģija",
+          "en": "Entomology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Literatūrzinātne",
+          "en": "Literary science",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Literatūra",
+          "en": "Literature",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Valodniecība",
+          "en": "Linguistics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Filoloģija",
+          "en": "Philology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Tehnika",
+          "en": "Technology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Tehnoloģija",
+          "en": "Technology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Informātika",
+          "en": "Informatics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Elektrotehnika",
+          "en": "Electrotechnical",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Elektronika",
+          "en": "Electronics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Hidrotehnika",
+          "en": "Hydrotechnical",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Aeronautika",
+          "en": "Aeronautics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Filozofija",
+          "en": "Philosophy",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Jurisprudence",
+          "en": "Law",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mūzika",
+          "en": "Music",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Arhitektūra",
+          "en": "Architecture",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Būvniecība",
+          "en": "Construction",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Arheoloģija",
+          "en": "Archeology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Historiogrāfija",
+          "en": "Historiography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Psiholoģija",
+          "en": "Psychology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Astronomija",
+          "en": "Astronomy",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ģeoloģija",
+          "en": "Geology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mineraloģija",
+          "en": "Mineralogy",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ģeogrāfija",
+          "en": "Geography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ģeodēzija",
+          "en": "Geodesy",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kartogrāfija",
+          "en": "Cartography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ekoloģija",
+          "en": "Ecology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Socioloģija",
+          "en": "Sociology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Antropoloģija",
+          "en": "Antropology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Reliģija",
+          "en": "Religion",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mitoloģija",
+          "en": "Mythology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Folklora",
+          "en": "Folklore",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Etnogrāfija",
+          "en": "Etnography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Politika",
+          "en": "Politics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ekonomika",
+          "en": "Economics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Finanses",
+          "en": "Finance",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Grāmatvedība",
+          "en": "Accounting",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Matemātika",
+          "en": "Mathemathics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Ģeometrija",
+          "en": "Geometry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Loģika",
+          "en": "Logic",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Statistika",
+          "en": "Statistics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Lauksaimniecība",
+          "en": "Agriculture",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Agronomija",
+          "en": "Agriculture",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Lauksaimniecības tehnika",
+          "en": "Agriculture",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Lopkopība",
+          "en": "Animal husbandry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Medniecība",
+          "en": "Hunting",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Biškopība",
+          "en": "Beekeeping",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mežsaimniecība",
+          "en": "Forestry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mežrūpniecība",
+          "en": "Forestry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kokapstrāde",
+          "en": "Carpentry",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Jūrniecība",
+          "en": "Marine",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Zvejniecība",
+          "en": "Fishing",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fiziskā kultūra un sports",
+          "en": "Sports",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Militārās zinātnes",
+          "en": "Military",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Telekomunikācijas",
+          "en": "Telecommunications",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Aviācija",
+          "en": "Aviation",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Dzelzceļš",
+          "en": "Railroad",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kalnrūpniecība",
+          "en": "Mining",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Silikātu tehnoloģija",
+          "en": "Silicate technology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Tekstilrūpniecība",
+          "en": "Textiles",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Apģērbi",
+          "en": "Clothing",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Papīrrūpniecība",
+          "en": "Paper manufacturing",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Poligrāfija",
+          "en": "Poligraphy",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Siltumtehnika",
+          "en": "HVAC",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Keramika",
+          "en": "Ceramics",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Glezniecība",
+          "en": "Painting",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fototehnika",
+          "en": "Photography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Fotogrāfija",
+          "en": "Photography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kinematogrāfija",
+          "en": "Cinematography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Televīzija",
+          "en": "Television",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vēsturisks vietvārds",
+          "en": "Historical toponym",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vēsturisks personvārds",
+          "en": "Historical person name",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Attiecas uz kapitālistisko iekārtu, kapitālistisko sabiedrību",
+          "en": "Capitalism",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Dārzkopība",
+          "en": "Gardening",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Transports",
+          "en": "Transport",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Okeanoloģija",
+          "en": "Oceanography",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Hidroloģija",
+          "en": "Hidrology",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sports",
+          "en": "Sport",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Izglītība",
+          "en": "Education",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Priedēkļa piemitība",
+      "en": "Having prefix",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Vārds bez priedēkļa",
+          "en": "No prefix",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Papildforma",
+      "en": "Alternative form",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Sistemātisks atvasinājums",
+      "en": "Systematic derivation",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Deminutīvs",
+      "en": "Deminutive",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Hipotēze",
+      "en": "Hypothesis",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Taksona kandidāts",
+      "en": "Taxon candidate",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Transliterācija",
+      "en": "Transliteration",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Dialekta iezīmes",
+      "en": "Dialect markings",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Latgaliešu",
+          "en": "Latgalian",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Augšzemnieku",
+          "en": "Upper Latvian",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vidus",
+          "en": "Middle Latvian",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Lībiskā",
+          "en": "Livonian",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Izlokšņu grupa",
+      "en": "Subdialect group",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Kurzemes lībiskās",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sēliskās",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Latgaliskās",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kursiskās",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Zemgaliskās",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vidzemes lībiskās",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vidzemes vidus",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Izloksne",
+      "en": "Subdialect",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Ērģemes",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kalupes",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vainižu",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kalnienas (Kalnamuižas)",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sinoles",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Mācienas",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Tilžas",
+          "en": null,
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Konversija",
+      "en": "Conversion",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Īpašības vārds",
+          "en": "Adjective",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Apstākļa vārds",
+          "en": "Adverb",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Lietvārds",
+          "en": "Noun",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pamata skaitļa vārds",
+          "en": "Cardinal numeral",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Prievārds",
+          "en": "Pronoun",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Partikula",
+          "en": "Particle",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Kategorija",
+      "en": "Category",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Saīsinājums",
+          "en": "Abbreviation",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Leksēmas pamatformas īpatnības",
+      "en": "Entry properties",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Daudzskaitlis",
+          "en": "Plural",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vienskaitlis",
+          "en": "Singular",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sieviešu dzimte",
+          "en": "Feminine",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pārākā pakāpe",
+          "en": "Comparative",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Locīšanas īpatnības",
+      "en": "Inflection properties",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Pielasīt visas izņēmumformas",
+          "en": "Gather hardcoded wordforms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Tikai izņēmumformas",
+          "en": "Only hardcoded wordforms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Otrās un trešās konjugācijas paralelitāte",
+          "en": "2nd/3rd conjugation parallel forms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pirmās konjugācijas paralēlforma",
+          "en": "1st conjugation parallel forms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pirmās konjugācijas paralēlforma visām personām",
+          "en": "1st conjugation parallel forms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pirmās konjugācijas paralēlforma tikai 3. personai",
+          "en": "1st conjugation parallel forms for third person",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nenoteiksmes homoformas",
+          "en": "Infinitive homoforms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Paralēlās formas",
+          "en": "Parallel forms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Kopdzimte",
+          "en": "Common gender",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nenoteiksmes homoformas",
+          "en": "Infinitive homonym",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vairākos punktos lokāms saliktenis",
+          "en": "Compound noun with multiple inflection points",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Sastingusi forma",
+          "en": "Frozen form",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Gramatiku analīzes problēmas",
+      "en": "Thesaurus analysis problems",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Neviennozīmīga paradigma",
+          "en": "Ambiguous paradigm",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Neviennozīmīga vārdšķira vai kategorija",
+          "en": "Ambiguous part of speech",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Oriģinālā gramatika satur karodziņos neatšifrētas nianses",
+          "en": "Freetext contains items not converted to attributes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Skaitļa īpatnības",
+      "en": "Number properties",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Skaitļa šķīrums semantikā nepastāv",
+          "en": "Grammatic number carries no semantic difference",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Daudzskaitļa formas lieto abu skaitļu nozīmē",
+          "en": "Plural forms used also in singular meaning",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vienskaitli lieto neliterārā valodā",
+          "en": "Singular forms used in nonliterary language",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Paradigmas īpatnības",
+      "en": "Paradigm specialty",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Nelieto lemmas galotni, bet tikai pielasītās izņēmumformas",
+          "en": "Skip lemma ending, use only extra exception forms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Satur pielasāmās izņēmumformas",
+          "en": "Contains the extra exception forms",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Nelokāms vārds",
+      "en": "Indeclinable word",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Jā",
+          "en": "Yes",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nē",
+          "en": "No",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Morfotabulas attēlošana",
+      "en": "Inflection table",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Nerādīt daudzskaitli",
+          "en": "Hide plural",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Nerādīt vienskaitli",
+          "en": "Hide singular",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Skaitlis nepiemīt",
+          "en": "No number",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Rādīt vokatīvu",
+          "en": "Show vocative",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Morfotabulas tips",
+      "en": "Inflection table type",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Lietvārds",
+          "en": "Noun",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Darbības vārds",
+          "en": "Verb",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Īpašības vārds",
+          "en": "Adjective",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Skaitļa vārds",
+          "en": "Numeral",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "UD vārdšķira",
+      "en": "UD POS",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "ADJ",
+          "en": "ADJ",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "ADP",
+          "en": "ADP",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "ADV",
+          "en": "ADV",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "PUNCT",
+          "en": "PUNCT",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "AUX",
+          "en": "AUX",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "SYM",
+          "en": "SYM",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "INTJ",
+          "en": "INTJ",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "CCONJ",
+          "en": "CCONJ",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "SCONJ",
+          "en": "SCONJ",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "NOUN",
+          "en": "NOUN",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "DET",
+          "en": "DET",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "PRON",
+          "en": "PRON",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "PROPN",
+          "en": "PROPN",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "NUM",
+          "en": "NUM",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "PART",
+          "en": "PART",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "X",
+          "en": "X",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    },
+    {
+      "lv": "Citi",
+      "en": "Other",
+      "description": null,
+      "part_of_speech": null,
+      "markup_pos": null,
+      "gf": null,
+      "values": [
+        {
+          "lv": "Cita paradigma",
+          "en": "Other paradigm",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Pēdējie celmi lietojami retāk",
+          "en": "Latter stems are used rarely",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vienskaitļa formas lieto sarunvalodā",
+          "en": "Singular forms used in colloquial language",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Vienskaitļa formas lieto dialektos",
+          "en": "Singular forms used in dialects",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Daudzskaitļa formas lieto vienskaitļa formu nozīmē",
+          "en": "Plural forms used with singular meaning",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        },
+        {
+          "lv": "Daudzskaitļa formas parasti lieto vienskaitļa formu nozīmē",
+          "en": "Plural forms usually used with singular meaning",
+          "tag": null,
+          "default_tags": null,
+          "gf": null
+        }
+      ]
+    }
+  ],
+  "free_attributes": [
+    {
+      "LV": "Vārdgrupas nr",
+      "EN": "Paradigm ID"
+    },
+    {
+      "LV": "Leksēmas nr",
+      "EN": "Lexeme ID"
+    },
+    {
+      "LV": "Galotnes nr",
+      "EN": "Ending ID"
+    },
+    {
+      "LV": "Pamatforma",
+      "EN": "Lemma"
+    },
+    {
+      "LV": "Pamatforma morforīkiem",
+      "EN": "Lemma for morphology tagging"
+    },
+    {
+      "LV": "Avots",
+      "EN": "Source"
+    },
+    {
+      "LV": "Pirmavots",
+      "EN": "Primary source"
+    },
+    {
+      "LV": "Vārds",
+      "EN": "Wordform"
+    },
+    {
+      "LV": "Avota pamatforma",
+      "EN": "Lexicon entry lemma"
+    },
+    {
+      "LV": "Piezīmes",
+      "EN": "Notes"
+    },
+    {
+      "LV": "Locīšana",
+      "EN": "Inflection"
+    },
+    {
+      "LV": "Valoda",
+      "EN": "Language"
+    },
+    {
+      "LV": "Skaits",
+      "EN": "Frequency"
+    },
+    {
+      "LV": "DepTree",
+      "EN": "DepTree"
+    },
+    {
+      "LV": "FreeText",
+      "EN": "FreeText"
+    },
+    {
+      "LV": "Leftovers",
+      "EN": "Leftovers"
+    },
+    {
+      "LV": "StructuralRestrictions",
+      "EN": "FormRestrictions"
+    },
+    {
+      "LV": "Pronunciations",
+      "EN": "Pronunciations"
+    },
+    {
+      "LV": "Šķirkļa ID",
+      "EN": "Entry ID"
+    },
+    {
+      "LV": "Šķirkļa cilvēklasāmais ID",
+      "EN": "Entry name"
+    },
+    {
+      "LV": "Priedēklis",
+      "EN": "Prefix"
+    },
+    {
+      "LV": "pronunciations",
+      "EN": "Pronunciations"
+    },
+    {
+      "LV": "Locīt kā",
+      "EN": "Inflect like"
+    },
+    {
+      "LV": "Šablons salikteņa vairākpunktu locīšanai",
+      "EN": "Pattern for multipoint inflection"
+    }
+  ],
+  "by_lv": {
+    "Vārdšķira": 0,
+    "Lietvārda tips": 1,
+    "Dzimte": 54,
+    "Skaitlis": 55,
+    "Skaitlis 2": 4,
+    "Locījums": 56,
+    "Deklinācija": 6,
+    "Darbības vārda tips": 17,
+    "Atgriezeniskums": 18,
+    "Izteiksme": 19,
+    "Laiks": 25,
+    "Transitivitāte": 11,
+    "Konjugācija": 12,
+    "Persona": 36,
+    "Kārta": 24,
+    "Noliegums": 40,
+    "Lokāmība": 20,
+    "Noteiktība": 33,
+    "Pakāpe": 42,
+    "Īpašības vārda tips": 29,
+    "Vietniekvārda tips": 35,
+    "Anafora": 41,
+    "Prievārdiskais apstākļa vārds": 43,
+    "Apstākļa vārda semantiskais tips": 44,
+    "Novietojums": 45,
+    "Rekcija": 47,
+    "Vietas apstākļa nozīme": 48,
+    "Saikļa sintaktiskā funkcija": 49,
+    "Uzbūve": 59,
+    "Saikļa semantiskais tips": 51,
+    "Skaitļa vārda tips": 52,
+    "Skaitļu kārta": 57,
+    "Pieturzīmes tips": 60,
+    "Reziduāļa tips": 61,
+    "Saīsinājuma tips": 62,
+    "Ģenerēt": 63,
+    "Minēšana": 64,
+    "Paradigmai atļautie atvasinājumi": 65,
+    "Īpašvārda veids": 66,
+    "Vispārīgais lietojuma biežums": 67,
+    "Lietojuma biežums": 68,
+    "Valodas normēšana": 69,
+    "Lietojums": 70,
+    "Stils": 71,
+    "Personvārda veids": 72,
+    "Sociālais lietojums": 73,
+    "Joma": 74,
+    "Priedēkļa piemitība": 75,
+    "Papildforma": 76,
+    "Sistemātisks atvasinājums": 77,
+    "Deminutīvs": 78,
+    "Hipotēze": 79,
+    "Taksona kandidāts": 80,
+    "Transliterācija": 81,
+    "Dialekta iezīmes": 82,
+    "Izlokšņu grupa": 83,
+    "Izloksne": 84,
+    "Konversija": 85,
+    "Kategorija": 86,
+    "Leksēmas pamatformas īpatnības": 87,
+    "Locīšanas īpatnības": 88,
+    "Gramatiku analīzes problēmas": 89,
+    "Skaitļa īpatnības": 90,
+    "Paradigmas īpatnības": 91,
+    "Nelokāms vārds": 92,
+    "Morfotabulas attēlošana": 93,
+    "Morfotabulas tips": 94,
+    "UD vārdšķira": 95,
+    "Citi": 96
+  },
+  "pos_to_attrs": {
+    "Lietvārds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      66
+    ],
+    "Darbības vārds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "Divdabis": [
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28
+    ],
+    "Īpašības vārds": [
+      29,
+      30,
+      31,
+      32,
+      33,
+      34
+    ],
+    "Vietniekvārds": [
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41
+    ],
+    "Apstākļa vārds": [
+      42,
+      43,
+      44
+    ],
+    "Prievārds": [
+      45,
+      46,
+      47,
+      48
+    ],
+    "Saiklis": [
+      49,
+      50,
+      51
+    ],
+    "Skaitļa vārds": [
+      52,
+      53,
+      54,
+      55,
+      56
+    ],
+    "Izsauksmes vārds": [
+      58
+    ],
+    "Partikula": [
+      59
+    ],
+    "Pieturzīme": [
+      60
+    ],
+    "Reziduālis": [
+      61
+    ],
+    "Saīsinājums": [
+      62
+    ]
+  }
+}
