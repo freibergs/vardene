@@ -23,8 +23,8 @@ from importlib.resources import files
 from pathlib import Path
 from typing import ClassVar
 
-from tezaurs.markup import to_tag
-from tezaurs.wordform import Word
+from vardene.markup import to_tag
+from vardene.wordform import Word
 
 
 class _SparseLRClassifier:
@@ -175,7 +175,7 @@ class CRFTagger:
 
     @classmethod
     def _model_path(cls, name: str) -> Path:
-        return Path(str(files("tezaurs").joinpath("data", name)))
+        return Path(str(files("vardene").joinpath("data", name)))
 
     # --- inference -----------------------------------------------------
 
@@ -260,7 +260,7 @@ class CRFTagger:
         Limits each token to its top 8 candidate wordforms by emission score
         to keep the lattice small. Recovers the best path with backpointers.
         """
-        from tezaurs.markup import to_tag
+        from vardene.markup import to_tag
 
         TRANS_WEIGHT = 0.08  # tuned on 200-sentence sample (0.05/0.10 gave less)
         BEAM = 8
@@ -401,7 +401,7 @@ class CRFTagger:
         """Pick the wordform with the highest classifier score, with backoff
         to subtag prefix / POS-only matching when the classifier isn't loaded
         or doesn't know the candidate tag."""
-        from tezaurs.markup import to_tag
+        from vardene.markup import to_tag
 
         wordforms = word.wordforms
         if not wordforms:

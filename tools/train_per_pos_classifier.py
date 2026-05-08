@@ -6,7 +6,7 @@ per-token feature vectors to the FULL tag string. Much faster than CRF since:
   - Only uses in-POS tokens for training (way smaller dataset per model)
   - sklearn's lbfgs solver is very fast for multinomial LR
 
-Output: `tezaurs/data/per_pos_clf.pkl` containing dict[pos_char, (vectorizer, clf)].
+Output: `vardene/data/per_pos_clf.pkl` containing dict[pos_char, (vectorizer, clf)].
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from tools.train_crf_tagger import load_sentences, sentence_features
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
-DEFAULT_OUT = REPO_ROOT / "tezaurs" / "data" / "per_pos_clf.pkl"
+DEFAULT_OUT = REPO_ROOT / "vardene" / "data" / "per_pos_clf.pkl"
 
 
 # POS chars worth training (skip ones with too few tokens or a single tag).

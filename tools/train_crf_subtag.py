@@ -2,7 +2,7 @@
 disambiguation. Captures POS + the most-discriminative feature positions
 (noun: type+gender+number+case; verb: type+reflexivity+mood).
 
-Output: `tezaurs/data/crf_subtag.crfsuite`.
+Output: `vardene/data/crf_subtag.crfsuite`.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from tools.train_crf_tagger import load_sentences, sentence_features
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "reference" / "src" / "main" / "resources" / "train.txt"
-DEFAULT_MODEL = REPO_ROOT / "tezaurs" / "data" / "crf_subtag.crfsuite"
+DEFAULT_MODEL = REPO_ROOT / "vardene" / "data" / "crf_subtag.crfsuite"
 
 
 def train(prefix_len: int = 5, corpus: Path = DEFAULT_CORPUS, out: Path = DEFAULT_MODEL) -> None:

@@ -249,7 +249,7 @@ class TagSet:
     @classmethod
     def _default_data_path(cls) -> Path:
         # Resolve via importlib.resources so the install layout matches the source layout.
-        return Path(str(files("tezaurs").joinpath("data", cls._DEFAULT_FILENAME)))
+        return Path(str(files("vardene").joinpath("data", cls._DEFAULT_FILENAME)))
 
     # --- lookups --------------------------------------------------------
 

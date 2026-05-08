@@ -20,8 +20,8 @@ from __future__ import annotations
 import re
 from collections.abc import Callable, Iterator
 
-from tezaurs.attributes import AttributeValues
-from tezaurs.mijas_dsl import (
+from vardene.attributes import AttributeValues
+from vardene.mijas_dsl import (
     I_DEGREE,
     I_MIJA,
     I_NORMATIVE,
@@ -32,7 +32,7 @@ from tezaurs.mijas_dsl import (
     SuffixRule,
     _strip_vys,
 )
-from tezaurs.variants import Variants
+from vardene.variants import Variants
 
 # ---------------------------------------------------------------------------
 # Latgalian vowel and consonant alternations.

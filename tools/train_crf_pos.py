@@ -2,7 +2,7 @@
 disambiguation. Predicts only the part-of-speech char (13 classes), which is
 fast (~30s) and resolves the biggest disambiguation gap (noun/verb confusion).
 
-Output: `tezaurs/data/crf_pos.crfsuite`.
+Output: `vardene/data/crf_pos.crfsuite`.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from tools.train_crf_tagger import load_sentences, sentence_features
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "reference" / "src" / "main" / "resources" / "train.txt"
-DEFAULT_MODEL = REPO_ROOT / "tezaurs" / "data" / "crf_pos.crfsuite"
+DEFAULT_MODEL = REPO_ROOT / "vardene" / "data" / "crf_pos.crfsuite"
 
 
 def train(corpus: Path = DEFAULT_CORPUS, out: Path = DEFAULT_MODEL) -> None:

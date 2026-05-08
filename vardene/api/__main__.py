@@ -1,10 +1,10 @@
-"""CLI entry point: `python -m tezaurs.api`."""
+"""CLI entry point: `python -m vardene.api`."""
 
 from __future__ import annotations
 
 import argparse
 
-from tezaurs.api.app import create_app
+from vardene.api.app import create_app
 
 
 def main() -> int:

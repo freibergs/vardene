@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from tezaurs.variants import Variants
+from vardene.variants import Variants
 
 # Tag-attribute names + value names referenced by both language modules.
 I_DEGREE = "Pakāpe"

@@ -17,9 +17,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from tezaurs.analyzer import Analyzer  # noqa: E402
-from tezaurs.markup import to_tag  # noqa: E402
 from tools.train_crf_tagger import load_sentences  # noqa: E402
+from vardene.analyzer import Analyzer  # noqa: E402
+from vardene.markup import to_tag  # noqa: E402
 
 CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
 
@@ -95,7 +95,7 @@ def main() -> int:
 
     if args.no_overrides:
         # Empty out the form-overrides table at runtime.
-        from tezaurs import analyzer as _a
+        from vardene import analyzer as _a
 
         _a._FORM_STRONG_OVERRIDES = {}
         _a._VERB_TRANSITIVITY = {}
@@ -103,7 +103,7 @@ def main() -> int:
         _a._ADVERB_PAKAPE = {}
         print("  Overrides DISABLED")
     if args.no_viterbi:
-        from tezaurs import crf_tagger as _c
+        from vardene import crf_tagger as _c
 
         # Hack: empty bigrams forces the per-token greedy rescore path.
         if analyzer._get_crf_tagger() is not None:

@@ -18,8 +18,8 @@ from typing import ClassVar
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from tezaurs.attributes import AttributeValues
-from tezaurs.paradigm import Ending, Paradigm, ParadigmCatalog, StemType
+from vardene.attributes import AttributeValues
+from vardene.paradigm import Ending, Paradigm, ParadigmCatalog, StemType
 
 
 @dataclass(slots=True)
@@ -98,7 +98,7 @@ class Lexicon:
 
     @classmethod
     def _default_data_path(cls) -> Path:
-        return Path(str(files("tezaurs").joinpath("data", cls._DEFAULT_FILENAME)))
+        return Path(str(files("vardene").joinpath("data", cls._DEFAULT_FILENAME)))
 
     # --- columnar accessors --------------------------------------------
 

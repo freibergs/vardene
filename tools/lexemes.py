@@ -42,8 +42,8 @@ XML_SOURCES: tuple[tuple[str, str, str], ...] = (
 )
 
 JSONL_SOURCES: tuple[tuple[str, str, str], ...] = (
-    ("tezaurs_lexemes.json", "tezaurs", "lv"),
-    ("tezaurs_latgalian.json", "tezaurs", "ltg"),
+    ("tezaurs_lexemes.json", "vardene", "lv"),
+    ("tezaurs_latgalian.json", "vardene", "ltg"),
 )
 
 

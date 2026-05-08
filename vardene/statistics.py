@@ -16,7 +16,7 @@ from importlib.resources import files
 from pathlib import Path
 from typing import ClassVar
 
-from tezaurs.wordform import Wordform
+from vardene.wordform import Wordform
 
 
 class Statistics:
@@ -50,7 +50,7 @@ class Statistics:
 
     @classmethod
     def _default_data_path(cls) -> Path:
-        return Path(str(files("tezaurs").joinpath("data", cls._DEFAULT_FILENAME)))
+        return Path(str(files("vardene").joinpath("data", cls._DEFAULT_FILENAME)))
 
     # Java `corpus/Statistics.java` line 50: lexemes weighted 1000× endings.
     # We mirror this constant exactly for 1:1 parity with the upstream's

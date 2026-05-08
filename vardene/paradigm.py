@@ -20,7 +20,7 @@ from importlib.resources import files
 from pathlib import Path
 from typing import ClassVar
 
-from tezaurs.attributes import AttributeValues
+from vardene.attributes import AttributeValues
 
 
 class StemType(Enum):
@@ -48,7 +48,7 @@ class Ending:
     """A single inflected ending within a paradigm.
 
     `mija` (stem alternation ID) is an index into the Mijas rule table —
-    the actual transformation logic lives in `tezaurs.mijas` (phase 4).
+    the actual transformation logic lives in `vardene.mijas` (phase 4).
     """
 
     id: int
@@ -192,7 +192,7 @@ class ParadigmCatalog:
 
     @classmethod
     def _default_data_path(cls) -> Path:
-        return Path(str(files("tezaurs").joinpath("data", cls._DEFAULT_FILENAME)))
+        return Path(str(files("vardene").joinpath("data", cls._DEFAULT_FILENAME)))
 
     # --- lookups --------------------------------------------------------
 

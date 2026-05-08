@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from tezaurs.paradigm import Ending
+from vardene.paradigm import Ending
 
 
 class _Node:

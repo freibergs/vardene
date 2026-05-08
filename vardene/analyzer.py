@@ -15,7 +15,7 @@ Not yet ported (TODO):
   - Vocative form handling
   - Word cache (we just rely on Lexicon's lazy indexes)
 
-The core path is enough to validate against `api.tezaurs.lv` for the bulk
+The core path is enough to validate against `api.vardene.lv` for the bulk
 of common nouns/verbs/adjectives.
 """
 
@@ -25,13 +25,13 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-from tezaurs.all_endings import AllEndings
-from tezaurs.attributes import AttributeValues
-from tezaurs.lexicon import Lexeme, Lexicon
-from tezaurs.mijas import mija_variants, verify_back_inflection
-from tezaurs.paradigm import Ending, ParadigmCatalog, StemType
-from tezaurs.statistics import Statistics
-from tezaurs.wordform import Word, Wordform
+from vardene.all_endings import AllEndings
+from vardene.attributes import AttributeValues
+from vardene.lexicon import Lexeme, Lexicon
+from vardene.mijas import mija_variants, verify_back_inflection
+from vardene.paradigm import Ending, ParadigmCatalog, StemType
+from vardene.statistics import Statistics
+from vardene.wordform import Word, Wordform
 
 
 def _load_form_disambiguation() -> dict[str, tuple[str, str]]:
@@ -39,7 +39,7 @@ def _load_form_disambiguation() -> dict[str, tuple[str, str]]:
     import json
     from importlib.resources import files
 
-    path = Path(str(files("tezaurs").joinpath("data", "form_disambiguation.json")))
+    path = Path(str(files("vardene").joinpath("data", "form_disambiguation.json")))
     if not path.exists():
         return {}
     with path.open(encoding="utf-8") as f:
@@ -53,7 +53,7 @@ def _load_verb_transitivity() -> dict[str, str]:
     import json
     from importlib.resources import files
 
-    path = Path(str(files("tezaurs").joinpath("data", "verb_transitivity.json")))
+    path = Path(str(files("vardene").joinpath("data", "verb_transitivity.json")))
     if not path.exists():
         return {}
     with path.open(encoding="utf-8") as f:
@@ -71,7 +71,7 @@ def _load_adverb_pakape() -> dict[str, str]:
     import json
     from importlib.resources import files
 
-    path = Path(str(files("tezaurs").joinpath("data", "adverb_pakape.json")))
+    path = Path(str(files("vardene").joinpath("data", "adverb_pakape.json")))
     if not path.exists():
         return {}
     with path.open(encoding="utf-8") as f:
@@ -88,7 +88,7 @@ def _load_verb_type() -> dict[str, str]:
     import json
     from importlib.resources import files
 
-    path = Path(str(files("tezaurs").joinpath("data", "verb_type.json")))
+    path = Path(str(files("vardene").joinpath("data", "verb_type.json")))
     if not path.exists():
         return {}
     with path.open(encoding="utf-8") as f:
@@ -108,7 +108,7 @@ def _load_form_strong_overrides() -> dict[str, tuple[str, str]]:
     import json
     from importlib.resources import files
 
-    path = Path(str(files("tezaurs").joinpath("data", "form_strong_overrides.json")))
+    path = Path(str(files("vardene").joinpath("data", "form_strong_overrides.json")))
     if not path.exists():
         return {}
     with path.open(encoding="utf-8") as f:
@@ -212,7 +212,7 @@ class Analyzer:
     def _get_crf_tagger(self):
         if not self._crf_loaded:
             try:
-                from tezaurs.crf_tagger import CRFTagger
+                from vardene.crf_tagger import CRFTagger
 
                 self._crf_tagger = CRFTagger.instance()
             except Exception:
@@ -513,7 +513,7 @@ class Analyzer:
         elif sv.celms.endswith("ēj"):
             verb_stem_raw = sv.celms[:-2]
             # 1st-conj -is participle mija (case 14) backwards
-            from tezaurs.mijas import mija_variants as _mv
+            from vardene.mijas import mija_variants as _mv
 
             verb_paradigm = self.paradigms.by_name("verb-1")
             if verb_paradigm is None:
@@ -960,7 +960,7 @@ def _recap_for_lemma(form: str, original: str) -> str:
 
 def _promote_matching(word: Word, target_tag: str, target_lemma: str) -> None:
     """Move the first wordform whose (tag, lemma) matches the targets to the front."""
-    from tezaurs.markup import to_tag
+    from vardene.markup import to_tag
 
     for i, wf in enumerate(word.wordforms):
         if i == 0:
@@ -980,7 +980,7 @@ def _apply_form_override(word: Word, surface: str, target_tag: str, target_lemma
     candidate-set ceiling — by design it relies on the corpus annotation
     being authoritative for these high-confidence forms.
     """
-    from tezaurs.markup import from_tag, to_tag
+    from vardene.markup import from_tag, to_tag
 
     # Try promote first.
     for i, wf in enumerate(word.wordforms):

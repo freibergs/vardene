@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from tezaurs.attributes import AttributeValues
+from vardene.attributes import AttributeValues
 
 
 class Variants(AttributeValues):

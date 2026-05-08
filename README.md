@@ -1,6 +1,6 @@
 <div align="center">
 
-# tezaurs
+# vardene
 
 **Latvian morphological analysis library — a complete Python port of the LU MII Java engine**
 
@@ -11,6 +11,8 @@
 [![POS accuracy](https://img.shields.io/badge/POS%20accuracy-98.76%25-brightgreen.svg)](#accuracy)
 [![Throughput](https://img.shields.io/badge/throughput-1170%20tok%2Fs-brightgreen.svg)](#performance)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+📄 **[Read the paper (PDF)](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf)** · 💻 **[GitHub repo](https://github.com/freibergs/vardene)**
 
 *Matches Java tag accuracy within seed variance · Exceeds Java POS accuracy by +0.56 pp · 44% smaller source · 8× smaller data · 2.6× faster cold start*
 
@@ -44,13 +46,13 @@ pip install -e .
 For development (tests, training tools, ruff):
 
 ```bash
-pip install -e '.[dev,tools]'
+pip install -e '.[dev,tools,api]'
 ```
 
 ## Quick start
 
 ```python
-from tezaurs.analyzer import Analyzer
+from vardene.analyzer import Analyzer
 
 a = Analyzer()
 a.enable_guessing = True
@@ -67,54 +69,11 @@ for r in results:
 ```
 
 ```python
-from tezaurs.inflector import Inflector
+from vardene.inflector import Inflector
 
 inf = Inflector()
-forms = inf.inflect("rakt")  # 536 forms incl. negation, debitive, all participles
+forms = inf.inflect("rakt")  # 974 forms incl. negation, debitive, all participles
 ```
-
-## Accuracy
-
-Held-out 20% split, 5-seed average ($n \approx 3{,}500$ tokens per seed):
-
-| Metric | **tezaurs (Python)** | LVTagger (Java) | Δ |
-|---|---|---|---|
-| Tag | **92.60 %** | 92.8 % | within seed variance |
-| Lemma | **96.72 %** | not published | — |
-| **POS** | **98.76 %** | 98.2 % | **+0.56 pp** ✓ |
-
-Two of five seeds exceed Java's 92.8% tag mark (best seed: 92.89%). See [`paper/tezaurs_python_port.pdf`](paper/tezaurs_python_port.pdf) for full methodology and ablation.
-
-## Performance
-
-| Metric | Value |
-|---|---|
-| Cold start (`Analyzer()` init) | 579 ms |
-| Sentence-level throughput | ~1170 tok/s |
-| Sentence-level latency | ~14 ms / sentence |
-| Peak resident memory | 475 MB |
-| Total package data | 34 MB |
-
-Benchmarked on Apple M1 Pro, single CPU core.
-
-## Architecture
-
-| Module | LOC | Role |
-|---|---:|---|
-| [`analyzer.py`](tezaurs/analyzer.py) | 1289 | Lemma analysis · prefix stripping · guessing · per-form/per-lemma overrides |
-| [`mijas.py`](tezaurs/mijas.py) | 1133 | Latvian stem alternations (analysis + inflection directions) |
-| [`mijas_ltg.py`](tezaurs/mijas_ltg.py) | 762 | Latgalian stem alternations |
-| [`mijas_dsl.py`](tezaurs/mijas_dsl.py) | 81 | Shared `SuffixRule` data + `_apply_first` / `_apply_all` helpers |
-| [`crf_tagger.py`](tezaurs/crf_tagger.py) | 527 | POS CRF + 4-char subtag CRF + per-POS LR + Viterbi rescoring |
-| [`trie.py`](tezaurs/trie.py) | 510 | Tokenizer (12 hardcoded automata) |
-| [`attributes.py`](tezaurs/attributes.py) | 260 | Tagset + multi-value attribute matcher |
-| [`paradigm.py`](tezaurs/paradigm.py) | 238 | 109 paradigms (LV + LTG), 5938 endings |
-| [`markup.py`](tezaurs/markup.py) | 231 | Position-tag emit / parse |
-| [`inflector.py`](tezaurs/inflector.py) | 188 | Forward generation with negation, debitive, participles |
-| [`lexicon.py`](tezaurs/lexicon.py) | 182 | Lazy-indexed Parquet lexicon (411k lexemes) |
-| [`statistics.py`](tezaurs/statistics.py) | 100 | Additive ranking ($0.1 + ef + lf \cdot 1000$) |
-
-The disambiguator pipeline is layered — POS CRF predicts the POS character, a per-POS log-linear classifier (sparse CSR weights, 16 MB on disk) predicts the full tag, a tag-bigram Viterbi pass enforces local consistency, and a high-confidence per-form corpus override layer (3{,}889 entries, ≥5 occurrences with ≥85% concentration) bypasses the engine's candidate-set ceiling for the +3 pp jump that gets the port to Java parity.
 
 ## HTTP API + demo UI
 
@@ -123,7 +82,7 @@ demo UI:
 
 ```bash
 pip install -e '.[api]'
-python -m tezaurs.api          # http://127.0.0.1:5000
+python -m vardene.api          # http://127.0.0.1:5000
 ```
 
 Endpoints (parity with the Java `api.tezaurs.lv` service where the underlying
@@ -149,6 +108,50 @@ Pending (501 Not Implemented): `/api/verbs`, `/api/neverbs`,
 paradigm scorer, person-name inflector, multi-word entity inflection)
 that have not yet been ported.
 
+## Accuracy
+
+Held-out 20% split, 5-seed average ($n \approx 3{,}500$ tokens per seed):
+
+| Metric | **vardene (Python)** | LVTagger (Java) | Δ |
+|---|---|---|---|
+| Tag | **92.60 %** | 92.8 % | within seed variance |
+| Lemma | **96.72 %** | not published | — |
+| **POS** | **98.76 %** | 98.2 % | **+0.56 pp** ✓ |
+
+Two of five seeds exceed Java's 92.8% tag mark (best seed: 92.89%). See [`paper/vardene_python_port.pdf`](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf) for full methodology and ablation.
+
+## Performance
+
+| Metric | Value |
+|---|---|
+| Cold start (`Analyzer()` init) | 579 ms |
+| Sentence-level throughput | ~1170 tok/s |
+| Sentence-level latency | ~14 ms / sentence |
+| Peak resident memory | 475 MB |
+| Total package data | 34 MB |
+
+Benchmarked on Apple M1 Pro, single CPU core.
+
+## Architecture
+
+| Module | LOC | Role |
+|---|---:|---|
+| [`analyzer.py`](vardene/analyzer.py) | 1289 | Lemma analysis · prefix stripping · guessing · per-form/per-lemma overrides |
+| [`mijas.py`](vardene/mijas.py) | 1133 | Latvian stem alternations (analysis + inflection directions) |
+| [`mijas_ltg.py`](vardene/mijas_ltg.py) | 762 | Latgalian stem alternations |
+| [`mijas_dsl.py`](vardene/mijas_dsl.py) | 81 | Shared `SuffixRule` data + `_apply_first` / `_apply_all` helpers |
+| [`crf_tagger.py`](vardene/crf_tagger.py) | 527 | POS CRF + 4-char subtag CRF + per-POS LR + Viterbi rescoring |
+| [`api/`](vardene/api/) | 380 | Flask HTTP API + minimal frontend |
+| [`trie.py`](vardene/trie.py) | 510 | Tokenizer (12 hardcoded automata) |
+| [`attributes.py`](vardene/attributes.py) | 260 | Tagset + multi-value attribute matcher |
+| [`paradigm.py`](vardene/paradigm.py) | 238 | 109 paradigms (LV + LTG), 5938 endings |
+| [`markup.py`](vardene/markup.py) | 231 | Position-tag emit / parse |
+| [`inflector.py`](vardene/inflector.py) | 188 | Forward generation with negation, debitive, participles |
+| [`lexicon.py`](vardene/lexicon.py) | 182 | Lazy-indexed Parquet lexicon (411k lexemes) |
+| [`statistics.py`](vardene/statistics.py) | 100 | Additive ranking ($0.1 + ef + lf \cdot 1000$) |
+
+The disambiguator pipeline is layered — POS CRF predicts the POS character, a per-POS log-linear classifier (sparse CSR weights, 16 MB on disk) predicts the full tag, a tag-bigram Viterbi pass enforces local consistency, and a high-confidence per-form corpus override layer (3{,}889 entries, ≥5 occurrences with ≥85% concentration) bypasses the engine's candidate-set ceiling for the +3 pp jump that gets the port to Java parity.
+
 ## Reproducibility
 
 ```bash
@@ -169,16 +172,16 @@ python -m tools.benchmark --train           # evaluate on full train corpus (ove
 If you use this in academic work, please cite the accompanying technical report:
 
 ```bibtex
-@techreport{freibergs2026tezaurs,
+@techreport{freibergs2026vardene,
   title  = {A Python Port of the LU MII Latvian Morphological Analyser:
             Performance, Accuracy, and Engineering Trade-offs},
   author = {Freibergs, Rihards Aleksandrs},
   year   = {2026},
-  note   = {GPL-3.0, available at \url{https://github.com/<owner>/tezaurs}}
+  url    = {https://github.com/freibergs/vardene},
 }
 ```
 
-The full PDF lives in [`paper/tezaurs_python_port.pdf`](paper/tezaurs_python_port.pdf).
+The full PDF lives in [`paper/vardene_python_port.pdf`](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf) — GitHub renders it inline in the browser.
 
 ## Credits
 
@@ -190,4 +193,4 @@ GPL-3.0-or-later. Same license as the upstream Java reference. See [`LICENSE`](L
 
 ## Contributing
 
-Pull requests welcome. Please run `pytest tests/` (41 tests) and `python -m tools.benchmark` (5-seed held-out parity) before submitting; both should be green and within ±0.5 pp of the published numbers.
+Pull requests welcome at [github.com/freibergs/vardene](https://github.com/freibergs/vardene). Please run `pytest tests/` (41 tests) and `python -m tools.benchmark` (5-seed held-out parity) before submitting; both should be green and within ±0.5 pp of the published numbers.

@@ -13,9 +13,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from tezaurs.analyzer import Analyzer
-from tezaurs.markup import to_tag
 from tools.train_crf_tagger import load_sentences
+from vardene.analyzer import Analyzer
+from vardene.markup import to_tag
 
 CORPUS = Path(__file__).resolve().parent.parent / "tools" / "data" / "train.txt"
 

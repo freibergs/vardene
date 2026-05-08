@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from tezaurs.attributes import AttributeValues, TagAttribute, TagSet
+from vardene.attributes import AttributeValues, TagAttribute, TagSet
 
 POS_LV = "Vārdšķira"
 
@@ -122,7 +122,7 @@ def to_tag(av: AttributeValues | Mapping[str, str], tagset: TagSet | None = None
 
 
 # Reasonable defaults the Java tagger emits when a position is unset.
-# These match what `api.tezaurs.lv` returns in practice.
+# These match what `api.vardene.lv` returns in practice.
 # Values reflect majority class in the training corpus; lexicon-declared
 # attributes always override these.
 _POS_DEFAULTS: dict[str, dict[int, str]] = {

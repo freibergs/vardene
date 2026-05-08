@@ -13,8 +13,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pytest
 
 from tests.parity import evaluate, load_corpus, sample_words
-from tezaurs.analyzer import Analyzer
-from tezaurs.inflector import Inflector
+from vardene.analyzer import Analyzer
+from vardene.inflector import Inflector
 
 # Baseline numbers locked in 2026-05-08 after the hierarchical CRF stack +
 # pronoun attribute fills (hardcoded forms for personal/demonstrative pronouns,

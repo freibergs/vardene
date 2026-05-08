@@ -11,7 +11,7 @@ the same corpus. Real CRF would add bigram/trigram context for ~3-5% more
 accuracy; this gets us most of the way.
 
 Run: `python -m tools.train_disambiguator`
-Output: `tezaurs/data/form_disambiguation.json`
+Output: `vardene/data/form_disambiguation.json`
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
-DEFAULT_OUT = REPO_ROOT / "tezaurs" / "data" / "form_disambiguation.json"
+DEFAULT_OUT = REPO_ROOT / "vardene" / "data" / "form_disambiguation.json"
 
 
 def build_table(corpus_path: Path, min_count: int = 2) -> dict[str, list[str]]:

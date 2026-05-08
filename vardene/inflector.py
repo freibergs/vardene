@@ -15,11 +15,11 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from tezaurs.attributes import AttributeValues
-from tezaurs.lexicon import Lexeme, Lexicon
-from tezaurs.mijas import mija_for_inflection
-from tezaurs.paradigm import Ending, ParadigmCatalog, StemType
-from tezaurs.wordform import Wordform
+from vardene.attributes import AttributeValues
+from vardene.lexicon import Lexeme, Lexicon
+from vardene.mijas import mija_for_inflection
+from vardene.paradigm import Ending, ParadigmCatalog, StemType
+from vardene.wordform import Wordform
 
 
 class Inflector:

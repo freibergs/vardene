@@ -1,14 +1,14 @@
 """CLI for the data extraction pipeline.
 
 Converts the upstream LU MII XML/JSON resources into our optimized data layout
-under `tezaurs/data/`:
+under `vardene/data/`:
 
   paradigms.json   ← Lexicon_v2.xml   (58 paradigms + 2717 endings + global prefixes)
   tagset.json      ← TagSet.xml       (97 grammatical attributes with values)
   statistics.json  ← Statistics.xml   (corpus frequency counts for tagger)
   lexemes.parquet  ← 7 XML lexicons + 2 JSONL dumps (~270K lexemes, unified schema)
 
-The pre-built data files are shipped in `tezaurs/data/`; this script is only
+The pre-built data files are shipped in `vardene/data/`; this script is only
 needed to regenerate them. Clone the upstream Java repo first:
 
   git clone https://github.com/PeterisP/morphology.git reference
@@ -35,7 +35,7 @@ from tools import tokenizer as tokenizer_mod
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_RESOURCES = REPO_ROOT / "reference" / "src" / "main" / "resources"
 DEFAULT_JAVA_SRC = REPO_ROOT / "reference" / "src" / "main" / "java" / "lv" / "semti" / "morphology"
-DEFAULT_DATA_OUT = REPO_ROOT / "tezaurs" / "data"
+DEFAULT_DATA_OUT = REPO_ROOT / "vardene" / "data"
 
 
 def _ts() -> str:

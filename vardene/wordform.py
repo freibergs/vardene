@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from tezaurs.attributes import AttributeValues
-from tezaurs.paradigm import Ending
+from vardene.attributes import AttributeValues
+from vardene.paradigm import Ending
 
 
 class Wordform(AttributeValues):

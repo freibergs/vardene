@@ -1,6 +1,6 @@
 """Flask app exposing the morphology engine over HTTP.
 
-Implemented routes (parity with `api.tezaurs.lv` Java service where the
+Implemented routes (parity with `api.vardene.lv` Java service where the
 underlying engine supports it):
 
   GET  /api/analyze/<word>                          single-word analysis (LV attrs)
@@ -30,9 +30,9 @@ from typing import Any
 
 from flask import Flask, jsonify, render_template, request
 
-from tezaurs.analyzer import Analyzer
-from tezaurs.api.serialization import wordform_to_dict
-from tezaurs.inflector import Inflector
+from vardene.analyzer import Analyzer
+from vardene.api.serialization import wordform_to_dict
+from vardene.inflector import Inflector
 
 _TOKEN_RE = re.compile(r"\w+|[^\w\s]", re.UNICODE)
 
@@ -245,7 +245,7 @@ def create_app() -> Flask:
         return jsonify(
             {
                 "status": "ok",
-                "engine": "tezaurs",
+                "engine": "vardene",
                 "lexicon_size": len(analyzer.lexicon.table),
             }
         )

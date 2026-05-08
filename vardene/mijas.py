@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 
-from tezaurs.mijas_dsl import (
+from vardene.mijas_dsl import (
     I_DEGREE,
     I_MIJA,
     V_COMPARATIVE,
@@ -38,13 +38,13 @@ from tezaurs.mijas_dsl import (
     _strip_vis,
     syllables,
 )
-from tezaurs.mijas_ltg import (
+from vardene.mijas_ltg import (
     LTG_HANDLERS_INFLECTION,
     LTG_HANDLERS_VARIANTS,
     _ltg_patskanu_mija_atpakal_locisanai,
     _ltg_patskanu_mija_locisanai,
 )
-from tezaurs.variants import Variants
+from vardene.variants import Variants
 
 # ---------------------------------------------------------------------------
 # Mija rule tables.

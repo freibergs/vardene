@@ -12,19 +12,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pytest
 
-from tezaurs.analyzer import Analyzer
-from tezaurs.attributes import AttributeValues, TagSet
-from tezaurs.inflector import Inflector
-from tezaurs.lexicon import Lexicon
-from tezaurs.markup import from_tag, to_tag
-from tezaurs.mijas import (
+from vardene.analyzer import Analyzer
+from vardene.attributes import AttributeValues, TagSet
+from vardene.inflector import Inflector
+from vardene.lexicon import Lexicon
+from vardene.markup import from_tag, to_tag
+from vardene.mijas import (
     mija_for_inflection,
     mija_variants,
     syllables,
     verify_back_inflection,
 )
-from tezaurs.paradigm import ParadigmCatalog
-from tezaurs.trie import Trie
+from vardene.paradigm import ParadigmCatalog
+from vardene.trie import Trie
 
 # ---------------------------------------------------------------------------
 # Mijas — core linguistic engine
@@ -79,7 +79,7 @@ class TestMijas:
         assert any(v.celms == "jārakt" for v in out)
 
     def test_ltg_vowel_mija(self) -> None:
-        from tezaurs.mijas import (
+        from vardene.mijas import (
             _ltg_patskanu_mija_atpakal_locisanai,
             _ltg_patskanu_mija_locisanai,
         )
@@ -115,7 +115,7 @@ class TestTrie:
         assert t.match("unknown") is False
 
     def test_individual_automata(self) -> None:
-        from tezaurs.trie import (
+        from vardene.trie import (
             n2_a_clock,
             n2_aa_date,
             n3_email,

@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from tezaurs.attributes import TagSet
-from tezaurs.markup import to_tag
-from tezaurs.wordform import Wordform
+from vardene.attributes import TagSet
+from vardene.markup import to_tag
+from vardene.wordform import Wordform
 
 
 def wordform_to_dict(wf: Wordform, *, language: str = "lv") -> dict[str, Any]:

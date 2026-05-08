@@ -2,7 +2,7 @@
 
 The XML attribute names use underscores (XML constraint) but the live API
 emits spaces. We normalize underscores → spaces in attribute keys so our
-output matches `api.tezaurs.lv` JSON one-to-one.
+output matches `api.vardene.lv` JSON one-to-one.
 """
 
 from __future__ import annotations

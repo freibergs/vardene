@@ -1,5 +1,5 @@
 """Train a CRF morphological tagger on `train.txt` — Python equivalent of
-LVTagger's Stanford CMM tagger. Outputs `tezaurs/data/crf_tagger.crfsuite`.
+LVTagger's Stanford CMM tagger. Outputs `vardene/data/crf_tagger.crfsuite`.
 
 Features per token (lexical only — fast to extract, learns rich patterns):
   - word, lower(word), word shape (Stanford `dan2useLC`)
@@ -28,7 +28,7 @@ import sklearn_crfsuite
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CORPUS = REPO_ROOT / "tools" / "data" / "train.txt"
-DEFAULT_MODEL = REPO_ROOT / "tezaurs" / "data" / "crf_tagger.crfsuite"
+DEFAULT_MODEL = REPO_ROOT / "vardene" / "data" / "crf_tagger.crfsuite"
 
 
 def load_sentences(path: Path) -> Iterator[list[tuple[str, str, str]]]:
