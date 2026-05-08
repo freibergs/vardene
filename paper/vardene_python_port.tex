@@ -37,30 +37,39 @@
 \maketitle
 
 \begin{abstract}
-We present a complete Python port of the Latvian morphological analysis library
-maintained by the AI Lab at the University of Latvia (LU MII). The original
-Java implementation (9{,}316 LOC, GPL-3.0) is the engine behind
-\texttt{api.tezaurs.lv}, the most widely used Latvian morphological web service.
-Our port reproduces every algorithmic component of the upstream engine
-(\textit{Mijas} stem alternations, \textit{Trie} tokenizer, \textit{Lexicon},
-\textit{Paradigm}, \textit{Analyzer}, \textit{Inflector}, \textit{MarkupConverter})
-and additionally trains and ships a hierarchical disambiguator
-(POS conditional random field $\rightarrow$ subtag CRF $\rightarrow$ per-POS
-log-linear classifier, plus a tag-bigram Viterbi pass, a high-confidence
-per-form corpus override layer, and a Latvian-specific syntactic post-pass
-for preposition-noun agreement) that closes the gap to the production
-tagger. On a held-out 20\,\% split of the gold-standard \texttt{train.txt}
-corpus (averaged over five random seeds, $n \approx 3{,}500$ tokens per
-seed) we measure $\textbf{92.51\,\%}$ tag accuracy,
-$\textbf{96.73\,\%}$ lemma accuracy, and $\textbf{98.75\,\%}$ POS
-accuracy --- matching the published Java tag figure of 92.8\,\% within seed
-variance and \emph{exceeding} the Java POS figure of 98.2\,\% by
-0.55 points. The Python package is 44\,\% smaller in source size, has a
-2.6$\times$ faster cold start, and runs at $\sim$1{,}170 tokens/sec on a
-single CPU core after a 15$\times$ classifier-weight sparsification that
-also drops resident memory from 1.7\,GB to 475\,MB. We discuss where the Python port wins (POS accuracy, code
-compactness, startup, reference-data size), where it loses (peak memory),
-and what each step of the disambiguator pipeline contributes.
+This paper presents \emph{vardene}, a Python port of the Latvian
+morphological analysis library maintained by the Institute of
+Mathematics and Computer Science at the University of Latvia (LU MII).
+The upstream Java implementation (9{,}922 LOC across the engine and
+its HTTP service layer, GPL-3.0) is the backend of
+\texttt{api.tezaurs.lv}, the most widely used Latvian morphological
+web service. The port reproduces every algorithmic component of the
+upstream engine (\textit{Mijas} stem alternations, \textit{Trie}
+tokenizer, \textit{Splitting}, \textit{Lexicon}, \textit{Paradigm},
+\textit{Analyzer}, \textit{Inflector}, \textit{MarkupConverter}), the
+full HTTP service layer (16 routes covering analysis, disambiguation,
+inflection, multi-word phrase declension, personal-name inflection,
+and valency-tag annotation), and adds a Python-native hierarchical
+disambiguator --- a part-of-speech CRF, a 4-character subtag CRF, a
+per-POS log-linear classifier, a tag-bigram Viterbi rescoring pass, a
+high-confidence per-form corpus override layer, and a Latvian-specific
+syntactic post-pass for preposition-noun agreement --- that closes
+the gap to the production statistical tagger. On a held-out 20\,\%
+split of the gold-standard \texttt{train.txt} corpus, evaluated over
+five random seeds with $n \approx 3{,}500$ tokens per seed, the system
+achieves a tag accuracy of $\mathbf{92.51 \pm 0.29\,\%}$, a lemma
+accuracy of $\mathbf{96.73 \pm 0.29\,\%}$, and a POS accuracy of
+$\mathbf{98.75 \pm 0.16\,\%}$. These figures match the published Java
+tag accuracy of 92.8\,\% within seed variance --- two of five seeds
+exceed it --- and surpass the Java POS accuracy of 98.2\,\% by
+0.55 points. The Python package is 39\,\% smaller in source size, has
+a 2.6$\times$ faster cold start, and processes $\sim$1{,}210
+tokens per second on a single CPU core after a 15$\times$
+sparsification of the classifier weights that also reduces resident
+memory from 1.7\,GB to 475\,MB. The paper analyses where the Python
+port wins (POS accuracy, source compactness, startup latency, shipped
+reference-data size), where it loses (peak memory), and quantifies
+the contribution of each step in the disambiguator pipeline.
 \end{abstract}
 
 \noindent\textbf{Keywords:} Latvian, morphological analysis,
@@ -69,40 +78,48 @@ under-resourced languages, tokenisation, finite-state morphology.
 
 \section{Introduction}
 
-The Latvian morphological library at \url{https://github.com/PeterisP/morphology}
-is the most thoroughly engineered open-source morphological analyser for
-Latvian. Released under GPL-3.0 and authored primarily by Pēteris Paikens
-(LU MII), the Java implementation provides the analysis backbone for
-\texttt{api.tezaurs.lv}, the public morphology API used by Latvian NLP
-researchers and downstream tooling. In this paper we describe a one-to-one
-port of that engine to Python (3.12+).
+The Latvian morphological library at
+\url{https://github.com/PeterisP/morphology} \cite{paikens2018} is the
+most thoroughly engineered open-source morphological analyser for
+Latvian. Released under GPL-3.0 and authored primarily by Pēteris
+Paikens at LU MII, the Java implementation provides the analytical
+backbone for \texttt{api.tezaurs.lv}, the public morphology API
+that Latvian natural-language-processing researchers and downstream
+tooling rely on. This paper describes a complete Python port of that
+engine and of the HTTP service layer that exposes it.
 
-The motivation for the port is twofold. First, it lowers the barrier for
-Python-native NLP pipelines that need Latvian morphology --- avoiding JVM
-boot-up, Maven dependency resolution, and inter-process IPC. Second, the port
-serves as a controlled laboratory for studying the engineering trade-offs of
-moving a mature corpus-linguistic codebase between languages: which patterns
-translate cleanly, which idioms become bottlenecks, and what the resulting
-accuracy/performance/footprint envelope looks like.
+The motivation is twofold. First, the port removes deployment friction
+for Python-native NLP pipelines that need Latvian morphology: there is
+no JVM to boot, no Maven dependency tree to resolve, and no
+inter-process boundary between the morphology component and the rest
+of the pipeline. Second, the port serves as a controlled laboratory
+for studying the engineering trade-offs of moving a mature
+corpus-linguistic codebase between languages --- which patterns
+translate cleanly, which idioms become bottlenecks, and what the
+resulting accuracy, performance, and footprint envelope looks like.
 
-\paragraph{Scope.} Two upstream Java repositories were ported:
-\texttt{PeterisP/morphology} (the morphology engine itself, $\sim$9.3\,kLOC) and
-\texttt{LUMII-AILab/Webservices} \cite{lumii_webservices} (the HTTP service
-layer that exposes the engine at \texttt{api.tezaurs.lv}, $\sim$3\,kLOC,
-also GPL-3.0). The first ships the algorithmic core
-(\texttt{Analyzer.analyze()} returns the candidate readings ranked by an
-additive scoring rule \texttt{Word.getBestWordform()}); the second wraps it
-in 16 HTTP routes including the multi-word phrase inflectors, personal-name
-inflector, valency-tag annotation tool, and paradigm-suitability scorer.
+\paragraph{Scope.} Two upstream Java repositories were ported.
+\texttt{PeterisP/morphology} (the morphology engine itself,
+approximately 9.3 thousand lines of Java code) ships the algorithmic
+core: \texttt{Analyzer.analyze()} returns a candidate set of readings
+ranked by an additive scoring rule
+(\texttt{Word.getBestWordform()}). \texttt{LUMII-AILab/Webservices}
+\cite{lumii_webservices} (approximately 3 thousand lines of Java
+code, also GPL-3.0) is the HTTP service layer that exposes the
+engine at \texttt{api.tezaurs.lv}; it wraps the engine in sixteen
+routes covering analysis, disambiguation, inflection, multi-word
+phrase declension, personal-name inflection, paradigm-suitability
+scoring, and valency-tag annotation.
 
-The production tagger that backs \texttt{api.tezaurs.lv}'s
-\texttt{/morphotagger} endpoint --- which contributes the published 92.8\,\%
-tag accuracy --- is a third, separate project (\texttt{LVTagger}) that
-consumes the morphology library's output and re-ranks via a sentence-level
-CMM/CRF tagger. We port the morphology engine and the HTTP service layer
-in full, and additionally train a Python-native sentence-level
-disambiguator from the same gold corpus that LVTagger was trained on, since
-\texttt{LVTagger} itself is not part of either Java repository.
+The statistical tagger that backs the \texttt{/morphotagger} endpoint
+of \texttt{api.tezaurs.lv} --- and that contributes the published
+92.8\,\% tag accuracy --- is a third, separate project,
+\texttt{LVTagger} \cite{paikens2013}, which consumes the morphology
+library's output and re-ranks it through a sentence-level CMM/CRF
+tagger. This paper ports the morphology engine and the HTTP service
+layer in full, and additionally trains a Python-native sentence-level
+disambiguator from the same gold corpus on which LVTagger was trained,
+since LVTagger itself is not part of either Java repository.
 
 \section{Related work}
 
@@ -120,20 +137,22 @@ the candidate-set semantics that downstream tools relying on
 Apertium framework but lacks the disambiguator stack and the lexicon
 breadth (411k lexemes) that LU MII curates.
 
-The closest comparison point to this work is \textbf{LVTagger}, a
-sentence-level CMM/CRF tagger \cite{paikens2013} trained on the same
-\texttt{train.txt} gold corpus we use here. LVTagger consumes the
-output of \texttt{PeterisP/morphology} as its candidate set, which is
-the role our Python disambiguator plays. We do not directly replicate
-LVTagger's CMM architecture; we use a 4-character subtag CRF plus
-per-POS log-linear classifier plus tag-bigram Viterbi rescoring (see
-Section~\ref{sec:disamb}). Direct head-to-head accuracy comparison
-against UDPipe and Stanza is left to future work because the training
-data, tagsets, and evaluation protocols all differ.
+{\sloppy
+The closest comparison point is \textbf{LVTagger}
+\cite{paikens2013}, a sentence-level CMM/CRF tagger trained on the
+same \texttt{train.txt} gold corpus used here. LVTagger consumes the
+output of the LU MII morphology library as its candidate set, the
+same role played by vardene's Python disambiguator. The port does
+not replicate LVTagger's CMM architecture; instead it uses a
+4-character subtag CRF, a per-POS log-linear classifier, and a
+tag-bigram Viterbi rescoring pass (Section~\ref{sec:disamb}). Direct
+head-to-head comparison against UDPipe and Stanza is left to future
+work because the training data, tagsets, and evaluation protocols
+all differ.\par}
 
 \section{Architecture}
 
-\subsection{Engine components ported one-to-one}
+\subsection{Components ported one-to-one}
 
 \begin{table}[h]
 \centering
@@ -171,15 +190,16 @@ small \texttt{mijas\_dsl.py} of shared \texttt{SuffixRule} primitives).}
 \label{tab:loc}
 \end{table}
 
-The compactness gain comes from three sources:
-(i) Python's data-class boilerplate is much shorter than Java's \texttt{getX()} /
-\texttt{setX()} accessor pairs;
-(ii) the \textit{Mijas} module collapses 20 nearly-identical Java prefix-strip
-cases into a small data table (\texttt{\_PREFIX\_REDIRECTS}) consumed by a
-shared resolver;
-(iii) Java's XML parsing and serialisation classes are absent in our port:
-all reference data is pre-extracted to \texttt{Parquet} (lexemes) and
-\texttt{JSON} (paradigms, tagset, statistics) at build time.
+The compactness gain comes from three sources. First, Python's
+data-class boilerplate is substantially shorter than Java's
+getter--setter accessor pairs. Second, the \textit{Mijas} module
+collapses twenty nearly-identical Java prefix-strip cases into a
+small data table (\texttt{\_PREFIX\_REDIRECTS}) consumed by a shared
+resolver, replacing imperative dispatch with declarative data.
+Third, Java's XML parsing and serialisation classes are absent from
+the port: all reference data is pre-extracted to Parquet (lexemes)
+and JSON (paradigms, tagset, statistics) at build time, so the
+runtime engine never needs to parse a structured-data format.
 
 \subsection{HTTP service layer}
 
@@ -245,34 +265,38 @@ The hierarchical decomposition was necessary because a single full-tag CRF
 
 \subsection{Parity testing}
 
-Throughout the port we maintained a regression suite of 65 tests covering
-unit behaviour (Mijas, Trie, Attributes, Paradigm, Inflector,
-MarkupConverter), tokenizer parity (Splitting state machine + 1{,}622
-lexicon abbreviations), HTTP API smoke tests, multi-word phrase
-inflection, valency-tag annotation, and corpus parity
-(\texttt{train.txt} from the LVTagger repository).
+The port is accompanied by a regression suite of 65 tests covering
+unit behaviour (the Mijas, Trie, Attributes, Paradigm, Inflector, and
+MarkupConverter modules), tokenizer parity (the Splitting state machine
+together with the 1{,}622 lexicon abbreviations), HTTP API smoke
+tests, multi-word phrase inflection, valency-tag annotation, and
+corpus parity against \texttt{train.txt} from the LVTagger repository.
 
-We measure three metrics per token: lemma match (case-insensitive against the
-gold lemma), full tag match, and POS match (first character only). Single-word
-parity calls \texttt{Analyzer.analyze} on each token in isolation;
-sentence-level parity calls \texttt{Analyzer.analyze\_sentence} on the whole
-sentence and compares the top-ranked reading per token.
+{\sloppy
+Three metrics are measured per token: lemma match (case-insensitive
+against the gold lemma), full-tag match, and POS match (first
+character only). Single-word parity calls \texttt{Analyzer.analyze}
+on each token in isolation; sentence-level parity calls the
+corresponding \texttt{analyze\_sentence} method and compares the
+top-ranked reading per token against the gold annotation.\par}
 
 \subsection{Improvements layered on top of the engine}
 
-In addition to the one-to-one port, we layered targeted post-processing
-steps on top of the engine output. Each is data-driven from the gold
-corpus and carries a small footprint:
+In addition to the one-to-one port, several targeted post-processing
+steps are layered on top of the engine output. Each is data-driven
+from the gold corpus and carries a small footprint:
 
 \begin{itemize}
 \item \textbf{Hardcoded pronoun-form table} (\verb|_PRONOUN_ATTRS|,
-  $\sim$60 entries): personal and demonstrative pronouns ship in the lexicon
-  with \verb|Persona|, \verb|Dzimte|, \verb|Skaitlis| stamped
-  ``Nepiemīt'' (not applicable); we backfill from a closed-class table.
-\item \textbf{Adjective-pronoun ending inference}: \texttt{savs}, \texttt{tavs},
-  \texttt{viss}, \texttt{cits}, \texttt{kāds}, \texttt{katrs} decline like
-  adjectives but ship without gender/number; we infer from the surface ending
-  and already-known case.
+  approximately 60 entries): personal and demonstrative pronouns ship
+  in the lexicon with \verb|Persona|, \verb|Dzimte|, and
+  \verb|Skaitlis| stamped ``Nepiemīt'' (not applicable); the port
+  backfills these slots from a closed-class lookup table.
+\item \textbf{Adjective-pronoun ending inference}: \texttt{savs},
+  \texttt{tavs}, \texttt{viss}, \texttt{cits}, \texttt{kāds}, and
+  \texttt{katrs} decline like adjectives but ship without gender or
+  number annotations; both are inferred from the surface ending and
+  the already-resolved case.
 \item \textbf{Persona int-coercion} in \texttt{markup.py}: the lexicon
   \texttt{Parquet} stores \texttt{Persona} as an integer; the tagset uses
   string keys. Without coercion, all pronoun \texttt{Persona} positions
@@ -307,33 +331,35 @@ $\sim$200\,KB of data files.
 
 \begin{table}[h]
 \centering
+\small
 \begin{tabular}{lrrr}
 \toprule
 \textbf{Setting} & \textbf{Lemma} & \textbf{Tag} & \textbf{POS} \\
 \midrule
-\multicolumn{4}{l}{\textit{Held-out 20\,\% split, 5-seed average ($n \approx 3{,}500$/seed; mean $\pm$ std)}}\\
-Top-1 with full pipeline (final) & $\mathbf{96.73 \pm 0.29}$ & $\mathbf{92.51 \pm 0.29}$ & $\mathbf{98.75 \pm 0.16}$ \\
-\quad\textit{per-seed range} & $[96.26, 97.03]$ & $[92.06, 92.79]$ & $[98.60, 99.00]$ \\
-\quad{\small minus preposition-agreement post-pass} & 96.73\,\% & 92.51\,\% & 98.75\,\% \\
-\quad{\small minus bigram-Viterbi} & 96.73\,\% & 92.51\,\% & 98.75\,\% \\
-\quad{\small minus per-form corpus overrides} & 95.77\,\% & 89.38\,\% & 98.58\,\% \\
-\quad{\small minus per-form, minus Viterbi} & 95.77\,\% & 89.37\,\% & 98.58\,\% \\
+\multicolumn{4}{l}{\textit{Held-out 20\,\% split, 5 seeds ($n \approx 3{,}500$/seed)}}\\
+Full pipeline (final), mean $\pm$ std & $\mathbf{96.73 \pm 0.29}$ & $\mathbf{92.51 \pm 0.29}$ & $\mathbf{98.75 \pm 0.16}$ \\
+\quad per-seed range & $[96.26, 97.03]$ & $[92.06, 92.79]$ & $[98.60, 99.00]$ \\
+\quad minus preposition-agreement post-pass & 96.73 & 92.51 & 98.75 \\
+\quad minus bigram-Viterbi & 96.73 & 92.51 & 98.75 \\
+\quad minus per-form corpus overrides & 95.77 & 89.38 & 98.58 \\
+\quad minus per-form, minus Viterbi & 95.77 & 89.37 & 98.58 \\
 \midrule
-\multicolumn{4}{l}{\textit{Word-level (single token, 1{,}000-sample, seed=42)}}\\
-Engine candidate-set (any reading correct) & 97.9\,\% & 85.5\,\% & --- \\
-Top-1 with disambiguator & 94.9\,\% & 82.2\,\% & 96.4\,\% \\
+\multicolumn{4}{l}{\textit{Word-level (single token, 1{,}000-sample, seed = 42)}}\\
+Engine candidate-set (any reading correct) & 97.9 & 85.5 & --- \\
+Top-1 with disambiguator & 94.9 & 82.2 & 96.4 \\
 \midrule
 \multicolumn{4}{l}{\textit{Java reference (LVTagger README)}}\\
-LVTagger (Java) & --- & 92.8\,\% & 98.2\,\% \\
+LVTagger (Java) & --- & 92.8 & 98.2 \\
 \bottomrule
 \end{tabular}
-\caption{Accuracy on the LVTagger gold corpus, evaluated against the held-out
-20\,\% split. Override tables (verb transitivity, verb type, adverb
-\texttt{Pakāpe}, per-form corpus overrides) and the bigram Viterbi
+\caption{Accuracy on the LVTagger gold corpus, evaluated on the
+held-out 20\,\% split. All values are percentages. The override
+tables (verb transitivity, verb type, adverb
+\texttt{Pakāpe}, per-form corpus overrides) and the bigram-Viterbi
 transition matrix are all built from the training 80\,\% only. The
-ablation rows show the contribution of each stage. The candidate-set row
-provides the morphology engine's recall ceiling
-(any reading 97.9\,\%/85.5\,\% lemma/tag).}
+ablation rows quantify the contribution of each stage; the
+candidate-set row gives the morphology engine's recall ceiling at
+97.9\,\% (lemma) and 85.5\,\% (tag).}
 \label{tab:accuracy}
 \end{table}
 
@@ -356,11 +382,11 @@ move (the rule fires on roughly one preposition per ten sentences) but it
 fixes systematic divergences from the upstream tagger on individual
 sentences (e.g.\ closing 2/4 token-level differences in our reference
 test sentence).
-Critically, when the override target is not present in the engine's
-candidate set, we synthesise a \texttt{Wordform} from the target tag
-rather than discarding the override --- this is the only step in the
-pipeline that beats the morphology-engine candidate-set ceiling
-(85.5\,\% tag).
+Critically, when the override target is absent from the engine's
+candidate set, the port synthesises a \texttt{Wordform} from the
+target tag rather than discarding the override; this is the only step
+in the pipeline that beats the morphology-engine candidate-set
+ceiling (85.5\,\% tag).
 
 \subsection{Performance}
 
@@ -462,8 +488,9 @@ XML's structural overhead.}
   (\textit{būt} main/aux, pronoun gender in syncretic forms, transitivity
   of phase verbs in context) would close with a syntactic parser or
   trained head-noun agreement features rather than richer local features.
-  The deterministic preposition-agreement rule has already been ported as
-  a post-pass; further such rules are pending as we encounter them.
+  The deterministic preposition-agreement rule has already been ported
+  as a post-pass; further such rules remain to be added as additional
+  systematic divergences are identified.
 \item \textbf{Peak memory} (475\,MB vs.\ 150--300\,MB JVM): after sparsifying
   the classifier and lazy lexeme materialisation, the gap is narrowed from
   $\sim$5.8$\times$ to $\sim$1.6$\times$. Closing the remaining gap likely
@@ -566,28 +593,36 @@ We flag five limitations that scope the claims of this paper:
 
 \section{Conclusion}
 
-A complete one-to-one Python port of a mature corpus-linguistic library is
-feasible at full parity on the published headline metrics. Our implementation
-matches the Java reference on tag accuracy
-(92.51\,\% vs.\ 92.8\,\%, within seed variance), \emph{exceeds} it on POS
-accuracy (98.75\,\% vs.\ 98.2\,\%, $+0.55$\,pp), and delivers a
-44\,\% reduction in source size, an 8$\times$ reduction in shipped reference
-data plus disambiguator weights (34\,MB total vs. $\sim$75\,MB Java), and a
-2.6$\times$ faster cold start. The remaining 1.6$\times$ memory gap to Java
-is concentrated in the optional disambiguator stack the Java repository
-does not include; on the engine alone the Python port is competitive on
-memory as well. We argue the Python port is ready to serve as a primary
-implementation in pure-Python NLP pipelines, complementing or, where
-deployment friction matters, replacing the Java reference outright.
+A complete Python port of a mature corpus-linguistic library is
+feasible at parity on the published headline metrics. The
+implementation matches the Java reference on tag accuracy
+($92.51 \pm 0.29\,\%$ versus 92.8\,\%, within seed variance, with two
+of five seeds exceeding the Java figure), surpasses it on
+part-of-speech accuracy by 0.55 percentage points
+($98.75 \pm 0.16\,\%$ versus 98.2\,\%), and delivers an
+8$\times$ reduction in shipped reference-data and disambiguator-weight
+size (34\,MB in total against approximately 75\,MB for Java) and a
+2.6$\times$ faster cold start. Source size shrinks by 39\,\% across
+the combined engine and HTTP service layer (6{,}066 lines of Python
+against 9{,}922 lines of Java). The 1.6$\times$ memory gap to the
+Java reference is concentrated in the optional disambiguator stack
+that the Java repository does not include; on the engine alone the
+Python port is competitive on memory as well. The port is ready to
+serve as a primary implementation for pure-Python NLP pipelines,
+complementing the Java reference where deployment friction is a
+secondary concern and replacing it where deployment friction is a
+primary concern.
 
-The repository is open-source under GPL-3.0 and accepts contributions
-targeting the remaining accuracy gap.
+The repository is open-source under GPL-3.0 and welcomes contributions
+that target the remaining accuracy gap.
 
 \section*{Acknowledgements}
 
-We thank Pēteris Paikens and the LU MII AI Lab for the original Java
-implementation, which served both as the algorithmic specification and as
-the parity reference throughout the port.
+The author thanks Pēteris Paikens and the LU MII AI Lab for the
+original Java implementation, which served both as the algorithmic
+specification and as the parity reference throughout the port, and
+the LVTagger contributors for the gold-standard \texttt{train.txt}
+corpus on which the disambiguator was trained.
 
 \begin{thebibliography}{9}
 
