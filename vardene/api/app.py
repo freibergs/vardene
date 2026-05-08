@@ -26,9 +26,9 @@ underlying engine supports it):
 
 from __future__ import annotations
 
-from flask import Flask, jsonify, render_template, request
-
 import re
+
+from flask import Flask, jsonify, render_template, request
 
 from vardene.analyzer import Analyzer
 from vardene.api.serialization import wordform_to_dict
@@ -36,7 +36,6 @@ from vardene.inflector import Inflector
 from vardene.phrase import inflect_people, inflect_phrase, normalize_phrase
 from vardene.splitting import build_trie, set_master_trie
 from vardene.splitting import tokenize as _tokenize
-from vardene.splitting import tokenize_sentences as _tokenize_sentences
 from vardene.valency import valency_tags
 
 _EXCEPTION_LEMMA_RE = re.compile(r".*[ ./'\d]+.*")

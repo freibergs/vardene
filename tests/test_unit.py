@@ -413,7 +413,8 @@ class TestSplitting:
         assert tokenize("Jaņus u.c. svētkus") == ["Jaņus", "u.c.", "svētkus"]
 
     def test_lexicon_exception_via_build_trie(self) -> None:
-        from vardene.splitting import build_trie, tokenize as tk
+        from vardene.splitting import build_trie
+        from vardene.splitting import tokenize as tk
         custom = build_trie(["mr.foo", "Acme.Corp"])
         assert tk("Skat mr.foo today.", trie=custom) == ["Skat", "mr.foo", "today", "."]
         assert tk("By Acme.Corp inc.", trie=custom) == ["By", "Acme.Corp", "inc", "."]

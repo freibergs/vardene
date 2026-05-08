@@ -24,10 +24,7 @@ inflection — same heuristic as the Java service.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 from vardene.analyzer import Analyzer
-from vardene.attributes import AttributeValues
 from vardene.inflector import Inflector
 from vardene.splitting import tokenize as _tokenize
 from vardene.wordform import Wordform
