@@ -125,8 +125,13 @@ def inflect_phrase(
     *,
     analyzer: Analyzer | None = None,
     inflector: Inflector | None = None,
+    category: str | None = None,
 ) -> dict[str, str]:
-    """Return dict of {Locījums: inflected_phrase}."""
+    """Return dict of {Locījums: inflected_phrase}.
+
+    `category` is one of `person`, `org`, `loc`, or None (matches the
+    api.tezaurs.lv `?category=` query parameter). For `person`, the head's
+    gender is added as a `Dzimte` field on the response."""
     if analyzer is None:
         analyzer = Analyzer()
     if inflector is None:
@@ -166,6 +171,8 @@ def inflect_phrase(
             )
             out_tokens.append(inflected)
         result[case] = _glue(tokens, out_tokens)
+    if category == "person" and head_gender:
+        result["Dzimte"] = head_gender
     return result
 
 
@@ -220,11 +227,15 @@ def normalize_phrase(
     return _glue(tokens, out_tokens)
 
 
+_GENDER_MAP = {"m": "Vīriešu", "f": "Sieviešu"}
+
+
 def inflect_people(
     name: str,
     *,
     analyzer: Analyzer | None = None,
     inflector: Inflector | None = None,
+    gender: str | None = None,
 ) -> list[list[dict[str, str]]]:
     """For a personal name, return a list-per-component of all 12 forms
     (6 cases × 2 numbers).
@@ -232,38 +243,57 @@ def inflect_people(
     Output mirrors api.tezaurs.lv `/inflect_people/json/<name>`: a JSON
     array of arrays. Each inner array is one name component (e.g. given
     name + surname), with 12 dicts inside listing every Skaitlis × Locījums
-    form."""
+    form.
+
+    `gender` is `"m"` or `"f"` (matches the upstream `?gender=m/f` query
+    parameter). When set, only readings whose Dzimte matches are kept; if
+    a component has no matching reading, just the surface form is returned
+    for that component."""
     if analyzer is None:
         analyzer = Analyzer()
     if inflector is None:
         inflector = Inflector(lexicon=analyzer.lexicon)
 
+    target_gender = _GENDER_MAP.get(gender or "")
     parts = [t for t in _tokenize(name) if not _is_punct(t)]
     out: list[list[dict[str, str]]] = []
     for part in parts:
-        out.append(_person_part_forms(analyzer, inflector, part))
+        out.append(_person_part_forms(analyzer, inflector, part, target_gender))
     return out
 
 
 def _person_part_forms(
-    analyzer: Analyzer, inflector: Inflector, surface: str
+    analyzer: Analyzer,
+    inflector: Inflector,
+    surface: str,
+    target_gender: str | None,
 ) -> list[dict[str, str]]:
     """All 12 forms of one personal-name component."""
     word = analyzer.analyze(surface)
     reading: Wordform | None = None
+    # Prefer proper-noun readings; if a target gender is set, prefer those that match.
     for wf in word.wordforms:
-        if (
+        if not (
             wf.is_matching_strong("Vārdšķira", "Lietvārds")
             and wf.is_matching_strong("Lietvārda tips", "Īpašvārds")
         ):
+            continue
+        if target_gender and wf.get("Dzimte") != target_gender:
+            continue
+        reading = wf
+        break
+    if reading is None:
+        for wf in word.wordforms:
+            if target_gender and wf.get("Dzimte") != target_gender:
+                continue
             reading = wf
             break
-    if reading is None and word.wordforms:
-        reading = word.wordforms[0]
     if reading is None or reading.lexeme is None:
-        return [{"Vārds": surface, "Locījums": "Nominatīvs", "Skaitlis": "Vienskaitlis"}]
+        return [{"Vārds": surface}]
 
     forms = inflector.inflect_lexeme(reading.lexeme, reading.lexeme.lemma)
+    if target_gender:
+        forms = [wf for wf in forms if wf.get("Dzimte") == target_gender]
     out: list[dict[str, str]] = []
     seen: set[tuple[str, str]] = set()
     for number in ("Vienskaitlis", "Daudzskaitlis"):
@@ -290,6 +320,8 @@ def _person_part_forms(
                 if v:
                     entry[attr] = v
             out.append(entry)
+    if not out:
+        return [{"Vārds": surface}]
     return out
 
 

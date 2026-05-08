@@ -62,7 +62,11 @@ main {
   gap: 0.25rem;
   border-bottom: 1px solid var(--border);
   margin-bottom: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { white-space: nowrap; }
 
 .tab {
   background: transparent;
@@ -118,10 +122,10 @@ input[type="text"]:focus {
   outline-offset: -1px;
 }
 
-button.primary {
-  background: var(--accent);
-  color: white;
-  border: none;
+button {
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--border);
   padding: 0.65rem 1.25rem;
   border-radius: 4px;
   cursor: pointer;
@@ -130,8 +134,117 @@ button.primary {
   font-weight: 500;
 }
 
-button.primary:hover { filter: brightness(1.05); }
-button.primary:disabled { opacity: 0.5; cursor: wait; }
+button:hover { background: var(--code-bg); }
+
+button.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+button.primary:hover { filter: brightness(1.05); background: var(--accent); }
+button:disabled { opacity: 0.5; cursor: wait; }
+
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.panel .hint {
+  color: var(--muted);
+  font-size: 0.92em;
+  margin: 0 0 1rem;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  font-size: 0.9em;
+}
+
+.control-row label,
+.control-row .radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.95rem;
+  color: var(--fg);
+  margin: 0;
+}
+
+.control-row select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.options {
+  margin-bottom: 1rem;
+  font-size: 0.95em;
+}
+
+.options summary {
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0.4rem 0;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.6rem 1rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.options-grid label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  display: block;
+  margin: 0;
+}
+
+.options-grid input,
+.options-grid select {
+  margin-top: 0.25rem;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.sentence-token {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+  background: var(--bg);
+}
+
+.sentence-token h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05em;
+}
 
 .output { min-height: 1.5em; }
 .output:empty::before {

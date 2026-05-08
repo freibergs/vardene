@@ -21,6 +21,18 @@ from vardene.trie import Trie
 
 DEFAULT_SENTENCE_LENGTH_CAP = 250
 
+# Default extra abbreviations the Java Splitting also keeps as one token. The
+# upstream Java code adds these from the lexicon at startup (see
+# `Paradigm.java:227` `automats.addException(lemma)`), so the equivalent
+# Python flow lives in `Analyzer`/`Lexicon`. This list is the kept-with-trie
+# fallback used when no analyzer is wired up.
+_DEFAULT_ABBREVIATIONS: tuple[str, ...] = (
+    "plkst.", "u.c.", "u.tml.", "u.tt.", "t.i.", "t.s.", "g.k.", "u.tj.",
+    "t.sk.", "š.g.", "p.m.ē.", "Dr.", "Drs.", "Inc.", "Ltd.", "Mr.", "Mrs.",
+    "Ms.", "St.", "etc.", "vs.", "viņ.", "i.e.", "e.g.",
+    "u.t.t.", "Dr.h.c.", "M.A.", "M.Sc.",
+)
+
 # Set lifted verbatim from Splitting.java line 46.
 _SEPARATORS = (
     " \t\n\r  ​.?:/!,;\"'`´(){}<>«»-+[]"
@@ -46,8 +58,16 @@ def _is_space(c: str) -> bool:
     return c.isspace() or c in (" ", "﻿", " ", "​")
 
 
-def _build_master_trie() -> Trie:
+def build_trie(exceptions: Iterable[str] = ()) -> Trie:
+    """Build a tokenizer trie with the 12 built-in FSAs plus `exceptions`
+    (multi-char tokens that should never split, e.g. `plkst.`, `u.c.`).
+    Mirrors Java's `Trie.addException` calls made by `Paradigm.add_lexeme`."""
     t = Trie()
+    seen: set[str] = set()
+    for s in (*_DEFAULT_ABBREVIATIONS, *exceptions):
+        if s and s not in seen:
+            t.add_exception(s)
+            seen.add(s)
     t.initialize_exceptions()
     return t
 
@@ -55,21 +75,37 @@ def _build_master_trie() -> Trie:
 def _master_trie() -> Trie:
     global _LAZY_TRIE
     if _LAZY_TRIE is None:
-        _LAZY_TRIE = _build_master_trie()
+        _LAZY_TRIE = build_trie()
     return _LAZY_TRIE
 
 
-def tokenize(text: str | None, *, brute_split: bool = False) -> list[str]:
+def set_master_trie(trie: Trie) -> None:
+    """Replace the module-level lazy trie. The API hooks this at startup so
+    every subsequent `tokenize()` call sees abbreviations harvested from the
+    lexicon (`Paradigm.add_lexeme` does this in Java)."""
+    global _LAZY_TRIE
+    _LAZY_TRIE = trie
+
+
+def tokenize(
+    text: str | None,
+    *,
+    brute_split: bool = False,
+    trie: Trie | None = None,
+) -> list[str]:
     """Split `text` into surface tokens.
 
     `brute_split=True` falls back to whitespace-only splitting (matches
-    `Splitting.tokenize(_, _, true)` in Java)."""
+    `Splitting.tokenize(_, _, true)` in Java). `trie` overrides the
+    module-level master trie for one call (used by callers that build their
+    own exceptions list)."""
     if text is None:
         return []
     if brute_split:
         return [p for p in text.strip().split(" ") if p]
 
-    automats = Trie(_master_trie())  # cloning ctor: shared branches, fresh cursor
+    base = trie if trie is not None else _master_trie()
+    automats = Trie(base)  # cloning ctor: shared branches, fresh cursor
 
     chunk = text + " "  # bug-fix from Java: append trailing space
     chunk = chunk.replace("''", "​''")

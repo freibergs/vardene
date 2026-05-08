@@ -16,15 +16,18 @@
     <nav class="tabs">
       <button class="tab active" data-tab="analyze">Analyse</button>
       <button class="tab" data-tab="sentence">Sentence</button>
+      <button class="tab" data-tab="tokenize">Tokenise</button>
       <button class="tab" data-tab="inflect">Inflect</button>
+      <button class="tab" data-tab="paradigm">Paradigms</button>
       <button class="tab" data-tab="phrase">Phrase</button>
       <button class="tab" data-tab="people">Names</button>
-      <button class="tab" data-tab="tokenize">Tokenise</button>
       <button class="tab" data-tab="api">API</button>
     </nav>
 
+    <!-- ANALYSE single word ------------------------------------------------ -->
     <section id="tab-analyze" class="panel active">
-      <label for="word-input">Word</label>
+      <h2>Analyse a single word</h2>
+      <p class="hint">Returns every candidate reading the morphology engine produces for a word, with full attribute set. Maps to <code>GET /api/analyze/&lt;word&gt;</code> and <code>/api/analyze/en/&lt;word&gt;</code>.</p>
       <div class="input-row">
         <input id="word-input" type="text" placeholder="rakstu" autocomplete="off">
         <button id="analyze-btn" class="primary">Analyse</button>
@@ -36,81 +39,132 @@
       <div id="analyze-output" class="output"></div>
     </section>
 
+    <!-- SENTENCE ----------------------------------------------------------- -->
     <section id="tab-sentence" class="panel">
-      <label for="sentence-input">Sentence</label>
+      <h2>Analyse a sentence</h2>
+      <p class="hint">Two modes — <strong>Best reading</strong> uses sentence-level CRF + Viterbi disambiguation (<code>/api/morphotagger</code>); <strong>All readings</strong> shows every candidate per token (<code>/api/analyzesentence</code>).</p>
       <div class="input-row">
-        <input id="sentence-input" type="text" placeholder="Māte sēd uz galda." autocomplete="off">
+        <input id="sentence-input" type="text" placeholder="Māte sēd uz galda, vai ne?" autocomplete="off">
         <button id="sentence-btn" class="primary">Analyse</button>
       </div>
-      <p class="hint">Returns the top reading per token after CRF + classifier + Viterbi disambiguation.</p>
+      <div class="control-row">
+        <label class="radio"><input type="radio" name="sentence-mode" value="best" checked> Best reading per token</label>
+        <label class="radio"><input type="radio" name="sentence-mode" value="all"> All readings per token</label>
+      </div>
       <div id="sentence-output" class="output"></div>
     </section>
 
-    <section id="tab-inflect" class="panel">
-      <label for="lemma-input">Lemma</label>
-      <div class="input-row">
-        <input id="lemma-input" type="text" placeholder="rakt" autocomplete="off">
-        <button id="inflect-btn" class="primary">Inflect</button>
-      </div>
-      <p class="hint">Generates every inflected form. Verb lemmas can produce 500+ forms across tenses, persons, moods, and participles.</p>
-      <div id="inflect-output" class="output"></div>
-    </section>
-
-    <section id="tab-phrase" class="panel">
-      <label for="phrase-input">Phrase</label>
-      <div class="input-row">
-        <input id="phrase-input" type="text" placeholder="sarkanā māja" autocomplete="off">
-        <button id="phrase-btn" class="primary">Inflect</button>
-      </div>
-      <p class="hint">Multi-word noun-phrase declension. The rightmost noun is the head; modifiers (adjectives, pronouns) agree in case + number + gender.</p>
-      <div id="phrase-output" class="output"></div>
-    </section>
-
-    <section id="tab-people" class="panel">
-      <label for="people-input">Personal name</label>
-      <div class="input-row">
-        <input id="people-input" type="text" placeholder="Jānis Bērziņš" autocomplete="off">
-        <button id="people-btn" class="primary">Inflect</button>
-      </div>
-      <p class="hint">Each component (given + surname) is inflected through all 6 cases × 2 numbers.</p>
-      <div id="people-output" class="output"></div>
-    </section>
-
+    <!-- TOKENISE ---------------------------------------------------------- -->
     <section id="tab-tokenize" class="panel">
-      <label for="tokenize-input">Text</label>
+      <h2>Tokenise text</h2>
+      <p class="hint">FSA-driven tokeniser ported from <code>Splitting.java</code>. Recognises clocks (<code>14:30</code>), URLs, e-mails, ISO dates, paragraph numbers (<code>1.2.3.4.</code>), and more. Maps to <code>GET /api/tokenize/&lt;query&gt;</code>.</p>
       <div class="input-row">
-        <input id="tokenize-input" type="text" placeholder="Māte sēd uz galda, vai ne?" autocomplete="off">
+        <input id="tokenize-input" type="text" placeholder="Skaties www.tezaurs.lv plkst. 14:30!" autocomplete="off">
         <button id="tokenize-btn" class="primary">Tokenise</button>
       </div>
       <div id="tokenize-output" class="output"></div>
     </section>
 
+    <!-- INFLECT ----------------------------------------------------------- -->
+    <section id="tab-inflect" class="panel">
+      <h2>Inflect a lemma</h2>
+      <p class="hint">All inflected forms of a lemma. Optional fields: paradigm name to force a specific paradigm; for verb-1 conjugation you can pass three explicit stems. Language filter restricts forms to Latvian (<code>lv</code>) or Latgalian (<code>ltg</code>). Maps to <code>/api/v1/inflections</code> and <code>/api/inflect/json</code>.</p>
+      <div class="input-row">
+        <input id="lemma-input" type="text" placeholder="rakt" autocomplete="off">
+        <button id="inflect-btn" class="primary">Inflect</button>
+      </div>
+      <details class="options">
+        <summary>Advanced options</summary>
+        <div class="options-grid">
+          <label>Paradigm name <input id="inflect-paradigm" type="text" placeholder="(auto)"></label>
+          <label>Language <select id="inflect-lang"><option value="lv" selected>lv</option><option value="ltg">ltg</option></select></label>
+          <label>Stem 1 (infinitive) <input id="inflect-stem1" type="text" placeholder=""></label>
+          <label>Stem 2 (present)    <input id="inflect-stem2" type="text" placeholder=""></label>
+          <label>Stem 3 (past)       <input id="inflect-stem3" type="text" placeholder=""></label>
+        </div>
+      </details>
+      <div id="inflect-output" class="output"></div>
+    </section>
+
+    <!-- PARADIGMS --------------------------------------------------------- -->
+    <section id="tab-paradigm" class="panel">
+      <h2>Suitable paradigms</h2>
+      <p class="hint">For a lemma, list every paradigm that could generate it, sorted by ending frequency (most common first). Maps to <code>GET /api/suitable_paradigm/&lt;lemma&gt;</code>.</p>
+      <div class="input-row">
+        <input id="paradigm-input" type="text" placeholder="kaķis" autocomplete="off">
+        <button id="paradigm-btn" class="primary">Find paradigms</button>
+      </div>
+      <div id="paradigm-output" class="output"></div>
+    </section>
+
+    <!-- PHRASE ----------------------------------------------------------- -->
+    <section id="tab-phrase" class="panel">
+      <h2>Inflect a phrase</h2>
+      <p class="hint">Multi-word noun-phrase declension. The rightmost noun is the head; modifiers (adjectives, pronouns) agree in case + number + gender. <strong>Normalise</strong> brings any phrase form back to its lemma. Maps to <code>/api/inflect_phrase</code> and <code>/api/normalize_phrase</code>.</p>
+      <div class="input-row">
+        <input id="phrase-input" type="text" placeholder="sarkanā māja" autocomplete="off">
+        <button id="phrase-btn" class="primary">Inflect</button>
+        <button id="phrase-normalize-btn">Normalise</button>
+      </div>
+      <div class="control-row">
+        <label>Category
+          <select id="phrase-category">
+            <option value="">— (none)</option>
+            <option value="person">person</option>
+            <option value="org">organisation</option>
+            <option value="loc">location</option>
+          </select>
+        </label>
+      </div>
+      <div id="phrase-output" class="output"></div>
+    </section>
+
+    <!-- PEOPLE ----------------------------------------------------------- -->
+    <section id="tab-people" class="panel">
+      <h2>Inflect a personal name</h2>
+      <p class="hint">Each component (given name + surname) is inflected through all 6 cases × 2 numbers. Setting gender filters readings to that gender; if no matching reading exists, the name is returned as-is. Maps to <code>GET /api/inflect_people/json/&lt;name&gt;</code>.</p>
+      <div class="input-row">
+        <input id="people-input" type="text" placeholder="Jānis Bērziņš" autocomplete="off">
+        <button id="people-btn" class="primary">Inflect</button>
+      </div>
+      <div class="control-row">
+        <label>Gender
+          <select id="people-gender">
+            <option value="">— (auto)</option>
+            <option value="m">m (Vīriešu)</option>
+            <option value="f">f (Sieviešu)</option>
+          </select>
+        </label>
+      </div>
+      <div id="people-output" class="output"></div>
+    </section>
+
+    <!-- API DOC ---------------------------------------------------------- -->
     <section id="tab-api" class="panel">
-      <h2>HTTP API</h2>
-      <p>All endpoints return JSON. Tokenisation uses the full port of <code>Splitting.java</code> — a state machine over 12 FSAs that recognise dates, clocks, URLs, e-mail addresses, numbers, paragraph numbers, ranges, and more.</p>
+      <h2>HTTP API reference</h2>
+      <p>Full parity with <code>api.tezaurs.lv</code> 2.5.15. All endpoints return JSON encoded as raw UTF-8.</p>
       <table class="api-table">
         <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td>GET</td><td><code>/api/analyze/&lt;word&gt;</code></td><td>Single-word analysis (LV attributes)</td></tr>
+          <tr><td>GET</td><td><code>/api/analyze/&lt;word&gt;</code></td><td>Single-word morphological analysis (LV attributes; guessing on)</td></tr>
           <tr><td>GET</td><td><code>/api/analyze/en/&lt;word&gt;</code></td><td>Same with English attribute names</td></tr>
-          <tr><td>GET</td><td><code>/api/analyzesentence/&lt;query&gt;</code></td><td>Per-token analysis with sentence context</td></tr>
+          <tr><td>GET</td><td><code>/api/analyzesentence/&lt;query&gt;</code></td><td>Per-token analysis (all readings) with sentence context</td></tr>
           <tr><td>GET</td><td><code>/api/morphotagger/&lt;query&gt;</code></td><td>Sentence-level disambiguation (best reading per token)</td></tr>
-          <tr><td>GET</td><td><code>/api/tokenize/&lt;query&gt;</code></td><td>Tokenise a sentence</td></tr>
-          <tr><td>POST</td><td><code>/api/tokenize</code></td><td>Same with body <code>{"text": "..."}</code></td></tr>
-          <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;</code></td><td>All inflectional forms of a lemma</td></tr>
+          <tr><td>GET</td><td><code>/api/tokenize/&lt;query&gt;</code></td><td>Tokenise text (FSA port of <code>Splitting.java</code>)</td></tr>
+          <tr><td>POST</td><td><code>/api/tokenize</code></td><td>Same; body <code>{"text": "..."}</code></td></tr>
+          <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;</code></td><td>All inflectional forms</td></tr>
           <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;?paradigm=&lt;name&gt;</code></td><td>With explicit paradigm</td></tr>
           <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;?paradigm=&amp;stem1=&amp;stem2=&amp;stem3=</code></td><td>Verb-1 with explicit stems</td></tr>
-          <tr><td>GET</td><td><code>/api/inflect/json/&lt;lemma&gt;</code></td><td>Format-selectable inflection (JSON only at the moment)</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect/json/&lt;lemma&gt;</code></td><td>Same as <code>/v1/inflections</code>, format-selectable</td></tr>
           <tr><td>GET</td><td><code>/api/inflect/json/&lt;lang&gt;/&lt;lemma&gt;</code></td><td>With language filter (<code>lv</code>/<code>ltg</code>)</td></tr>
           <tr><td>GET</td><td><code>/api/suitable_paradigm/&lt;lemma&gt;</code></td><td>Paradigms that could generate <code>lemma</code> (sorted by frequency)</td></tr>
-          <tr><td>GET</td><td><code>/api/inflect_phrase/&lt;phrase&gt;</code></td><td>Multi-word noun-phrase declension</td></tr>
-          <tr><td>GET</td><td><code>/api/normalize_phrase/&lt;phrase&gt;</code></td><td>Lemmatised (Nominatīvs) phrase</td></tr>
-          <tr><td>GET</td><td><code>/api/inflect_people/json/&lt;name&gt;</code></td><td>Full declension of a personal name</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect_phrase/&lt;phrase&gt;?category=&lt;person|org|loc&gt;</code></td><td>Multi-word noun-phrase declension</td></tr>
+          <tr><td>GET</td><td><code>/api/normalize_phrase/&lt;phrase&gt;?category=&lt;person|org|loc&gt;</code></td><td>Phrase normalisation (Nominatīvs lemma form)</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect_people/json/&lt;name&gt;?gender=&lt;m|f&gt;</code></td><td>Full declension of a personal name</td></tr>
+          <tr><td>GET</td><td><code>/api/verbs/&lt;query&gt;</code> · <code>/api/neverbs/&lt;query&gt;</code></td><td>Out-of-scope notice (valency lexicon, separate service)</td></tr>
           <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness probe</td></tr>
         </tbody>
       </table>
-      <h3>Out of scope</h3>
-      <p><code>/api/verbs</code> and <code>/api/neverbs</code> proxy a separate non-open-source valency lexicon at <code>api.tezaurs.lv</code>. The vardene engine intentionally scopes to the morphology library and does not bundle valency data.</p>
     </section>
   </main>
 

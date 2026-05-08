@@ -30,12 +30,35 @@ from __future__ import annotations
 
 from flask import Flask, jsonify, render_template, request
 
+import re
+
 from vardene.analyzer import Analyzer
 from vardene.api.serialization import wordform_to_dict
 from vardene.inflector import Inflector
 from vardene.phrase import inflect_people, inflect_phrase, normalize_phrase
+from vardene.splitting import build_trie, set_master_trie
 from vardene.splitting import tokenize as _tokenize
 from vardene.splitting import tokenize_sentences as _tokenize_sentences
+
+_EXCEPTION_LEMMA_RE = re.compile(r".*[ ./'\d]+.*")
+_PURE_DOTS_RE = re.compile(r"^\.+$")
+
+
+def _lexicon_tokenizer_exceptions(analyzer: Analyzer) -> list[str]:
+    """Mirror of Java's `Paradigm.add_lexeme` line that calls
+    `lexicon.automats.addException(lemma)` for every lemma with a space,
+    period, slash, apostrophe, or digit."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for lemma in analyzer.lexicon.table.column("lemma").to_pylist():
+        if not lemma or len(lemma) < 2:
+            continue
+        if lemma in seen:
+            continue
+        if _EXCEPTION_LEMMA_RE.match(lemma) and not _PURE_DOTS_RE.match(lemma):
+            seen.add(lemma)
+            out.append(lemma)
+    return out
 
 
 def create_app() -> Flask:
@@ -55,6 +78,12 @@ def create_app() -> Flask:
     # guess instead of a null reading. Match that.
     analyzer.enable_guessing = True
     inflector = Inflector(lexicon=analyzer.lexicon)
+
+    # Mirror of `Paradigm.add_lexeme` (Java line 227): every lemma that
+    # contains a space, period, slash, apostrophe, or digit is registered
+    # with the tokenizer trie so it never splits. Picks up `plkst.`, `u.c.`,
+    # `t.i.`, `A/S`, etc. — without this, `plkst.` tokenizes to `plkst` `.`.
+    set_master_trie(build_trie(_lexicon_tokenizer_exceptions(analyzer)))
 
     # ----- frontend ----------------------------------------------------------
 
@@ -214,15 +243,29 @@ def create_app() -> Flask:
 
     @app.route("/api/inflect_phrase/<path:phrase>")
     def inflect_phrase_route(phrase: str):
-        return jsonify(inflect_phrase(phrase, analyzer=analyzer, inflector=inflector))
+        category = request.args.get("category")  # person / org / loc / None
+        return jsonify(
+            inflect_phrase(
+                phrase, analyzer=analyzer, inflector=inflector, category=category
+            )
+        )
 
     @app.route("/api/normalize_phrase/<path:phrase>")
     def normalize_phrase_route(phrase: str):
+        # Upstream's `?category=` is purely informational on this endpoint —
+        # we accept it for API compatibility but the normalisation itself is
+        # category-agnostic.
+        request.args.get("category")
         return jsonify(normalize_phrase(phrase, analyzer=analyzer, inflector=inflector))
 
     @app.route("/api/inflect_people/json/<path:query>")
     def inflect_people_route(query: str):
-        return jsonify(inflect_people(query, analyzer=analyzer, inflector=inflector))
+        gender = request.args.get("gender")  # m / f / None
+        return jsonify(
+            inflect_people(
+                query, analyzer=analyzer, inflector=inflector, gender=gender
+            )
+        )
 
     # ----- valency lookups (NOT in upstream open-source morphology) ---------
     # api.tezaurs.lv `/verbs` and `/neverbs` proxy a separate valency lexicon

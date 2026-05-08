@@ -374,7 +374,10 @@ class TestSplitting:
         assert tokenize("Es eju mājās.") == ["Es", "eju", "mājās", "."]
 
     def test_clock(self, tokenize) -> None:
-        assert tokenize("plkst. 14:30") == ["plkst", ".", "14:30"]
+        # `plkst.` is in the default abbreviation list and stays as one token.
+        assert tokenize("plkst. 14:30") == ["plkst.", "14:30"]
+        # Without the abbreviation context the period splits off cleanly.
+        assert tokenize("ej mājās. 14:30 nāku")[:3] == ["ej", "mājās", "."]
 
     def test_url(self, tokenize) -> None:
         assert tokenize("Skat www.tezaurs.lv vai https://example.com/path") == [
@@ -403,6 +406,17 @@ class TestSplitting:
 
     def test_brute_split(self, tokenize) -> None:
         assert tokenize("plkst. 14:30", brute_split=True) == ["plkst.", "14:30"]
+
+    def test_default_abbreviations(self, tokenize) -> None:
+        # Built-in abbreviation list keeps `plkst.` and `u.c.` as one token.
+        assert tokenize("plkst. 14:30") == ["plkst.", "14:30"]
+        assert tokenize("Jaņus u.c. svētkus") == ["Jaņus", "u.c.", "svētkus"]
+
+    def test_lexicon_exception_via_build_trie(self) -> None:
+        from vardene.splitting import build_trie, tokenize as tk
+        custom = build_trie(["mr.foo", "Acme.Corp"])
+        assert tk("Skat mr.foo today.", trie=custom) == ["Skat", "mr.foo", "today", "."]
+        assert tk("By Acme.Corp inc.", trie=custom) == ["By", "Acme.Corp", "inc", "."]
 
     def test_sentences(self, tokenize_sentences) -> None:
         out = tokenize_sentences('Es teicu: "Sveiki!" Pēc tam aizgāju.')
@@ -532,6 +546,23 @@ class TestApi:
         data = r.json
         assert len(data) == 1
         assert len(data[0]) == 12
+
+    def test_inflect_people_gender_filter(self, client) -> None:
+        # Andris is masculine; ?gender=f rejects every reading → just lemma.
+        r = client.get("/api/inflect_people/json/Andris?gender=f")
+        assert r.json == [[{"Vārds": "Andris"}]]
+
+    def test_inflect_phrase_category_person(self, client) -> None:
+        r = client.get("/api/inflect_phrase/Anna%20Liepa?category=person")
+        # category=person adds Dzimte field
+        assert r.json["Dzimte"] == "Sieviešu"
+        assert r.json["Nominatīvs"] == "Anna Liepa"
+
+    def test_analyzesentence_returns_all_readings(self, client) -> None:
+        r = client.get("/api/analyzesentence/M%C4%81te%20s%C4%93d.")
+        # Per-token analysis surfaces every candidate (multi-reading tokens).
+        assert len(r.json["tokens"]) == 3
+        assert any(len(t["wordforms"]) > 0 for t in r.json["tokens"])
 
     def test_suitable_paradigm(self, client) -> None:
         r = client.get("/api/suitable_paradigm/ka%C4%B7is")
