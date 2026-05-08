@@ -45,12 +45,13 @@ Our port reproduces every algorithmic component of the upstream engine
 \textit{Paradigm}, \textit{Analyzer}, \textit{Inflector}, \textit{MarkupConverter})
 and additionally trains and ships a hierarchical disambiguator
 (POS conditional random field $\rightarrow$ subtag CRF $\rightarrow$ per-POS
-log-linear classifier, plus a tag-bigram Viterbi pass and a high-confidence
-per-form corpus override layer) that closes the gap to the production
+log-linear classifier, plus a tag-bigram Viterbi pass, a high-confidence
+per-form corpus override layer, and a Latvian-specific syntactic post-pass
+for preposition-noun agreement) that closes the gap to the production
 tagger. On a held-out 20\,\% split of the gold-standard \texttt{train.txt}
 corpus (averaged over five random seeds, $n \approx 3{,}500$ tokens per
-seed) we measure $\textbf{92.60\,\%}$ tag accuracy,
-$\textbf{96.72\,\%}$ lemma accuracy, and $\textbf{98.75\,\%}$ POS
+seed) we measure $\textbf{92.51\,\%}$ tag accuracy,
+$\textbf{96.73\,\%}$ lemma accuracy, and $\textbf{98.75\,\%}$ POS
 accuracy --- matching the published Java tag figure of 92.8\,\% within seed
 variance and \emph{exceeding} the Java POS figure of 98.2\,\% by
 0.55 points. The Python package is 44\,\% smaller in source size, has a
@@ -227,8 +228,9 @@ $\sim$200\,KB of data files.
 \textbf{Setting} & \textbf{Lemma} & \textbf{Tag} & \textbf{POS} \\
 \midrule
 \multicolumn{4}{l}{\textit{Held-out 20\,\% split, 5-seed average ($n \approx 3{,}500$/seed)}}\\
-Top-1 with full pipeline (final) & \textbf{96.72\,\%} & \textbf{92.60\,\%} & \textbf{98.75\,\%} \\
-\quad{\small minus bigram-Viterbi} & 96.72\,\% & 92.60\,\% & 98.75\,\% \\
+Top-1 with full pipeline (final) & \textbf{96.73\,\%} & \textbf{92.51\,\%} & \textbf{98.75\,\%} \\
+\quad{\small minus preposition-agreement post-pass} & 96.73\,\% & 92.51\,\% & 98.75\,\% \\
+\quad{\small minus bigram-Viterbi} & 96.73\,\% & 92.51\,\% & 98.75\,\% \\
 \quad{\small minus per-form corpus overrides} & 95.77\,\% & 89.38\,\% & 98.58\,\% \\
 \quad{\small minus per-form, minus Viterbi} & 95.77\,\% & 89.37\,\% & 98.58\,\% \\
 \midrule
@@ -251,15 +253,24 @@ provides the morphology engine's recall ceiling
 \end{table}
 
 The Python port \emph{exceeds} Java's published POS accuracy
-(\textbf{98.76\,\%} vs.\ 98.2\,\%, $+0.56$\,pp) and \emph{matches} Java's
-tag accuracy (92.50\,\% vs.\ 92.8\,\%, within 0.3\,pp --- inside per-seed
+(\textbf{98.75\,\%} vs.\ 98.2\,\%, $+0.55$\,pp) and \emph{matches} Java's
+tag accuracy (92.51\,\% vs.\ 92.8\,\%, within 0.3\,pp --- inside per-seed
 variance, with two of five seeds exceeding 92.8\,\%). The per-form
 corpus override layer is the dominant contribution: it lifts tag accuracy
-from 89.38\,\% (per-POS classifier baseline) to 92.50\,\% ($+3.12$\,pp),
+from 89.38\,\% (per-POS classifier baseline) to 92.51\,\% ($+3.13$\,pp),
 while the bigram Viterbi pass on top of overrides is roughly neutral
 (table~\ref{tab:accuracy}). The override layer is a corpus-derived lookup
 of forms with $\geq$5 training occurrences and $\geq$85\,\% concentration
 on a single \texttt{(tag, lemma)} pair (3{,}889 entries, 134\,KB).
+A final \textbf{preposition-agreement post-pass} encodes the deterministic
+Latvian rule that a preposition with a plural complement always takes
+\texttt{Datīvs}, regardless of the preposition's lexicon-default singular
+case (e.g.\ \emph{no} defaults to sg.gen but \emph{no zemēm} is pl.dat).
+This is a pure linguistic rule, not learned: held-out aggregates barely
+move (the rule fires on roughly one preposition per ten sentences) but it
+fixes systematic divergences from the upstream tagger on individual
+sentences (e.g.\ closing 2/4 token-level differences in our reference
+test sentence).
 Critically, when the override target is not present in the engine's
 candidate set, we synthesise a \texttt{Wordform} from the target tag
 rather than discarding the override --- this is the only step in the
@@ -339,12 +350,12 @@ XML's structural overhead.}
 \subsection{Where Python wins}
 
 \begin{enumerate}
-\item \textbf{POS accuracy} (98.76\,\% vs.\ 98.2\,\%, $+0.56$\,pp): the
+\item \textbf{POS accuracy} (98.75\,\% vs.\ 98.2\,\%, $+0.55$\,pp): the
   per-POS log-linear classifier picks up signal that Java's CMM does not,
   despite using a simpler emission model.
-\item \textbf{Lemma accuracy} (96.14\,\%): not separately published for
+\item \textbf{Lemma accuracy} (96.73\,\%): not separately published for
   the Java tagger; for context, our morphological engine's lemma recall
-  ceiling is 97.9\,\%, so the disambiguator captures 96.14/97.9 $=$ 98.2\,\%
+  ceiling is 97.9\,\%, so the disambiguator captures 96.73/97.9 $=$ 98.8\,\%
   of the achievable lemma accuracy.
 \item \textbf{Code size} (5{,}193 vs.\ 9{,}316 LOC, $-44$\,\%): no
   accessor boilerplate, data-driven prefix dispatch, no bespoke XML I/O.
@@ -360,12 +371,14 @@ XML's structural overhead.}
 \subsection{Where Python loses}
 
 \begin{enumerate}
-\item \textbf{Tag accuracy} (92.60\,\% vs.\ 92.8\,\%, $-0.2$\,pp): essentially
+\item \textbf{Tag accuracy} (92.51\,\% vs.\ 92.8\,\%, $-0.3$\,pp): essentially
   matches within seed variance (two of five seeds exceed 92.8\,\%, with the
   best seed reaching 92.89\,\%). The remaining contextual gap
-  (preposition \texttt{Skaitlis}, \textit{būt} main/aux, pronoun gender in
-  syncretic forms) would close with a syntactic parser or trained
-  head-noun agreement features rather than richer local features.
+  (\textit{būt} main/aux, pronoun gender in syncretic forms, transitivity
+  of phase verbs in context) would close with a syntactic parser or
+  trained head-noun agreement features rather than richer local features.
+  The deterministic preposition-agreement rule has already been ported as
+  a post-pass; further such rules are pending as we encounter them.
 \item \textbf{Peak memory} (475\,MB vs.\ 150--300\,MB JVM): after sparsifying
   the classifier and lazy lexeme materialisation, the gap is narrowed from
   $\sim$5.8$\times$ to $\sim$1.6$\times$. Closing the remaining gap likely
@@ -425,7 +438,7 @@ python -m tools.benchmark --no-viterbi    # ablation
 A complete one-to-one Python port of a mature corpus-linguistic library is
 feasible at full parity on the published headline metrics. Our implementation
 matches the Java reference on tag accuracy
-(92.60\,\% vs.\ 92.8\,\%, within seed variance), \emph{exceeds} it on POS
+(92.51\,\% vs.\ 92.8\,\%, within seed variance), \emph{exceeds} it on POS
 accuracy (98.75\,\% vs.\ 98.2\,\%, $+0.55$\,pp), and delivers a
 44\,\% reduction in source size, an 8$\times$ reduction in shipped reference
 data plus disambiguator weights (34\,MB total vs. $\sim$75\,MB Java), and a
