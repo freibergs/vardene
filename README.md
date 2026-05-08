@@ -5,6 +5,7 @@
 **Latvian morphological analysis library — a complete Python port of the LU MII Java engine**
 
 [![CI](https://github.com/freibergs/vardene/actions/workflows/test.yml/badge.svg)](https://github.com/freibergs/vardene/actions/workflows/test.yml)
+[![Codecov](https://codecov.io/gh/freibergs/vardene/branch/master/graph/badge.svg)](https://codecov.io/gh/freibergs/vardene)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Tests](https://img.shields.io/badge/tests-65%2F65%20passing-brightgreen.svg)](#testing)
@@ -13,7 +14,7 @@
 [![Endpoint parity](https://img.shields.io/badge/api.tezaurs.lv-100%25%20parity-brightgreen.svg)](#http-api)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-📄 **[Read the paper (PDF)](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf)** · 💻 **[GitHub repo](https://github.com/freibergs/vardene)**
+📄 **[Paper PDF](paper/vardene_python_port.pdf)** · 🍳 **[Examples](examples/)** · ❓ **[FAQ](docs/faq.md)** · 🔒 **[Security](SECURITY.md)** · 📜 **[Changelog](CHANGELOG.md)** · 🤝 **[Contributing](CONTRIBUTING.md)**
 
 *Matches Java tag accuracy within seed variance · Exceeds Java POS accuracy by +0.55 pp · 44% smaller source · 8× smaller data · 2.6× faster cold start*
 
@@ -128,15 +129,35 @@ The demo UI has nine tabs covering every upstream endpoint:
 | `GET /api/verbs/<query>` · `GET /api/neverbs/<query>` | Valency-tag annotation (verb / non-verb biased reading) |
 | `GET /api/health` | Liveness probe |
 
+## Pipeline
+
+```mermaid
+flowchart LR
+    Text["Latvian text"] --> Tok["Splitting<br/>(FSA + 1,622<br/>lexicon abbrevs)"]
+    Tok -->|tokens| Eng["Analyzer<br/>(lexicon · prefix-strip<br/>· guess-by-ending<br/>· hardcoded-paradigm<br/>overrides)"]
+    Eng -->|candidate set| Disamb["Disambiguator stack<br/>(POS-CRF → subtag-CRF<br/>→ per-POS LR<br/>→ Viterbi rescoring)"]
+    Disamb --> Over["Per-form corpus<br/>overrides<br/>(3,889 entries)"]
+    Over --> Post["Preposition–noun<br/>agreement post-pass"]
+    Post --> Out["Tagged + lemmatised<br/>tokens"]
+
+    Eng -.->|"forward<br/>generation"| Inf["Inflector<br/>(negation · debitive<br/>· participles)"]
+    Inf -.-> Forms["All inflected forms"]
+
+    classDef pyOnly fill:#fee,stroke:#c75c5d
+    class Disamb,Over,Post pyOnly
+```
+
+The dashed forward-generation path is the inverse of analysis (lemma → all forms). The pink-tinted boxes are the Python-only layer that has no Java counterpart in either upstream repo — they close the gap to the published 92.8 % tag accuracy. Full architectural details: [`paper/vardene_python_port.pdf`](paper/vardene_python_port.pdf).
+
 ## Accuracy
 
-Held-out 20% split, 5-seed average ($n \approx 3{,}500$ tokens per seed):
+Held-out 20% split, 5-seed mean ± std ($n \approx 3{,}500$ tokens per seed):
 
 | Metric | **Vārdene (Python)** | LVTagger (Java) | Δ |
 |---|---|---|---|
-| Tag | **92.51 %** | 92.8 % | within seed variance |
-| Lemma | **96.73 %** | not published | — |
-| **POS** | **98.75 %** | 98.2 % | **+0.55 pp** ✓ |
+| Tag | **92.51 ± 0.29 %** | 92.8 % | within seed variance |
+| Lemma | **96.73 ± 0.29 %** | not published | — |
+| **POS** | **98.75 ± 0.16 %** | 98.2 % | **+0.55 pp** ✓ |
 
 Two of five seeds exceed Java's 92.8 % tag mark (best seed: 92.89 %). The lemma figure of 96.73 % captures **98.8 %** of the engine's candidate-set ceiling (97.9 %). See [`paper/vardene_python_port.pdf`](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf) for full methodology and ablation.
 

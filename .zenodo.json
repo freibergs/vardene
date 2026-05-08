@@ -1,0 +1,36 @@
+{
+  "title": "Vārdene: a Python port of the LU MII Latvian morphological analyser",
+  "description": "Vārdene is a complete Python port of the LU MII Latvian morphology engine (PeterisP/morphology) and its HTTP service layer (LUMII-AILab/Webservices), plus a sentence-level CRF + Viterbi disambiguator that closes the gap to the published 92.8% Java tag accuracy. Held-out 5-seed accuracy: Tag 92.51 ± 0.29%, Lemma 96.73 ± 0.29%, POS 98.75 ± 0.16%.",
+  "creators": [
+    {
+      "name": "Freibergs, Rihards Aleksandrs",
+      "affiliation": "Independent"
+    }
+  ],
+  "license": "GPL-3.0-or-later",
+  "upload_type": "software",
+  "keywords": [
+    "Latvian",
+    "morphology",
+    "natural language processing",
+    "tokenization",
+    "morphological tagging",
+    "lemmatization",
+    "conditional random fields",
+    "Python port",
+    "under-resourced languages"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/PeterisP/morphology",
+      "relation": "isDerivedFrom",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://github.com/LUMII-AILab/Webservices",
+      "relation": "isDerivedFrom",
+      "resource_type": "software"
+    }
+  ],
+  "communities": []
+}
