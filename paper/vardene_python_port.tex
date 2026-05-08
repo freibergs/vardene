@@ -80,16 +80,24 @@ moving a mature corpus-linguistic codebase between languages: which patterns
 translate cleanly, which idioms become bottlenecks, and what the resulting
 accuracy/performance/footprint envelope looks like.
 
-\paragraph{Scope.} The original Java repository ships only the morphological
-\emph{engine}: \texttt{Analyzer.analyze()} returns the candidate readings
-ranked by an additive scoring rule (\texttt{Word.getBestWordform()}). The
-production tagger that backs \texttt{api.tezaurs.lv}'s
+\paragraph{Scope.} Two upstream Java repositories were ported:
+\texttt{PeterisP/morphology} (the morphology engine itself, $\sim$9.3\,kLOC) and
+\texttt{LUMII-AILab/Webservices} \cite{lumii_webservices} (the HTTP service
+layer that exposes the engine at \texttt{api.tezaurs.lv}, $\sim$3\,kLOC,
+also GPL-3.0). The first ships the algorithmic core
+(\texttt{Analyzer.analyze()} returns the candidate readings ranked by an
+additive scoring rule \texttt{Word.getBestWordform()}); the second wraps it
+in 16 HTTP routes including the multi-word phrase inflectors, personal-name
+inflector, valency-tag annotation tool, and paradigm-suitability scorer.
+
+The production tagger that backs \texttt{api.tezaurs.lv}'s
 \texttt{/morphotagger} endpoint --- which contributes the published 92.8\,\%
-tag accuracy --- is a separate downstream project (\texttt{LVTagger}) that
-consumes the morphology library's output and re-ranks via a
-sentence-level CMM/CRF tagger. We port the morphology engine in full and
-additionally train a sentence-level disambiguator from the same gold corpus
-that LVTagger was trained on.
+tag accuracy --- is a third, separate project (\texttt{LVTagger}) that
+consumes the morphology library's output and re-ranks via a sentence-level
+CMM/CRF tagger. We port the morphology engine and the HTTP service layer
+in full, and additionally train a Python-native sentence-level
+disambiguator from the same gold corpus that LVTagger was trained on, since
+\texttt{LVTagger} itself is not part of either Java repository.
 
 \section{Architecture}
 
@@ -98,29 +106,34 @@ that LVTagger was trained on.
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{lrrp{5.5cm}}
+\begin{tabular}{lrrp{5cm}}
 \toprule
 \textbf{Component} & \textbf{Java LOC} & \textbf{Python LOC} & \textbf{Notes} \\
 \midrule
-Mijas LV (stem alternations) & 3{,}500 & 1{,}133 & LV cases (analysis + inflection) \\
-Mijas LTG (Latgalian) & --- & 762 & LTG cases + LTG-specific helpers \\
-Mijas DSL (shared) & --- & 81 & \texttt{SuffixRule}, \texttt{\_apply\_first/\_all} \\
-Analyzer & 1{,}124 & 1{,}289 & Analysis, prefix stripping, guessing, overrides \\
-Trie (tokenizer) & 564 & 510 & 12 automata + user exceptions \\
+Mijas LV (stem alternations) & 3{,}500 & 1{,}140 & LV cases (analysis + inflection) \\
+Mijas LTG (Latgalian) & --- & 802 & LTG cases + LTG-specific helpers \\
+Mijas DSL (shared) & --- & 82 & \texttt{SuffixRule}, \texttt{\_apply\_first/\_all} \\
+Analyzer & 1{,}124 & 1{,}368 & Analysis, prefix stripping, guessing, overrides, \texttt{suitable\_paradigms} \\
+Trie + Splitting (tokenizer) & 820 & 762 & 12 automata + user exceptions + tokenizer state machine \\
 Attributes/TagSet & 240 & 260 & Multi-value matcher, reverse-index \\
-Paradigm/Endings & 200 & 238 & 109 paradigms, 5938 endings \\
-MarkupConverter & 884 & 231 & Position-tag emit / parse \\
-Lexicon & 220 & 182 & Lazy lemma/id/paradigm indexes \\
-Inflector & 750 & 188 & Forward generation with negation \\
-Statistics & 50 & 100 & Additive $0.1 + ef + lf \cdot 1000$ \\
+Paradigm/Endings & 200 & 248 & 109 paradigms, 5938 endings \\
+MarkupConverter & 884 & 228 & Position-tag emit / parse \\
+Lexicon & 220 & 187 & Lazy lemma/id/paradigm indexes \\
+Inflector & 750 & 187 & Forward generation with negation \\
+Phrase / People / Valency & 350 & 484 & Multi-word inflection + valency tags \\
+Statistics & 50 & 99 & Additive $0.1 + ef + lf \cdot 1000$ \\
 Wordform / Variants / Other & 1{,}784 & 219 & Various data classes \\
 \midrule
-\textbf{Total runtime engine} & \textbf{9{,}316} & \textbf{5{,}193} & \textbf{Python is 44\,\% smaller} \\
+\textbf{Total runtime engine} & \textbf{9{,}922} & \textbf{6{,}066} & \textbf{Python is 39\,\% smaller} \\
 \bottomrule
 \end{tabular}
-\caption{Source size by component. Counts exclude the disambiguator
-(\texttt{crf\_tagger.py}, 527 LOC, an addition that has no Java counterpart
-in the morphology repo). The Mija engine is split across three files
+\caption{Source size by component, both upstream Java repositories
+combined: \texttt{PeterisP/morphology} (engine) plus
+\texttt{LUMII-AILab/Webservices} (HTTP service layer routes that the port
+folds into the same package: \texttt{phrase.py}, \texttt{valency.py},
+\texttt{Analyzer.suitable\_paradigms}). Counts exclude the disambiguator
+(\texttt{crf\_tagger.py}, 526 LOC, an addition with no Java counterpart in
+either repo). The Mija engine is split across three files
 (\texttt{mijas.py} for LV, \texttt{mijas\_ltg.py} for Latgalian, plus a
 small \texttt{mijas\_dsl.py} of shared \texttt{SuffixRule} primitives).}
 \label{tab:loc}
@@ -135,6 +148,42 @@ shared resolver;
 (iii) Java's XML parsing and serialisation classes are absent in our port:
 all reference data is pre-extracted to \texttt{Parquet} (lexemes) and
 \texttt{JSON} (paradigms, tagset, statistics) at build time.
+
+\subsection{HTTP service layer}
+
+The upstream HTTP layer at \texttt{api.tezaurs.lv} lives in a sibling
+open-source repository \cite{lumii_webservices}. We port every route in
+its 2.5.15 spec --- 16 endpoints in total --- to a single Flask
+application (\texttt{api/app.py}, 291 LOC) backed by three new engine
+modules:
+\begin{itemize}
+\item \texttt{splitting.py} (250 LOC) --- full state-machine port of
+  \texttt{Splitting.java}: tokenizer over the 12 \texttt{Trie}
+  automata, plus \texttt{tokenize\_sentences}.
+\item \texttt{phrase.py} (345 LOC) --- multi-word noun-phrase
+  declension and personal-name inflection (driving
+  \texttt{/inflect\_phrase}, \texttt{/normalize\_phrase}, and
+  \texttt{/inflect\_people/json}).
+\item \texttt{valency.py} (139 LOC) --- port of
+  \texttt{VerbResource.java} and \texttt{NonVerbResource.java}: a
+  morphology-only heuristic that emits valency-relevant tags
+  (\texttt{V1}/\texttt{V2}/\texttt{V3}, case codes, \texttt{Adv},
+  \texttt{S}) for the verb-valency annotation tool.
+\end{itemize}
+\noindent
+\texttt{Analyzer.suitable\_paradigms} ports \texttt{suitableParadigms}
+plus \texttt{ParadigmFrequencyComparator} for the
+\texttt{/suitable\_paradigm} endpoint.
+
+A non-obvious upstream behaviour the port had to reproduce: Java's
+\texttt{Paradigm.addLexeme} silently registers every multi-character
+lemma containing whitespace, period, slash, apostrophe, or a digit as a
+tokenizer-trie exception (\texttt{plkst.}, \texttt{u.c.},
+\texttt{t.i.}, \texttt{A/S}, $\dots$). Without this hook our
+tokenizer split \texttt{plkst.} into \texttt{plkst} + \texttt{.}; with
+it, the upstream 1{,}622-entry abbreviation list is honoured and the
+tokenizer matches \texttt{api.tezaurs.lv} byte-for-byte on every
+canonical test case.
 
 \subsection{Disambiguator (Python-only addition)}
 
@@ -164,9 +213,12 @@ The hierarchical decomposition was necessary because a single full-tag CRF
 
 \subsection{Parity testing}
 
-Throughout the port we maintained a regression suite of 41 tests covering
-unit behaviour (Mijas, Trie, Attributes, Paradigm, Inflector, MarkupConverter)
-and corpus parity (\texttt{train.txt} from the LVTagger repository).
+Throughout the port we maintained a regression suite of 65 tests covering
+unit behaviour (Mijas, Trie, Attributes, Paradigm, Inflector,
+MarkupConverter), tokenizer parity (Splitting state machine + 1{,}622
+lexicon abbreviations), HTTP API smoke tests, multi-word phrase
+inflection, valency-tag annotation, and corpus parity
+(\texttt{train.txt} from the LVTagger repository).
 
 We measure three metrics per token: lemma match (case-insensitive against the
 gold lemma), full tag match, and POS match (first character only). Single-word
@@ -419,15 +471,17 @@ released under GPL-3.0 (matching the upstream Java repository).
 \begin{itemize}
 \item Source: data-extraction tools (\texttt{tools/}) and runtime engine
   (\texttt{vardene/}) total 5{,}721 LOC plus 800 LOC of pipeline code.
-\item HTTP service: a Flask app at full parity with
-  \texttt{api.tezaurs.lv}. Wraps the engine plus a port of the FSA
-  tokenizer (\texttt{Splitting.java}), the paradigm-suitability
-  scorer, and short multi-word helpers for phrase and personal-name
-  inflection.
-\item Test suite: 58 tests, all passing as of submission. Includes 9
+\item HTTP service: a Flask app at 100\,\% parity with
+  \texttt{api.tezaurs.lv} 2.5.15 (16 routes, ported from the
+  \texttt{LUMII-AILab/Webservices} repo). Includes the
+  \texttt{Splitting.java} tokenizer state machine, the
+  paradigm-suitability scorer, multi-word phrase and personal-name
+  inflectors, and the valency-tag annotator.
+\item Test suite: 65 tests, all passing as of submission. Includes 9
   parity tests against the gold corpus, 7 canonical-word acceptance
-  tests, 17 tests covering the HTTP layer (tokenizer, phrase inflection,
-  suitable-paradigm scorer, endpoint smoke tests).
+  tests, and 24 tests covering the HTTP layer (tokenizer, phrase
+  inflection, suitable-paradigm scorer, valency tags, endpoint smoke
+  tests).
 \item Models: POS CRF, subtag CRF, per-POS classifier (\texttt{float32}),
   tag-bigram Viterbi transitions, and the four override JSON tables ship as
   package data.
@@ -476,6 +530,12 @@ Paikens, P. (2013).
 Paikens, P., Rituma, L., Pretkalniņa, L. (2018).
 \textit{Latvian Morphological Analyser}.
 \url{https://github.com/PeterisP/morphology}.
+
+\bibitem{lumii_webservices}
+LU MII AI Lab.
+\textit{LUMII-AILab/Webservices: Morphology and transliteration HTTP
+services backing api.tezaurs.lv}.
+\url{https://github.com/LUMII-AILab/Webservices}.
 
 \bibitem{defazio2014}
 Defazio, A., Bach, F., Lacoste-Julien, S. (2014).

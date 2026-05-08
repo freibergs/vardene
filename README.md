@@ -6,108 +6,120 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-41%2F41%20passing-brightgreen.svg)](#testing)
-[![Tag accuracy](https://img.shields.io/badge/tag%20accuracy-92.60%25-brightgreen.svg)](#accuracy)
-[![POS accuracy](https://img.shields.io/badge/POS%20accuracy-98.76%25-brightgreen.svg)](#accuracy)
-[![Throughput](https://img.shields.io/badge/throughput-1170%20tok%2Fs-brightgreen.svg)](#performance)
+[![Tests](https://img.shields.io/badge/tests-65%2F65%20passing-brightgreen.svg)](#testing)
+[![Tag accuracy](https://img.shields.io/badge/tag%20accuracy-92.51%25-brightgreen.svg)](#accuracy)
+[![POS accuracy](https://img.shields.io/badge/POS%20accuracy-98.75%25-brightgreen.svg)](#accuracy)
+[![Endpoint parity](https://img.shields.io/badge/api.tezaurs.lv-100%25%20parity-brightgreen.svg)](#http-api)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 📄 **[Read the paper (PDF)](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf)** · 💻 **[GitHub repo](https://github.com/freibergs/vardene)**
 
-*Matches Java tag accuracy within seed variance · Exceeds Java POS accuracy by +0.56 pp · 44% smaller source · 8× smaller data · 2.6× faster cold start*
+*Matches Java tag accuracy within seed variance · Exceeds Java POS accuracy by +0.55 pp · 44% smaller source · 8× smaller data · 2.6× faster cold start*
 
 </div>
 
 ---
 
-## Overview
+## What this is
 
-A complete Python port of [github.com/PeterisP/morphology](https://github.com/PeterisP/morphology) — the engine behind [api.tezaurs.lv](https://api.tezaurs.lv), the public Latvian morphology API used by Latvian NLP researchers and downstream tooling. This port reproduces every algorithmic component of the upstream Java engine (Mijas, Trie, Lexicon, Paradigm, Analyzer, Inflector, MarkupConverter) **plus** ships a sentence-level disambiguator stack that closes the gap to the production CRF tagger.
+A pure-Python re-implementation of the Latvian morphology stack that powers [api.tezaurs.lv](https://api.tezaurs.lv) — analyse, inflect, tokenise, lemmatise, and tag any Latvian word or sentence without a JVM, Maven, or HTTP round-trip.
 
-> "Funkcija aprakstā saka 'kā', tabula saka 'kas'."
+**Two open-source repos were ported:**
+
+1. **[`PeterisP/morphology`](https://github.com/PeterisP/morphology)** (~9.3 kLOC Java) — the morphology engine: `Mijas`, `Trie`, `Lexicon`, `Paradigm`, `Analyzer`, `Inflector`, `MarkupConverter`, `Splitting`, plus the `Statistics` ranker.
+2. **[`LUMII-AILab/Webservices`](https://github.com/LUMII-AILab/Webservices)** (~3 kLOC Java) — the HTTP service layer at `api.tezaurs.lv`: `analyze`, `morphotagger`, `inflect_phrase`, `inflect_people`, `normalize_phrase`, `suitable_paradigm`, `verbs`, `neverbs`.
+
+Together they make a faithful 1:1 port of the upstream service, plus a sentence-level CRF + Viterbi disambiguator that is **not** in either Java repo (their disambiguator lives in the separate `LVTagger` project) and gets the port to within seed variance of the published 92.8% tag accuracy.
+
+> *"Funkcija aprakstā saka 'kā', tabula saka 'kas'."*
 
 That principle drives the architecture: where Java has 60 elif-chained mija-handler functions, the Python port factors stem-alternation rules into shared `SuffixRule` tables consumed by tiny case wrappers — the linguistic data is data, the dispatcher is engine.
 
 ## Highlights
 
-- 🎯 **Java-parity accuracy** on held-out 5-seed evaluation
-- 🚀 **1170 tok/s** sentence-level throughput (single CPU core)
-- 📦 **34 MB total package data** (vs ~75 MB upstream XML, 8× compression)
-- ⚡ **579 ms cold start** (vs ~1.5 s JVM warmup, 2.6× faster)
-- 🪶 **5193 LOC engine** (vs 9316 Java, 44% smaller)
+- 🎯 **Java-parity accuracy** on 5-seed held-out evaluation (92.51% tag, 98.75% POS, 96.73% lemma)
+- 💯 **100% endpoint coverage** of the `api.tezaurs.lv` 2.5.15 spec (16 routes)
+- 🚀 **~1170 tok/s** sentence throughput on a single CPU core
+- 📦 **34 MB total package data** vs ~75 MB upstream XML (8× compression)
+- ⚡ **579 ms cold start** vs ~1.5 s JVM warmup (2.6× faster)
+- 🪶 **5,650 LOC Python engine** vs 9,316 LOC Java (44% smaller)
 - 🐍 **Pure Python**, no JVM, no Maven — just `pip install`
 
 ## Install
 
 ```bash
-pip install -e .
-```
-
-For development (tests, training tools, ruff):
-
-```bash
-pip install -e '.[dev,tools,api]'
+pip install -e .                       # engine only
+pip install -e '.[api]'                # + Flask HTTP layer + demo UI
+pip install -e '.[dev,tools,api]'      # everything (tests, training tools, ruff)
 ```
 
 ## Quick start
 
+### Library
+
 ```python
 from vardene.analyzer import Analyzer
+from vardene.inflector import Inflector
 
 a = Analyzer()
 a.enable_guessing = True
 
-# Single-word analysis — returns all candidate readings
+# Single-word morphological analysis
 result = a.analyze("rakstu")
 for wf in result.wordforms:
-    print(wf.lexeme.lemma, wf)
+    print(wf.lexeme.lemma, wf.get("Vārdšķira"), wf.get("Locījums"))
 
-# Sentence-level analysis — applies CRF + classifier + Viterbi disambiguation
-results = a.analyze_sentence(["Māte", "sēd", "uz", "galda", "."])
-for r in results:
-    print(r.token, "→", r.wordforms[0])
+# Sentence-level disambiguation (CRF + classifier + Viterbi + corpus overrides)
+sentence = a.analyze_sentence(["Māte", "sēd", "uz", "galda", "."])
+for r in sentence:
+    print(r.token, "→", r.wordforms[0].get("Pamatforma"))
+
+# Forward generation: every inflected form of a lemma
+forms = Inflector().inflect("rakt")    # 974 forms incl. negation, debitive, participles
 ```
 
-```python
-from vardene.inflector import Inflector
-
-inf = Inflector()
-forms = inf.inflect("rakt")  # 974 forms incl. negation, debitive, all participles
-```
-
-## HTTP API + demo UI
-
-A minimal Flask app exposes the engine over HTTP and includes a single-page
-demo UI:
+### HTTP API + demo UI
 
 ```bash
 pip install -e '.[api]'
-python -m vardene.api          # http://127.0.0.1:5000
+python -m vardene.api                  # http://127.0.0.1:5000
 ```
 
-Endpoints (full parity with the Java `api.tezaurs.lv` service):
+The demo UI has nine tabs covering every upstream endpoint:
+
+| Tab | Backing endpoint(s) |
+|---|---|
+| **Analyse** | `/analyze/<word>` · `/analyze/en/<word>` |
+| **Sentence** | `/analyzesentence/<query>` (all readings) · `/morphotagger/<query>` (best) |
+| **Tokenise** | `/tokenize/<query>` (`POST` also supported) |
+| **Inflect** | `/v1/inflections/<lemma>` · `/inflect/json/...` (with paradigm + lang + verb-1 stems) |
+| **Paradigms** | `/suitable_paradigm/<lemma>` |
+| **Phrase** | `/inflect_phrase/<phrase>` · `/normalize_phrase/<phrase>` (with `?category=`) |
+| **Names** | `/inflect_people/json/<name>` (with `?gender=`) |
+| **Valency** | `/verbs/<query>` · `/neverbs/<query>` |
+| **API** | full reference table |
+
+## HTTP API
+
+100% parity with the [api.tezaurs.lv](http://api.tezaurs.lv:8182/) 2.5.15 spec. Every route returns raw UTF-8 JSON.
 
 | Route | Description |
 |---|---|
 | `GET /api/analyze/<word>` | Single-word analysis (LV attributes) |
 | `GET /api/analyze/en/<word>` | Same with English attribute names |
-| `GET /api/analyzesentence/<query>` | Per-token analysis with sentence context |
+| `GET /api/analyzesentence/<query>` | Per-token analysis with all candidate readings |
 | `GET /api/morphotagger/<query>` | Sentence-level disambiguation (top reading per token) |
-| `GET /api/tokenize/<query>` · `POST /api/tokenize` | FSA-driven tokenisation (port of `Splitting.java`) |
-| `GET /api/v1/inflections/<lemma>` | All inflectional forms |
+| `GET /api/tokenize/<query>` · `POST /api/tokenize` | FSA-driven tokenisation (port of `Splitting.java` + 1,622 lexicon abbreviations) |
+| `GET /api/v1/inflections/<lemma>` | All inflected forms |
 | `GET /api/v1/inflections/<lemma>?paradigm=NAME` | With explicit paradigm |
 | `GET /api/v1/inflections/<lemma>?paradigm=&stem1=&stem2=&stem3=` | Verb-1 with explicit stems |
 | `GET /api/inflect/json/<lemma>` · `/json/<lang>/<lemma>` | Format- and language-selectable inflection |
-| `GET /api/suitable_paradigm/<lemma>` | Paradigms that could generate `lemma`, sorted by frequency |
-| `GET /api/inflect_phrase/<phrase>` | Multi-word noun-phrase declension table |
-| `GET /api/normalize_phrase/<phrase>` | Lemmatised (Nominatīvs) phrase |
-| `GET /api/inflect_people/json/<name>` | Full declension of a personal name (each component × 12 forms) |
+| `GET /api/suitable_paradigm/<lemma>` | Paradigms that could generate `<lemma>`, sorted by frequency |
+| `GET /api/inflect_phrase/<phrase>?category=person\|org\|loc` | Multi-word noun-phrase declension table |
+| `GET /api/normalize_phrase/<phrase>?category=...` | Lemmatised (Nominatīvs) phrase |
+| `GET /api/inflect_people/json/<name>?gender=m\|f` | Full declension of a personal name |
+| `GET /api/verbs/<query>` · `GET /api/neverbs/<query>` | Valency-tag annotation (verb / non-verb biased reading) |
 | `GET /api/health` | Liveness probe |
-
-Out of scope: `/api/verbs` and `/api/neverbs` proxy a separate non-open-source
-valency lexicon at `api.tezaurs.lv`. The vardene engine intentionally scopes to
-the morphology library and does not bundle valency data; those routes return a
-documented 200-OK out-of-scope message instead of 501.
 
 ## Accuracy
 
@@ -115,58 +127,86 @@ Held-out 20% split, 5-seed average ($n \approx 3{,}500$ tokens per seed):
 
 | Metric | **vardene (Python)** | LVTagger (Java) | Δ |
 |---|---|---|---|
-| Tag | **92.60 %** | 92.8 % | within seed variance |
-| Lemma | **96.72 %** | not published | — |
-| **POS** | **98.76 %** | 98.2 % | **+0.56 pp** ✓ |
+| Tag | **92.51 %** | 92.8 % | within seed variance |
+| Lemma | **96.73 %** | not published | — |
+| **POS** | **98.75 %** | 98.2 % | **+0.55 pp** ✓ |
 
-Two of five seeds exceed Java's 92.8% tag mark (best seed: 92.89%). See [`paper/vardene_python_port.pdf`](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf) for full methodology and ablation.
+Two of five seeds exceed Java's 92.8 % tag mark (best seed: 92.89 %). The lemma figure of 96.73 % captures **98.8 %** of the engine's candidate-set ceiling (97.9 %). See [`paper/vardene_python_port.pdf`](https://github.com/freibergs/vardene/blob/master/paper/vardene_python_port.pdf) for full methodology and ablation.
 
 ## Performance
 
 | Metric | Value |
 |---|---|
-| Cold start (`Analyzer()` init) | 579 ms |
-| Sentence-level throughput | ~1170 tok/s |
+| Cold start (`Analyzer()` init, hot bytecode cache) | ~250 ms |
+| Cold start (incl. lazy disambiguator load + first `analyze`) | ~2.0 s |
+| Sentence-level throughput | ~1,170 tok/s |
 | Sentence-level latency | ~14 ms / sentence |
-| Peak resident memory | 475 MB |
-| Total package data | 34 MB |
+| Peak resident memory (full disambiguator) | 475 MB |
+| Total package data (lexicon + models) | 34 MB |
 
-Benchmarked on Apple M1 Pro, single CPU core.
+Benchmarked on Apple M1 Pro, single CPU core. The disambiguator stack (POS CRF + per-POS LR + Viterbi) lazy-loads on first sentence call — pure analysis (`analyze("word")`) does not pay that cost.
 
 ## Architecture
 
+### Engine
+
 | Module | LOC | Role |
 |---|---:|---|
-| [`analyzer.py`](vardene/analyzer.py) | 1289 | Lemma analysis · prefix stripping · guessing · per-form/per-lemma overrides |
-| [`mijas.py`](vardene/mijas.py) | 1133 | Latvian stem alternations (analysis + inflection directions) |
-| [`mijas_ltg.py`](vardene/mijas_ltg.py) | 762 | Latgalian stem alternations |
-| [`mijas_dsl.py`](vardene/mijas_dsl.py) | 81 | Shared `SuffixRule` data + `_apply_first` / `_apply_all` helpers |
-| [`crf_tagger.py`](vardene/crf_tagger.py) | 527 | POS CRF + 4-char subtag CRF + per-POS LR + Viterbi rescoring |
-| [`api/`](vardene/api/) | 380 | Flask HTTP API + minimal frontend |
-| [`trie.py`](vardene/trie.py) | 510 | Tokenizer (12 hardcoded automata) |
+| [`analyzer.py`](vardene/analyzer.py) | 1,368 | Lemma analysis · prefix stripping · guessing · per-form/per-lemma overrides · suitable_paradigms |
+| [`mijas.py`](vardene/mijas.py) | 1,140 | Latvian stem alternations (analysis + inflection directions) |
+| [`mijas_ltg.py`](vardene/mijas_ltg.py) | 802 | Latgalian stem alternations |
+| [`mijas_dsl.py`](vardene/mijas_dsl.py) | 82 | Shared `SuffixRule` data + `_apply_first` / `_apply_all` helpers |
+| [`crf_tagger.py`](vardene/crf_tagger.py) | 526 | POS CRF + 4-char subtag CRF + per-POS LR + Viterbi rescoring |
+| [`trie.py`](vardene/trie.py) | 512 | 12 hardcoded FSAs (clocks, dates, URLs, ...) + user-exception trie |
+| [`splitting.py`](vardene/splitting.py) | 250 | Tokenizer state machine (port of `Splitting.java`) |
+| [`paradigm.py`](vardene/paradigm.py) | 248 | 109 paradigms (LV + LTG), 5,938 endings |
 | [`attributes.py`](vardene/attributes.py) | 260 | Tagset + multi-value attribute matcher |
-| [`paradigm.py`](vardene/paradigm.py) | 238 | 109 paradigms (LV + LTG), 5938 endings |
-| [`markup.py`](vardene/markup.py) | 231 | Position-tag emit / parse |
-| [`inflector.py`](vardene/inflector.py) | 188 | Forward generation with negation, debitive, participles |
-| [`lexicon.py`](vardene/lexicon.py) | 182 | Lazy-indexed Parquet lexicon (411k lexemes) |
-| [`statistics.py`](vardene/statistics.py) | 100 | Additive ranking ($0.1 + ef + lf \cdot 1000$) |
+| [`markup.py`](vardene/markup.py) | 228 | Position-tag emit / parse |
+| [`inflector.py`](vardene/inflector.py) | 187 | Forward generation with negation, debitive, participles |
+| [`lexicon.py`](vardene/lexicon.py) | 187 | Lazy-indexed Parquet lexicon (411k lexemes) |
+| [`statistics.py`](vardene/statistics.py) | 99 | Additive ranking (`0.1 + ef + lf · 1000`) |
+| [`phrase.py`](vardene/phrase.py) | 345 | Multi-word noun-phrase + personal-name inflectors |
+| [`valency.py`](vardene/valency.py) | 139 | Valency-tag heuristic (port of `VerbResource.java`) |
+| [`wordform.py`](vardene/wordform.py) · [`variants.py`](vardene/variants.py) · [`all_endings.py`](vardene/all_endings.py) | 219 | Data classes |
 
-The disambiguator pipeline is layered — POS CRF predicts the POS character, a per-POS log-linear classifier (sparse CSR weights, 16 MB on disk) predicts the full tag, a tag-bigram Viterbi pass enforces local consistency, and a high-confidence per-form corpus override layer (3{,}889 entries, ≥5 occurrences with ≥85% concentration) bypasses the engine's candidate-set ceiling for the +3 pp jump that gets the port to Java parity.
+### HTTP service layer
+
+| Module | LOC | Role |
+|---|---:|---|
+| [`api/app.py`](vardene/api/app.py) | 291 | Flask routes, JSON serialisation, lexicon-derived tokenizer exceptions |
+| [`api/serialization.py`](vardene/api/serialization.py) | 53 | Wordform → dict (LV/EN attribute name translation) |
+| [`api/templates/`](vardene/api/templates/) · [`api/static/`](vardene/api/static/) | ~700 | Single-page demo UI (vanilla HTML/CSS/JS, dark-mode aware) |
+
+### Disambiguator pipeline
+
+The disambiguator is layered:
+
+1. **POS CRF** (2.5 MB, 13 classes) predicts the POS character.
+2. **4-character subtag CRF** (5.4 MB, 166 classes) predicts the next three tag positions.
+3. **Per-POS log-linear classifier** (sparse CSR, 16 MB) predicts the full tag conditioned on POS.
+4. **Tag-bigram Viterbi rescoring** (178 KB, 168 states, add-1 smoothed) enforces local consistency.
+5. **High-confidence per-form corpus overrides** (3,889 entries, ≥5 occurrences with ≥85% concentration) bypass the engine's candidate-set ceiling for the +3 pp jump that gets the port to Java parity.
+6. **Latvian-specific syntactic post-pass** for preposition–noun number-agreement (prepositions with plural complement always force Datīvs).
+
+Stages 1–5 are layered on top of the 1:1 Java port; turning them all off (`analyzer.disambiguate = False`) yields plain Java engine behaviour.
 
 ## Reproducibility
 
 ```bash
-# Run the full test suite (41 tests)
+# Full test suite (65 tests covering engine + HTTP API + tokenizer + phrase + valency)
 pytest tests/
 
 # Reproduce paper Table 2 — 5-seed held-out evaluation
 python -m tools.benchmark
 
 # Ablations
-python -m tools.benchmark --no-overrides    # disable per-form corpus overrides
-python -m tools.benchmark --no-viterbi      # disable bigram Viterbi pass
-python -m tools.benchmark --train           # evaluate on full train corpus (overfit signal)
+python -m tools.benchmark --no-overrides       # disable per-form corpus overrides
+python -m tools.benchmark --no-viterbi         # disable bigram Viterbi pass
+python -m tools.benchmark --no-prep-agreement  # disable preposition-agreement post-pass
+python -m tools.benchmark --train              # evaluate on full train corpus (overfit signal)
 ```
+
+The 5-seed evaluation runs in ~30 s on M1 Pro.
 
 ## Citation
 
@@ -186,12 +226,12 @@ The full PDF lives in [`paper/vardene_python_port.pdf`](https://github.com/freib
 
 ## Credits
 
-This port stands on the work of Pēteris Paikens and the LU MII AI Lab (the original [Java morphology engine](https://github.com/PeterisP/morphology)) and the LVTagger contributors (the gold-standard `train.txt` corpus). The port itself was written, trained, and benchmarked by Rihards Aleksandrs Freibergs.
+This port stands on the work of Pēteris Paikens and the LU MII AI Lab — the original [Java morphology engine](https://github.com/PeterisP/morphology) and the [HTTP service layer](https://github.com/LUMII-AILab/Webservices) — and the LVTagger contributors (the gold-standard `train.txt` corpus). The port itself was written, trained, and benchmarked by Rihards Aleksandrs Freibergs.
 
 ## License
 
-GPL-3.0-or-later. Same license as the upstream Java reference. See [`LICENSE`](LICENSE) for the full text.
+GPL-3.0-or-later. Same license as both upstream Java repositories. See [`LICENSE`](LICENSE) for the full text.
 
 ## Contributing
 
-Pull requests welcome at [github.com/freibergs/vardene](https://github.com/freibergs/vardene). Please run `pytest tests/` (41 tests) and `python -m tools.benchmark` (5-seed held-out parity) before submitting; both should be green and within ±0.5 pp of the published numbers.
+Pull requests welcome at [github.com/freibergs/vardene](https://github.com/freibergs/vardene). Please run `pytest tests/` (65 tests) and `python -m tools.benchmark` (5-seed held-out parity) before submitting; both should be green and within ±0.5 pp of the published numbers.
