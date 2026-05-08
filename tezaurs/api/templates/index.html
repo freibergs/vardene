@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tezaurs — Latvian morphology</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>tezaurs</h1>
+    <p class="tagline">Latvian morphological analysis — Python port of the LU MII engine</p>
+  </header>
+
+  <main>
+    <nav class="tabs">
+      <button class="tab active" data-tab="analyze">Analyse</button>
+      <button class="tab" data-tab="sentence">Sentence</button>
+      <button class="tab" data-tab="inflect">Inflect</button>
+      <button class="tab" data-tab="api">API</button>
+    </nav>
+
+    <section id="tab-analyze" class="panel active">
+      <label for="word-input">Word</label>
+      <div class="input-row">
+        <input id="word-input" type="text" placeholder="rakstu" autocomplete="off">
+        <button id="analyze-btn" class="primary">Analyse</button>
+      </div>
+      <div id="analyze-output" class="output"></div>
+    </section>
+
+    <section id="tab-sentence" class="panel">
+      <label for="sentence-input">Sentence</label>
+      <div class="input-row">
+        <input id="sentence-input" type="text" placeholder="Māte sēd uz galda." autocomplete="off">
+        <button id="sentence-btn" class="primary">Analyse</button>
+      </div>
+      <div id="sentence-output" class="output"></div>
+    </section>
+
+    <section id="tab-inflect" class="panel">
+      <label for="lemma-input">Lemma</label>
+      <div class="input-row">
+        <input id="lemma-input" type="text" placeholder="rakt" autocomplete="off">
+        <button id="inflect-btn" class="primary">Inflect</button>
+      </div>
+      <div id="inflect-output" class="output"></div>
+    </section>
+
+    <section id="tab-api" class="panel">
+      <h2>HTTP API</h2>
+      <p>All endpoints return JSON. Tokenisation in <code>/analyzesentence</code> and <code>/morphotagger</code> uses a lightweight whitespace + punctuation regex; a port of <code>Splitting.java</code> is pending.</p>
+      <table class="api-table">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td><code>/api/analyze/&lt;word&gt;</code></td><td>Single-word analysis (LV attributes)</td></tr>
+          <tr><td>GET</td><td><code>/api/analyze/en/&lt;word&gt;</code></td><td>Same with English attribute names</td></tr>
+          <tr><td>GET</td><td><code>/api/analyzesentence/&lt;query&gt;</code></td><td>Per-token analysis with sentence context</td></tr>
+          <tr><td>GET</td><td><code>/api/morphotagger/&lt;query&gt;</code></td><td>Sentence-level disambiguation (best reading per token)</td></tr>
+          <tr><td>GET</td><td><code>/api/tokenize/&lt;query&gt;</code></td><td>Tokenise a sentence</td></tr>
+          <tr><td>POST</td><td><code>/api/tokenize</code></td><td>Same with body <code>{"text": "..."}</code></td></tr>
+          <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;</code></td><td>All inflectional forms of a lemma</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;?paradigm=&lt;name&gt;</code></td><td>With explicit paradigm</td></tr>
+          <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;?paradigm=&amp;stem1=&amp;stem2=&amp;stem3=</code></td><td>Verb-1 with explicit stems</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect/json/&lt;lemma&gt;</code></td><td>Format-selectable inflection (JSON only at the moment)</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect/json/&lt;lang&gt;/&lt;lemma&gt;</code></td><td>With language filter (<code>lv</code>/<code>ltg</code>)</td></tr>
+          <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness probe</td></tr>
+        </tbody>
+      </table>
+      <h3>Pending (501 Not Implemented)</h3>
+      <ul class="pending">
+        <li><code>/api/verbs</code>, <code>/api/neverbs</code> — external valency annotation tool</li>
+        <li><code>/api/suitable_paradigm</code> — paradigm suitability scorer</li>
+        <li><code>/api/inflect_people</code> — person-name inflector</li>
+        <li><code>/api/inflect_phrase</code>, <code>/api/normalize_phrase</code> — multi-word entity inflection / normalisation</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <a href="https://github.com/" target="_blank">GitHub</a> ·
+    GPL-3.0 · Engine port by Rihards Aleksandrs Freibergs
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

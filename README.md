@@ -116,6 +116,39 @@ Benchmarked on Apple M1 Pro, single CPU core.
 
 The disambiguator pipeline is layered — POS CRF predicts the POS character, a per-POS log-linear classifier (sparse CSR weights, 16 MB on disk) predicts the full tag, a tag-bigram Viterbi pass enforces local consistency, and a high-confidence per-form corpus override layer (3{,}889 entries, ≥5 occurrences with ≥85% concentration) bypasses the engine's candidate-set ceiling for the +3 pp jump that gets the port to Java parity.
 
+## HTTP API + demo UI
+
+A minimal Flask app exposes the engine over HTTP and includes a single-page
+demo UI:
+
+```bash
+pip install -e '.[api]'
+python -m tezaurs.api          # http://127.0.0.1:5000
+```
+
+Endpoints (parity with the Java `api.tezaurs.lv` service where the underlying
+engine supports it; 6 specialised routes return 501 until their upstream
+modules are ported):
+
+| Route | Description |
+|---|---|
+| `GET /api/analyze/<word>` | Single-word analysis (LV attributes) |
+| `GET /api/analyze/en/<word>` | Same with English attribute names |
+| `GET /api/analyzesentence/<query>` | Per-token analysis with sentence context |
+| `GET /api/morphotagger/<query>` | Sentence-level disambiguation (top reading per token) |
+| `GET /api/tokenize/<query>` · `POST /api/tokenize` | Tokenisation |
+| `GET /api/v1/inflections/<lemma>` | All inflectional forms |
+| `GET /api/v1/inflections/<lemma>?paradigm=NAME` | With explicit paradigm |
+| `GET /api/v1/inflections/<lemma>?paradigm=&stem1=&stem2=&stem3=` | Verb-1 with explicit stems |
+| `GET /api/inflect/json/<lemma>` · `/json/<lang>/<lemma>` | Format- and language-selectable inflection |
+| `GET /api/health` | Liveness probe |
+
+Pending (501 Not Implemented): `/api/verbs`, `/api/neverbs`,
+`/api/suitable_paradigm`, `/api/inflect_people`, `/api/inflect_phrase`,
+`/api/normalize_phrase` — these wrap upstream modules (verb-valency tool,
+paradigm scorer, person-name inflector, multi-word entity inflection)
+that have not yet been ported.
+
 ## Reproducibility
 
 ```bash

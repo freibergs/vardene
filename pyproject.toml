@@ -16,10 +16,14 @@ dependencies = [
 tools = [
     "lxml>=5.0",
 ]
+api = [
+    "flask>=3.0",
+]
 dev = [
     "lxml>=5.0",
     "pytest>=8.0",
     "ruff>=0.5",
+    "flask>=3.0",
 ]
 
 [project.scripts]
