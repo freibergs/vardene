@@ -207,6 +207,10 @@ class Analyzer:
                 if target is None:
                     continue
                 _apply_form_override(result, word, target[0], target[1])
+        # Latvian rule: a preposition with a plural complement always takes
+        # Datīvs, regardless of its lexicon-default singular case. Mirrors
+        # the upstream Java tagger's syntactic agreement post-pass.
+        _apply_preposition_agreement(results)
         return results
 
     def _get_crf_tagger(self):
@@ -1113,6 +1117,37 @@ _PRONOUN_ATTRS: dict[tuple[str, str], dict[str, str]] = {
     ("šajos", "šis"): {"Persona": "3", "Dzimte": "Vīriešu", "Skaitlis": "Daudzskaitlis"},
     ("šajās", "šī"): {"Persona": "3", "Dzimte": "Sieviešu", "Skaitlis": "Daudzskaitlis"},
 }
+
+
+def _apply_preposition_agreement(sentence_words) -> None:
+    """Latvian syntactic rule: a preposition with a plural noun complement
+    always takes Datīvs, regardless of the preposition's lexicon-default
+    singular case. E.g. `no` defaults to sg.gen but in `no zemēm` (pl) it
+    becomes pl.dat → tag `sppd`. Mirrors upstream Java's agreement post-pass.
+
+    Implementation: for each top-ranked preposition, scan the next non-
+    trivial token (skipping particles/conjunctions/punctuation). If its
+    Skaitlis is Daudzskaitlis, override the preposition's Skaitlis and
+    Rekcija; this changes the emitted tag from `spsX` to `sppd`.
+    """
+    skip = {"Partikula", "Saiklis", "Pieturzīme"}
+    for i, word in enumerate(sentence_words):
+        if not word.wordforms:
+            continue
+        wf = word.wordforms[0]
+        if wf.get("Vārdšķira") != "Prievārds":
+            continue
+        for j in range(i + 1, len(sentence_words)):
+            nw = sentence_words[j]
+            if not nw.wordforms:
+                continue
+            n_wf = nw.wordforms[0]
+            if n_wf.get("Vārdšķira") in skip:
+                continue
+            if n_wf.get("Skaitlis") == "Daudzskaitlis":
+                wf.add("Skaitlis", "Daudzskaitlis")
+                wf.add("Rekcija", "Datīvs")
+            break  # only inspect the immediate non-trivial neighbour
 
 
 def _add_proper_noun_reading(result: Word, original: str) -> None:
