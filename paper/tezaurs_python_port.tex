@@ -53,7 +53,7 @@ seed) we measure $\textbf{92.60\,\%}$ tag accuracy,
 $\textbf{96.72\,\%}$ lemma accuracy, and $\textbf{98.75\,\%}$ POS
 accuracy --- matching the published Java tag figure of 92.8\,\% within seed
 variance and \emph{exceeding} the Java POS figure of 98.2\,\% by
-0.55 points. The Python package is 41\,\% smaller in source size, has a
+0.55 points. The Python package is 44\,\% smaller in source size, has a
 2.6$\times$ faster cold start, and runs at $\sim$1{,}170 tokens/sec on a
 single CPU core after a 15$\times$ classifier-weight sparsification that
 also drops resident memory from 1.7\,GB to 475\,MB. We discuss where the Python port wins (POS accuracy, code
@@ -101,8 +101,10 @@ that LVTagger was trained on.
 \toprule
 \textbf{Component} & \textbf{Java LOC} & \textbf{Python LOC} & \textbf{Notes} \\
 \midrule
-Mijas (stem alternations) & 3{,}500 & 1{,}960 & 76 mija handlers, two directions \\
-Analyzer & 1{,}124 & 1{,}161 & Analysis, prefix stripping, guessing \\
+Mijas LV (stem alternations) & 3{,}500 & 1{,}133 & LV cases (analysis + inflection) \\
+Mijas LTG (Latgalian) & --- & 762 & LTG cases + LTG-specific helpers \\
+Mijas DSL (shared) & --- & 81 & \texttt{SuffixRule}, \texttt{\_apply\_first/\_all} \\
+Analyzer & 1{,}124 & 1{,}289 & Analysis, prefix stripping, guessing, overrides \\
 Trie (tokenizer) & 564 & 510 & 12 automata + user exceptions \\
 Attributes/TagSet & 240 & 260 & Multi-value matcher, reverse-index \\
 Paradigm/Endings & 200 & 238 & 109 paradigms, 5938 endings \\
@@ -110,14 +112,16 @@ MarkupConverter & 884 & 231 & Position-tag emit / parse \\
 Lexicon & 220 & 182 & Lazy lemma/id/paradigm indexes \\
 Inflector & 750 & 188 & Forward generation with negation \\
 Statistics & 50 & 100 & Additive $0.1 + ef + lf \cdot 1000$ \\
-Trie/Wordform/Other & 1{,}784 & 219 & Various data classes \\
+Wordform / Variants / Other & 1{,}784 & 219 & Various data classes \\
 \midrule
-\textbf{Total runtime} & \textbf{9{,}316} & \textbf{5{,}049} & \textbf{Python is 46\,\% smaller} \\
+\textbf{Total runtime engine} & \textbf{9{,}316} & \textbf{5{,}193} & \textbf{Python is 44\,\% smaller} \\
 \bottomrule
 \end{tabular}
 \caption{Source size by component. Counts exclude the disambiguator
-(\texttt{crf\_tagger.py}, 469 LOC, an addition that has no Java counterpart in
-the morphology repo).}
+(\texttt{crf\_tagger.py}, 527 LOC, an addition that has no Java counterpart
+in the morphology repo). The Mija engine is split across three files
+(\texttt{mijas.py} for LV, \texttt{mijas\_ltg.py} for Latgalian, plus a
+small \texttt{mijas\_dsl.py} of shared \texttt{SuffixRule} primitives).}
 \label{tab:loc}
 \end{table}
 
@@ -315,8 +319,8 @@ extra disambiguator stack the Java repository does not include.
 \toprule
 \textbf{Artifact} & \textbf{Java} & \textbf{Python} \\
 \midrule
-Source LOC (engine) & 9{,}316 & 5{,}049 \\
-Source LOC (engine + disambig.) & --- & 5{,}519 \\
+Source LOC (engine) & 9{,}316 & 5{,}193 \\
+Source LOC (engine + disambig.) & --- & 5{,}721 \\
 Reference data shipped & $\sim$75\,MB XML & 9.4\,MB Parquet \\
 Disambiguator models & --- & 25\,MB (sparse) \\
 \textbf{Total package data} & $\sim$75\,MB & \textbf{34\,MB} \\
@@ -342,7 +346,7 @@ XML's structural overhead.}
   the Java tagger; for context, our morphological engine's lemma recall
   ceiling is 97.9\,\%, so the disambiguator captures 96.14/97.9 $=$ 98.2\,\%
   of the achievable lemma accuracy.
-\item \textbf{Code size} (5{,}049 vs.\ 9{,}316 LOC, $-46$\,\%): no
+\item \textbf{Code size} (5{,}193 vs.\ 9{,}316 LOC, $-44$\,\%): no
   accessor boilerplate, data-driven prefix dispatch, no bespoke XML I/O.
 \item \textbf{Cold start} (579\,ms vs.\ $\sim$1.5\,s, $\sim$2.6$\times$
   faster): mmap-Parquet over XML parse, lazy index construction.
@@ -401,7 +405,7 @@ The full port, training pipeline, and reference data extraction tooling are
 released under GPL-3.0 (matching the upstream Java repository).
 \begin{itemize}
 \item Source: data-extraction tools (\texttt{tools/}) and runtime engine
-  (\texttt{tezaurs/}) total 5{,}519 LOC plus 800 LOC of pipeline code.
+  (\texttt{tezaurs/}) total 5{,}721 LOC plus 800 LOC of pipeline code.
 \item Test suite: 41 tests, all passing as of submission. Includes 9
   parity tests against the gold corpus and 7 canonical-word acceptance tests.
 \item Models: POS CRF, subtag CRF, per-POS classifier (\texttt{float32}),
@@ -423,7 +427,7 @@ feasible at full parity on the published headline metrics. Our implementation
 matches the Java reference on tag accuracy
 (92.60\,\% vs.\ 92.8\,\%, within seed variance), \emph{exceeds} it on POS
 accuracy (98.75\,\% vs.\ 98.2\,\%, $+0.55$\,pp), and delivers a
-46\,\% reduction in source size, an 8$\times$ reduction in shipped reference
+44\,\% reduction in source size, an 8$\times$ reduction in shipped reference
 data plus disambiguator weights (34\,MB total vs. $\sim$75\,MB Java), and a
 2.6$\times$ faster cold start. The remaining 1.6$\times$ memory gap to Java
 is concentrated in the optional disambiguator stack the Java repository
