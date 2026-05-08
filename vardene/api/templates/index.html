@@ -21,6 +21,7 @@
       <button class="tab" data-tab="paradigm">Paradigms</button>
       <button class="tab" data-tab="phrase">Phrase</button>
       <button class="tab" data-tab="people">Names</button>
+      <button class="tab" data-tab="valency">Valency</button>
       <button class="tab" data-tab="api">API</button>
     </nav>
 
@@ -139,6 +140,21 @@
       <div id="people-output" class="output"></div>
     </section>
 
+    <!-- VALENCY (verbs/neverbs) ---------------------------------------- -->
+    <section id="tab-valency" class="panel">
+      <h2>Valency-tag annotation</h2>
+      <p class="hint">For a word or short phrase, returns the list of valency-relevant tags it could attach to (case codes for nouns, V1/V2/V3/Inf for verbs, Adv for adverbs, S for subordinate-clause heads, etc.). Used by the upstream verb-valency annotation tool. <strong>Verb mode</strong> biases the reading toward verb POS; <strong>non-verb mode</strong> biases away from it. Maps to <code>/api/verbs</code> and <code>/api/neverbs</code>.</p>
+      <div class="input-row">
+        <input id="valency-input" type="text" placeholder="zem ozola" autocomplete="off">
+        <button id="valency-btn" class="primary">Tag</button>
+      </div>
+      <div class="control-row">
+        <label class="radio"><input type="radio" name="valency-mode" value="verbs" checked> Verb mode (<code>/verbs</code>)</label>
+        <label class="radio"><input type="radio" name="valency-mode" value="neverbs"> Non-verb mode (<code>/neverbs</code>)</label>
+      </div>
+      <div id="valency-output" class="output"></div>
+    </section>
+
     <!-- API DOC ---------------------------------------------------------- -->
     <section id="tab-api" class="panel">
       <h2>HTTP API reference</h2>
@@ -161,7 +177,8 @@
           <tr><td>GET</td><td><code>/api/inflect_phrase/&lt;phrase&gt;?category=&lt;person|org|loc&gt;</code></td><td>Multi-word noun-phrase declension</td></tr>
           <tr><td>GET</td><td><code>/api/normalize_phrase/&lt;phrase&gt;?category=&lt;person|org|loc&gt;</code></td><td>Phrase normalisation (Nominatīvs lemma form)</td></tr>
           <tr><td>GET</td><td><code>/api/inflect_people/json/&lt;name&gt;?gender=&lt;m|f&gt;</code></td><td>Full declension of a personal name</td></tr>
-          <tr><td>GET</td><td><code>/api/verbs/&lt;query&gt;</code> · <code>/api/neverbs/&lt;query&gt;</code></td><td>Out-of-scope notice (valency lexicon, separate service)</td></tr>
+          <tr><td>GET</td><td><code>/api/verbs/&lt;query&gt;</code></td><td>Valency-tag annotation, verb-biased reading</td></tr>
+          <tr><td>GET</td><td><code>/api/neverbs/&lt;query&gt;</code></td><td>Valency-tag annotation, non-verb-biased reading</td></tr>
           <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness probe</td></tr>
         </tbody>
       </table>

@@ -372,6 +372,31 @@ async function inflectPeople() {
   }
 }
 
+// ---- Valency (verbs / neverbs) -------------------------------------------
+async function valencyTag() {
+  const input = document.getElementById("valency-input");
+  const output = document.getElementById("valency-output");
+  const text = input.value.trim();
+  if (!text) {
+    output.innerHTML = renderError("Enter a word or short phrase.");
+    return;
+  }
+  const mode = document.querySelector('input[name="valency-mode"]:checked').value;
+  output.innerHTML = "<em>Tagging…</em>";
+  try {
+    const data = await fetchJson(`/api/${mode}/${encodeURIComponent(text)}`);
+    output.innerHTML = `
+      <div class="token-list">
+        ${data.map((t) => `<span class="token-chip">${escapeHtml(t)}</span>`).join("")}
+      </div>
+      <p style="color:var(--muted);margin-top:0.75rem;font-size:0.85em">
+        ${data.length} valency tag${data.length === 1 ? "" : "s"} (mode: <code>/${mode}</code>)
+      </p>`;
+  } catch (e) {
+    output.innerHTML = renderError(e.message);
+  }
+}
+
 // ---- Wire up --------------------------------------------------------------
 function bind(inputId, btnId, handler) {
   document.getElementById(btnId).addEventListener("click", handler);
@@ -388,3 +413,4 @@ bind("paradigm-input", "paradigm-btn", findParadigms);
 bind("phrase-input",   "phrase-btn",   inflectPhrase);
 document.getElementById("phrase-normalize-btn").addEventListener("click", normalisePhrase);
 bind("people-input",   "people-btn",   inflectPeople);
+bind("valency-input",  "valency-btn",  valencyTag);

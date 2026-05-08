@@ -19,11 +19,9 @@ underlying engine supports it):
   GET  /api/inflect_phrase/<phrase>                 phrase declension table
   GET  /api/normalize_phrase/<phrase>               lemmatised (Nominatīvs) phrase
   GET  /api/inflect_people/json/<name>              full declension of a personal name
+  GET  /api/verbs/<query>                           valency-tag annotation (verb-mode)
+  GET  /api/neverbs/<query>                         valency-tag annotation (non-verb-mode)
   GET  /api/health                                  liveness probe
-
-Out of scope (return a 200 explaining why, not 501):
-  /api/verbs, /api/neverbs                          valency frames live in a
-                                                    separate non-open service
 """
 
 from __future__ import annotations
@@ -39,6 +37,7 @@ from vardene.phrase import inflect_people, inflect_phrase, normalize_phrase
 from vardene.splitting import build_trie, set_master_trie
 from vardene.splitting import tokenize as _tokenize
 from vardene.splitting import tokenize_sentences as _tokenize_sentences
+from vardene.valency import valency_tags
 
 _EXCEPTION_LEMMA_RE = re.compile(r".*[ ./'\d]+.*")
 _PURE_DOTS_RE = re.compile(r"^\.+$")
@@ -267,27 +266,15 @@ def create_app() -> Flask:
             )
         )
 
-    # ----- valency lookups (NOT in upstream open-source morphology) ---------
-    # api.tezaurs.lv `/verbs` and `/neverbs` proxy a separate valency lexicon
-    # (see https://github.com/PeterisP/morphology — not present in that repo).
-    # We expose the documented response shape with an explanatory note.
+    # ----- valency-tag annotation (port of VerbResource.java) --------------
 
     @app.route("/api/verbs/<path:query>")
+    def verbs_route(query: str):
+        return jsonify(valency_tags(query, prefer_verb=True, analyzer=analyzer))
+
     @app.route("/api/neverbs/<path:query>")
-    def valency(query: str):
-        return jsonify(
-            {
-                "error": "out_of_scope",
-                "message": (
-                    "Valency frames live in a separate non-open-source service "
-                    "layer at api.tezaurs.lv. The vardene engine intentionally "
-                    "scopes to the morphology library and does not bundle "
-                    "valency data."
-                ),
-                "tags": ["Nom", "Gen", "Dat", "Acc", "Loc", "V1", "V2", "V3",
-                         "Inf", "S", "TR", "Adv"],
-            }
-        )
+    def neverbs_route(query: str):
+        return jsonify(valency_tags(query, prefer_verb=False, analyzer=analyzer))
 
     # ----- meta -------------------------------------------------------------
 

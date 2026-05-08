@@ -564,12 +564,33 @@ class TestApi:
         assert len(r.json["tokens"]) == 3
         assert any(len(t["wordforms"]) > 0 for t in r.json["tokens"])
 
+    def test_verbs_endpoint(self, client) -> None:
+        # Single verb → V1/V2/V3/Inf
+        assert sorted(client.get("/api/verbs/m%C4%81c%C4%ABt").json) == ["Inf", "V1", "V2", "V3"]
+        # Single noun → 5 cases
+        assert sorted(client.get("/api/verbs/m%C4%81ju").json) == ["Acc", "Dat", "Gen", "Loc", "Nom"]
+        # Adverb
+        assert client.get("/api/verbs/%C4%81tri").json == ["Adv"]
+        # Conjunction-led phrase → S
+        assert client.get("/api/verbs/ka%20m%C4%81te").json == ["S"]
+        # Preposition phrase → token+caseCode pairs
+        out = client.get("/api/verbs/zem%20ozola").json
+        assert sorted(out) == ["zemDat", "zemGen"]
+
+    def test_neverbs_endpoint(self, client) -> None:
+        # /neverbs is the same module with prefer_verb=False — same shape.
+        assert client.get("/api/neverbs/%C4%81tri").json == ["Adv"]
+
+    def test_verbs_unknown_word_fallback(self, client) -> None:
+        # Unrecognised input → full fallback list.
+        assert client.get("/api/verbs/xyz123").json == [
+            "Nom", "Gen", "Dat", "Acc", "Loc",
+            "V1", "V2", "V3", "Inf",
+            "S", "TR", "Adv",
+        ]
+
     def test_suitable_paradigm(self, client) -> None:
         r = client.get("/api/suitable_paradigm/ka%C4%B7is")
         names = [p["Description"] for p in r.json]
         assert "noun-2b" in names
 
-    def test_valency_explained(self, client) -> None:
-        r = client.get("/api/verbs/foo")
-        assert r.status_code == 200
-        assert r.json["error"] == "out_of_scope"
