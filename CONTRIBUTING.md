@@ -1,4 +1,4 @@
-# Contributing to vardene
+# Contributing to Vārdene
 
 Thanks for your interest in contributing. This guide covers the development workflow, code style, and what to verify before opening a pull request.
 

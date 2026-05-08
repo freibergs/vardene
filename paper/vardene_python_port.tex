@@ -27,7 +27,7 @@
   rulecolor=\color{gray!40},
 }
 
-\title{Vardene: A Python Port of the LU MII Latvian Morphological Analyser:\\
+\title{Vārdene: A Python Port of the LU MII Latvian Morphological Analyser:\\
   \large Performance, Accuracy, and Engineering Trade-offs}
 \author{Rihards Aleksandrs Freibergs\thanks{Independent. Code:
   \url{https://github.com/freibergs/vardene}.}}
@@ -37,7 +37,7 @@
 \maketitle
 
 \begin{abstract}
-This paper presents \emph{vardene}, a Python port of the Latvian
+This paper presents \emph{Vārdene}, a Python port of the Latvian
 morphological analysis library maintained by the Institute of
 Mathematics and Computer Science at the University of Latvia (LU MII).
 The upstream Java implementation (9{,}922 LOC across the engine and
@@ -142,7 +142,7 @@ The closest comparison point is \textbf{LVTagger}
 \cite{paikens2013}, a sentence-level CMM/CRF tagger trained on the
 same \texttt{train.txt} gold corpus used here. LVTagger consumes the
 output of the LU MII morphology library as its candidate set, the
-same role played by vardene's Python disambiguator. The port does
+same role played by Vārdene's Python disambiguator. The port does
 not replicate LVTagger's CMM architecture; instead it uses a
 4-character subtag CRF, a per-POS log-linear classifier, and a
 tag-bigram Viterbi rescoring pass (Section~\ref{sec:disamb}). Direct

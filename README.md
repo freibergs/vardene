@@ -1,6 +1,6 @@
 <div align="center">
 
-# vardene
+# Vārdene
 
 **Latvian morphological analysis library — a complete Python port of the LU MII Java engine**
 
@@ -87,7 +87,7 @@ python -m vardene.api                  # http://127.0.0.1:5000
 ```
 
 <p align="center">
-  <img src="docs/screenshots/ui-analyze-light.png" alt="vardene demo UI — analyse tab" width="640">
+  <img src="docs/screenshots/ui-analyze-light.png" alt="Vārdene demo UI — analyse tab" width="640">
 </p>
 <p align="center"><sub>The demo UI shows every candidate reading per word with full attribute set; tabs cover all 16 endpoints (light + dark mode aware).</sub></p>
 
@@ -132,7 +132,7 @@ The demo UI has nine tabs covering every upstream endpoint:
 
 Held-out 20% split, 5-seed average ($n \approx 3{,}500$ tokens per seed):
 
-| Metric | **vardene (Python)** | LVTagger (Java) | Δ |
+| Metric | **Vārdene (Python)** | LVTagger (Java) | Δ |
 |---|---|---|---|
 | Tag | **92.51 %** | 92.8 % | within seed variance |
 | Lemma | **96.73 %** | not published | — |

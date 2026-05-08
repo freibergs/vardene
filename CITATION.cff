@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "vardene: a Python port of the LU MII Latvian morphological analyser"
+title: "Vārdene: a Python port of the LU MII Latvian morphological analyser"
 message: "If you use this software, please cite it as below."
 type: software
 authors:
