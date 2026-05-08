@@ -418,9 +418,16 @@ The full port, training pipeline, and reference data extraction tooling are
 released under GPL-3.0 (matching the upstream Java repository).
 \begin{itemize}
 \item Source: data-extraction tools (\texttt{tools/}) and runtime engine
-  (\texttt{tezaurs/}) total 5{,}721 LOC plus 800 LOC of pipeline code.
-\item Test suite: 41 tests, all passing as of submission. Includes 9
-  parity tests against the gold corpus and 7 canonical-word acceptance tests.
+  (\texttt{vardene/}) total 5{,}721 LOC plus 800 LOC of pipeline code.
+\item HTTP service: a Flask app at full parity with
+  \texttt{api.tezaurs.lv}. Wraps the engine plus a port of the FSA
+  tokenizer (\texttt{Splitting.java}), the paradigm-suitability
+  scorer, and short multi-word helpers for phrase and personal-name
+  inflection.
+\item Test suite: 58 tests, all passing as of submission. Includes 9
+  parity tests against the gold corpus, 7 canonical-word acceptance
+  tests, 17 tests covering the HTTP layer (tokenizer, phrase inflection,
+  suitable-paradigm scorer, endpoint smoke tests).
 \item Models: POS CRF, subtag CRF, per-POS classifier (\texttt{float32}),
   tag-bigram Viterbi transitions, and the four override JSON tables ship as
   package data.

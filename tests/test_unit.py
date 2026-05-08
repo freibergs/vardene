@@ -352,3 +352,193 @@ class TestTrieIntegration:
         clone = Trie(t)
         # The branch list is shared but each instance has its own iterator state
         assert clone._branch_list is t._branch_list
+
+
+# ---------------------------------------------------------------------------
+# Splitting — tokenizer (port of Splitting.java)
+# ---------------------------------------------------------------------------
+
+
+class TestSplitting:
+    @pytest.fixture(scope="class")
+    def tokenize(self):
+        from vardene.splitting import tokenize
+        return tokenize
+
+    @pytest.fixture(scope="class")
+    def tokenize_sentences(self):
+        from vardene.splitting import tokenize_sentences
+        return tokenize_sentences
+
+    def test_basic(self, tokenize) -> None:
+        assert tokenize("Es eju mājās.") == ["Es", "eju", "mājās", "."]
+
+    def test_clock(self, tokenize) -> None:
+        assert tokenize("plkst. 14:30") == ["plkst", ".", "14:30"]
+
+    def test_url(self, tokenize) -> None:
+        assert tokenize("Skat www.tezaurs.lv vai https://example.com/path") == [
+            "Skat", "www.tezaurs.lv", "vai", "https://example.com/path"
+        ]
+
+    def test_email(self, tokenize) -> None:
+        assert tokenize("kontakts: peteris@example.com") == [
+            "kontakts", ":", "peteris@example.com"
+        ]
+
+    def test_paragraph_number(self, tokenize) -> None:
+        assert tokenize("Likuma 1.2.3.4. punkts") == ["Likuma", "1.2.3.4.", "punkts"]
+
+    def test_iso_date(self, tokenize) -> None:
+        assert tokenize("2009-12-14 un 2024.05.08") == ["2009-12-14", "un", "2024.05.08"]
+
+    def test_repeating_punct(self, tokenize) -> None:
+        assert tokenize("Ko?! Ej!?") == ["Ko", "?!", "Ej", "!?"]
+
+    def test_thousand_separator(self, tokenize) -> None:
+        assert tokenize("1 234,56 EUR") == ["1 234,56", "EUR"]
+
+    def test_spaced_letters(self, tokenize) -> None:
+        assert tokenize("a t s t a r p e s") == ["a t s t a r p e s"]
+
+    def test_brute_split(self, tokenize) -> None:
+        assert tokenize("plkst. 14:30", brute_split=True) == ["plkst.", "14:30"]
+
+    def test_sentences(self, tokenize_sentences) -> None:
+        out = tokenize_sentences('Es teicu: "Sveiki!" Pēc tam aizgāju.')
+        assert len(out) == 2
+        # Quote-after-bang glues to first sentence (direct-speech rule).
+        assert out[0][-1] == '"'
+        assert out[1] == ["Pēc", "tam", "aizgāju", "."]
+
+
+# ---------------------------------------------------------------------------
+# Phrase + people inflection
+# ---------------------------------------------------------------------------
+
+
+class TestPhrase:
+    @pytest.fixture(scope="class")
+    def inflect_phrase(self):
+        from vardene.phrase import inflect_phrase
+        return inflect_phrase
+
+    @pytest.fixture(scope="class")
+    def normalize_phrase(self):
+        from vardene.phrase import normalize_phrase
+        return normalize_phrase
+
+    @pytest.fixture(scope="class")
+    def inflect_people(self):
+        from vardene.phrase import inflect_people
+        return inflect_people
+
+    def test_adjective_noun_definite(self, inflect_phrase) -> None:
+        out = inflect_phrase("sarkanā māja")
+        assert out["Nominatīvs"] == "sarkanā māja"
+        assert out["Ģenitīvs"] == "sarkanās mājas"
+        assert out["Datīvs"] == "sarkanajai mājai"
+        assert out["Akuzatīvs"] == "sarkano māju"
+        assert out["Lokatīvs"] == "sarkanajā mājā"
+
+    def test_adjective_noun_indefinite(self, inflect_phrase) -> None:
+        out = inflect_phrase("zaļa zāle")
+        assert out["Nominatīvs"] == "zaļa zāle"
+        assert out["Akuzatīvs"] == "zaļu zāli"
+
+    def test_normalize(self, normalize_phrase) -> None:
+        assert normalize_phrase("sarkano māju") == "sarkanā māja"
+        # `lielo bērnu` is unambiguously definite in genitive plural, so
+        # normalisation must preserve definiteness ("lielais bērns").
+        assert normalize_phrase("lielo bērnu") == "lielais bērns"
+
+    def test_person_full_paradigm(self, inflect_people) -> None:
+        out = inflect_people("Jānis Bērziņš")
+        assert len(out) == 2  # given + surname
+        for component in out:
+            cases = {(d["Locījums"], d["Skaitlis"]) for d in component}
+            # All 6 cases × 2 numbers = 12 forms expected
+            assert len(cases) == 12
+        # Spot-check known surface forms
+        janis = {(d["Locījums"], d["Skaitlis"]): d["Vārds"] for d in out[0]}
+        assert janis[("Ģenitīvs", "Vienskaitlis")] == "Jāņa"
+        assert janis[("Datīvs", "Vienskaitlis")] == "Jānim"
+        assert janis[("Vokatīvs", "Vienskaitlis")] == "Jāni"
+
+
+# ---------------------------------------------------------------------------
+# Suitable paradigms (ported from Java suitableParadigms)
+# ---------------------------------------------------------------------------
+
+
+class TestSuitableParadigms:
+    @pytest.fixture(scope="class")
+    def analyzer(self) -> Analyzer:
+        return Analyzer()
+
+    def test_known_noun(self, analyzer: Analyzer) -> None:
+        result = analyzer.suitable_paradigms("kaķis")
+        names = [p.name for p in result]
+        assert "noun-2b" in names  # tētis-class (no mija)
+
+    def test_known_verb(self, analyzer: Analyzer) -> None:
+        result = analyzer.suitable_paradigms("rakt")
+        names = [p.name for p in result]
+        assert "verb-1" in names
+
+    def test_sorted_by_frequency(self, analyzer: Analyzer) -> None:
+        # noun-1a (-s declension) is much more common than ltg variants
+        result = analyzer.suitable_paradigms("mežs")
+        names = [p.name for p in result]
+        assert names[0] == "noun-1a"
+
+
+# ---------------------------------------------------------------------------
+# HTTP API (Flask) — smoke tests via test_client
+# ---------------------------------------------------------------------------
+
+
+class TestApi:
+    @pytest.fixture(scope="class")
+    def client(self):
+        from vardene.api import create_app
+        return create_app().test_client()
+
+    def test_health(self, client) -> None:
+        r = client.get("/api/health")
+        assert r.status_code == 200
+        assert r.json["status"] == "ok"
+
+    def test_analyze(self, client) -> None:
+        r = client.get("/api/analyze/kaķis")
+        assert r.status_code == 200
+        assert r.json["wordforms"]
+
+    def test_tokenize(self, client) -> None:
+        r = client.get("/api/tokenize/Es%20eju%20m%C4%81j%C4%81s.")
+        assert r.json["tokens"] == ["Es", "eju", "mājās", "."]
+
+    def test_inflect_phrase(self, client) -> None:
+        r = client.get("/api/inflect_phrase/sarkan%C4%81%20m%C4%81ja")
+        assert r.json["Akuzatīvs"] == "sarkano māju"
+
+    def test_normalize_phrase(self, client) -> None:
+        r = client.get("/api/normalize_phrase/sarkano%20m%C4%81ju")
+        assert r.json == "sarkanā māja"
+
+    def test_inflect_people(self, client) -> None:
+        r = client.get("/api/inflect_people/json/J%C4%81nis")
+        # Single-component name → wrapped in outer list, 12 inner forms
+        data = r.json
+        assert len(data) == 1
+        assert len(data[0]) == 12
+
+    def test_suitable_paradigm(self, client) -> None:
+        r = client.get("/api/suitable_paradigm/ka%C4%B7is")
+        names = [p["Description"] for p in r.json]
+        assert "noun-2b" in names
+
+    def test_valency_explained(self, client) -> None:
+        r = client.get("/api/verbs/foo")
+        assert r.status_code == 200
+        assert r.json["error"] == "out_of_scope"

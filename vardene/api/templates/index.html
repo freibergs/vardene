@@ -17,6 +17,8 @@
       <button class="tab active" data-tab="analyze">Analyse</button>
       <button class="tab" data-tab="sentence">Sentence</button>
       <button class="tab" data-tab="inflect">Inflect</button>
+      <button class="tab" data-tab="phrase">Phrase</button>
+      <button class="tab" data-tab="people">Names</button>
       <button class="tab" data-tab="tokenize">Tokenise</button>
       <button class="tab" data-tab="api">API</button>
     </nav>
@@ -54,6 +56,26 @@
       <div id="inflect-output" class="output"></div>
     </section>
 
+    <section id="tab-phrase" class="panel">
+      <label for="phrase-input">Phrase</label>
+      <div class="input-row">
+        <input id="phrase-input" type="text" placeholder="sarkanā māja" autocomplete="off">
+        <button id="phrase-btn" class="primary">Inflect</button>
+      </div>
+      <p class="hint">Multi-word noun-phrase declension. The rightmost noun is the head; modifiers (adjectives, pronouns) agree in case + number + gender.</p>
+      <div id="phrase-output" class="output"></div>
+    </section>
+
+    <section id="tab-people" class="panel">
+      <label for="people-input">Personal name</label>
+      <div class="input-row">
+        <input id="people-input" type="text" placeholder="Jānis Bērziņš" autocomplete="off">
+        <button id="people-btn" class="primary">Inflect</button>
+      </div>
+      <p class="hint">Each component (given + surname) is inflected through all 6 cases × 2 numbers.</p>
+      <div id="people-output" class="output"></div>
+    </section>
+
     <section id="tab-tokenize" class="panel">
       <label for="tokenize-input">Text</label>
       <div class="input-row">
@@ -65,7 +87,7 @@
 
     <section id="tab-api" class="panel">
       <h2>HTTP API</h2>
-      <p>All endpoints return JSON. Tokenisation in <code>/analyzesentence</code> and <code>/morphotagger</code> uses a lightweight whitespace + punctuation regex; a port of <code>Splitting.java</code> is pending.</p>
+      <p>All endpoints return JSON. Tokenisation uses the full port of <code>Splitting.java</code> — a state machine over 12 FSAs that recognise dates, clocks, URLs, e-mail addresses, numbers, paragraph numbers, ranges, and more.</p>
       <table class="api-table">
         <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
         <tbody>
@@ -80,16 +102,15 @@
           <tr><td>GET</td><td><code>/api/v1/inflections/&lt;lemma&gt;?paradigm=&amp;stem1=&amp;stem2=&amp;stem3=</code></td><td>Verb-1 with explicit stems</td></tr>
           <tr><td>GET</td><td><code>/api/inflect/json/&lt;lemma&gt;</code></td><td>Format-selectable inflection (JSON only at the moment)</td></tr>
           <tr><td>GET</td><td><code>/api/inflect/json/&lt;lang&gt;/&lt;lemma&gt;</code></td><td>With language filter (<code>lv</code>/<code>ltg</code>)</td></tr>
+          <tr><td>GET</td><td><code>/api/suitable_paradigm/&lt;lemma&gt;</code></td><td>Paradigms that could generate <code>lemma</code> (sorted by frequency)</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect_phrase/&lt;phrase&gt;</code></td><td>Multi-word noun-phrase declension</td></tr>
+          <tr><td>GET</td><td><code>/api/normalize_phrase/&lt;phrase&gt;</code></td><td>Lemmatised (Nominatīvs) phrase</td></tr>
+          <tr><td>GET</td><td><code>/api/inflect_people/json/&lt;name&gt;</code></td><td>Full declension of a personal name</td></tr>
           <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness probe</td></tr>
         </tbody>
       </table>
-      <h3>Pending (501 Not Implemented)</h3>
-      <ul class="pending">
-        <li><code>/api/verbs</code>, <code>/api/neverbs</code> — external valency annotation tool</li>
-        <li><code>/api/suitable_paradigm</code> — paradigm suitability scorer</li>
-        <li><code>/api/inflect_people</code> — person-name inflector</li>
-        <li><code>/api/inflect_phrase</code>, <code>/api/normalize_phrase</code> — multi-word entity inflection / normalisation</li>
-      </ul>
+      <h3>Out of scope</h3>
+      <p><code>/api/verbs</code> and <code>/api/neverbs</code> proxy a separate non-open-source valency lexicon at <code>api.tezaurs.lv</code>. The vardene engine intentionally scopes to the morphology library and does not bundle valency data.</p>
     </section>
   </main>
 

@@ -40,7 +40,7 @@ reference/
 *.full_corpus.bak
 
 # Override global ignores: ship our classifier pickle and trained models.
-!tezaurs/data/per_pos_clf.pkl
-!tezaurs/data/*.crfsuite
-!tezaurs/data/*.parquet
-!tezaurs/data/*.json
+!vardene/data/per_pos_clf.pkl
+!vardene/data/*.crfsuite
+!vardene/data/*.parquet
+!vardene/data/*.json

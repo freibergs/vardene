@@ -201,6 +201,74 @@ async function inflectLemma() {
   }
 }
 
+// ---- Phrase ----------------------------------------------------------------
+
+const CASE_ORDER = ["Nominatīvs", "Ģenitīvs", "Datīvs", "Akuzatīvs", "Lokatīvs"];
+
+async function inflectPhrase() {
+  const input = document.getElementById("phrase-input");
+  const output = document.getElementById("phrase-output");
+  const text = input.value.trim();
+  if (!text) {
+    output.innerHTML = renderError("Enter a phrase.");
+    return;
+  }
+  output.innerHTML = "<em>Inflecting…</em>";
+  try {
+    const data = await fetchJson(`/api/inflect_phrase/${encodeURIComponent(text)}`);
+    output.innerHTML = `
+      <table class="phrase-table">
+        <tbody>
+          ${CASE_ORDER.map((c) => data[c]
+            ? `<tr><td class="case">${escapeHtml(c)}</td><td>${escapeHtml(data[c])}</td></tr>`
+            : "").join("")}
+        </tbody>
+      </table>`;
+  } catch (e) {
+    output.innerHTML = renderError(e.message);
+  }
+}
+
+// ---- People (personal names) -----------------------------------------------
+
+async function inflectPeople() {
+  const input = document.getElementById("people-input");
+  const output = document.getElementById("people-output");
+  const text = input.value.trim();
+  if (!text) {
+    output.innerHTML = renderError("Enter a name.");
+    return;
+  }
+  output.innerHTML = "<em>Inflecting…</em>";
+  try {
+    const data = await fetchJson(`/api/inflect_people/json/${encodeURIComponent(text)}`);
+    output.innerHTML = data.map((component) => {
+      const byNumberCase = {};
+      for (const f of component) byNumberCase[`${f.Skaitlis}|${f.Locījums}`] = f.Vārds;
+      const cases = ["Nominatīvs", "Ģenitīvs", "Datīvs", "Akuzatīvs", "Lokatīvs", "Vokatīvs"];
+      const head = component[0];
+      const heading = `${head.Vārds} <span class="reading-pos">${head.Dzimte}, ${head.Deklinācija}. dekl.</span>`;
+      return `
+        <div class="phrase-component">
+          <h3>${escapeHtml(head.Vārds)}</h3>
+          <table class="phrase-table">
+            <thead><tr><th></th><th>Vienskaitlis</th><th>Daudzskaitlis</th></tr></thead>
+            <tbody>
+              ${cases.map((c) => `
+                <tr>
+                  <td class="case">${escapeHtml(c)}</td>
+                  <td>${escapeHtml(byNumberCase[`Vienskaitlis|${c}`] || "—")}</td>
+                  <td>${escapeHtml(byNumberCase[`Daudzskaitlis|${c}`] || "—")}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }).join("");
+  } catch (e) {
+    output.innerHTML = renderError(e.message);
+  }
+}
+
 // ---- Tokenize --------------------------------------------------------------
 
 async function tokenize() {
@@ -219,7 +287,7 @@ async function tokenize() {
         ${data.tokens.map((t) => `<span class="token-chip">${escapeHtml(t)}</span>`).join("")}
       </div>
       <p style="color:var(--muted);margin-top:0.75rem;font-size:0.85em">
-        ${data.tokens.length} tokens — using regex fallback (Splitting.java port pending)
+        ${data.tokens.length} tokens — Splitting.java port (FSA-driven)
       </p>`;
   } catch (e) {
     output.innerHTML = renderError(e.message);
@@ -238,4 +306,6 @@ function bind(inputId, btnId, handler) {
 bind("word-input", "analyze-btn", analyzeWord);
 bind("sentence-input", "sentence-btn", analyzeSentence);
 bind("lemma-input", "inflect-btn", inflectLemma);
+bind("phrase-input", "phrase-btn", inflectPhrase);
+bind("people-input", "people-btn", inflectPeople);
 bind("tokenize-input", "tokenize-btn", tokenize);

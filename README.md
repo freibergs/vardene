@@ -85,9 +85,7 @@ pip install -e '.[api]'
 python -m vardene.api          # http://127.0.0.1:5000
 ```
 
-Endpoints (parity with the Java `api.tezaurs.lv` service where the underlying
-engine supports it; 6 specialised routes return 501 until their upstream
-modules are ported):
+Endpoints (full parity with the Java `api.tezaurs.lv` service):
 
 | Route | Description |
 |---|---|
@@ -95,18 +93,21 @@ modules are ported):
 | `GET /api/analyze/en/<word>` | Same with English attribute names |
 | `GET /api/analyzesentence/<query>` | Per-token analysis with sentence context |
 | `GET /api/morphotagger/<query>` | Sentence-level disambiguation (top reading per token) |
-| `GET /api/tokenize/<query>` · `POST /api/tokenize` | Tokenisation |
+| `GET /api/tokenize/<query>` · `POST /api/tokenize` | FSA-driven tokenisation (port of `Splitting.java`) |
 | `GET /api/v1/inflections/<lemma>` | All inflectional forms |
 | `GET /api/v1/inflections/<lemma>?paradigm=NAME` | With explicit paradigm |
 | `GET /api/v1/inflections/<lemma>?paradigm=&stem1=&stem2=&stem3=` | Verb-1 with explicit stems |
 | `GET /api/inflect/json/<lemma>` · `/json/<lang>/<lemma>` | Format- and language-selectable inflection |
+| `GET /api/suitable_paradigm/<lemma>` | Paradigms that could generate `lemma`, sorted by frequency |
+| `GET /api/inflect_phrase/<phrase>` | Multi-word noun-phrase declension table |
+| `GET /api/normalize_phrase/<phrase>` | Lemmatised (Nominatīvs) phrase |
+| `GET /api/inflect_people/json/<name>` | Full declension of a personal name (each component × 12 forms) |
 | `GET /api/health` | Liveness probe |
 
-Pending (501 Not Implemented): `/api/verbs`, `/api/neverbs`,
-`/api/suitable_paradigm`, `/api/inflect_people`, `/api/inflect_phrase`,
-`/api/normalize_phrase` — these wrap upstream modules (verb-valency tool,
-paradigm scorer, person-name inflector, multi-word entity inflection)
-that have not yet been ported.
+Out of scope: `/api/verbs` and `/api/neverbs` proxy a separate non-open-source
+valency lexicon at `api.tezaurs.lv`. The vardene engine intentionally scopes to
+the morphology library and does not bundle valency data; those routes return a
+documented 200-OK out-of-scope message instead of 501.
 
 ## Accuracy
 

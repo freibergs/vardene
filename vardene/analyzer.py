@@ -539,6 +539,59 @@ class Analyzer:
                         wf.add("Pamatforma", _recap_for_lemma(final_lemma, original))
                     result.add_wordform(wf)
 
+    # --- paradigm suitability (for /api/suitable_paradigm) ------------
+
+    def suitable_paradigms(self, lemma: str) -> list:
+        """Paradigms that might generate `lemma`, sorted by ending frequency
+        (most frequent first). Mirror of Java `Analyzer.suitableParadigms`.
+
+        A paradigm is "suitable" iff some analysis of `lemma` lands on the
+        paradigm's lemma-ending, OR is a noun nominative-plural reading
+        (plurare-tantum case)."""
+        from vardene.attributes import AttributeValues  # local: avoid cycle
+
+        lexicon_options = self.analyze(lemma)
+        all_options = self.guess_by_ending(lemma.lower().strip(), lemma)
+        for wf in lexicon_options.wordforms:
+            all_options.add_wordform(wf)
+
+        plurare_tantum = AttributeValues()
+        plurare_tantum.add("Vārdšķira", "Lietvārds")
+        plurare_tantum.add("Locījums", "Nominatīvs")
+        plurare_tantum.add("Skaitlis", "Daudzskaitlis")
+
+        result: list = []
+        seen_paradigm_ids: set[int] = set()
+        for wf in all_options.wordforms:
+            ending = wf.ending
+            if ending is None:
+                continue
+            paradigm = ending.paradigm
+            if paradigm is None:
+                continue
+            le = ending.lemma_ending()
+            if not (ending is le or wf.is_matching_weak(plurare_tantum)):
+                continue
+            if paradigm.id in seen_paradigm_ids:
+                continue
+            seen_paradigm_ids.add(paradigm.id)
+            result.append(paradigm)
+
+        # Sort by ending frequency, descending. Mirrors Java
+        # `ParadigmFrequencyComparator` + `Collections.reverse`.
+        if self._statistics is None:
+            self._statistics = Statistics.instance()
+        stats = self._statistics
+
+        def _freq(p) -> int:
+            le = p.lemma_ending()
+            if le is None:
+                return 0
+            return stats.ending_freq.get(le.id, 0)
+
+        result.sort(key=_freq, reverse=True)
+        return result
+
     # --- ending-based guessing (for unknown words) ---------------------
 
     def guess_by_ending(self, word: str, original: str) -> Word:

@@ -15,51 +15,27 @@ underlying engine supports it):
   GET  /api/inflect/json/<query>                    same as v1/inflections, format selector
   GET  /api/inflect/json/<lang>/<query>             with language filter (lv / ltg)
   GET  /api/morphotagger/<query>                    sentence-level disambiguation
+  GET  /api/suitable_paradigm/<lemma>               paradigms that could generate `lemma`
+  GET  /api/inflect_phrase/<phrase>                 phrase declension table
+  GET  /api/normalize_phrase/<phrase>               lemmatised (Nominatīvs) phrase
+  GET  /api/inflect_people/json/<name>              full declension of a personal name
   GET  /api/health                                  liveness probe
 
-Placeholders (501 Not Implemented; will be filled in once the upstream
-modules they wrap are ported):
-  /api/verbs, /api/neverbs, /api/suitable_paradigm,
-  /api/inflect_people, /api/inflect_phrase, /api/normalize_phrase
+Out of scope (return a 200 explaining why, not 501):
+  /api/verbs, /api/neverbs                          valency frames live in a
+                                                    separate non-open service
 """
 
 from __future__ import annotations
-
-import re
-from typing import Any
 
 from flask import Flask, jsonify, render_template, request
 
 from vardene.analyzer import Analyzer
 from vardene.api.serialization import wordform_to_dict
 from vardene.inflector import Inflector
-
-_TOKEN_RE = re.compile(r"\w+|[^\w\s]", re.UNICODE)
-
-
-def _tokenize(text: str) -> list[str]:
-    """Lightweight whitespace + punctuation tokenizer.
-
-    A direct port of Java's `Splitting.java` (with its 12 hardcoded automata
-    for clocks/dates/URLs/etc.) is pending — this is the simple regex
-    fallback in the meantime.
-    """
-    return _TOKEN_RE.findall(text)
-
-
-def _not_implemented(name: str, plan: str) -> Any:
-    return (
-        jsonify(
-            {
-                "error": "not_implemented",
-                "endpoint": name,
-                "message": (
-                    f"This endpoint requires a port that has not yet been completed. Status: {plan}"
-                ),
-            }
-        ),
-        501,
-    )
+from vardene.phrase import inflect_people, inflect_phrase, normalize_phrase
+from vardene.splitting import tokenize as _tokenize
+from vardene.splitting import tokenize_sentences as _tokenize_sentences
 
 
 def create_app() -> Flask:
@@ -68,8 +44,16 @@ def create_app() -> Flask:
         template_folder="templates",
         static_folder="static",
     )
+    # Match api.tezaurs.lv: emit raw UTF-8 instead of \u-escaping non-ASCII.
+    # Flask 3+ uses `app.json` provider with `ensure_ascii` flag; setting it
+    # before the first request takes effect for all `jsonify` calls.
+    app.json.ensure_ascii = False  # type: ignore[attr-defined]
+    app.config["JSON_AS_ASCII"] = False  # legacy fallback
     analyzer = Analyzer()
-    analyzer.enable_guessing = False  # match Java default (guessing off by default)
+    # api.tezaurs.lv runs with guessing ON for /morphotagger and friends — out-of-
+    # lexicon words like proper-noun diminutives (`māmīņa`) get a backed-off
+    # guess instead of a null reading. Match that.
+    analyzer.enable_guessing = True
     inflector = Inflector(lexicon=analyzer.lexicon)
 
     # ----- frontend ----------------------------------------------------------
@@ -216,37 +200,51 @@ def create_app() -> Flask:
             }
         )
 
-    # ----- placeholders (501 until upstream module is ported) ---------------
-
-    @app.route("/api/verbs/<path:query>")
-    def verbs(query: str):
-        return _not_implemented(
-            "verbs", "external valency annotation tool, not in upstream morphology repo"
-        )
-
-    @app.route("/api/neverbs/<path:query>")
-    def neverbs(query: str):
-        return _not_implemented(
-            "neverbs", "external valency annotation tool, not in upstream morphology repo"
-        )
+    # ----- paradigm + multi-word inflection ---------------------------------
 
     @app.route("/api/suitable_paradigm/<lemma>")
-    def suitable_paradigm(lemma: str):
-        return _not_implemented("suitable_paradigm", "paradigm suitability scorer pending port")
-
-    @app.route("/api/inflect_people/json/<path:query>")
-    def inflect_people(query: str):
-        return _not_implemented(
-            "inflect_people", "person-name inflector pending port (PersonInflector.java)"
+    def suitable_paradigm_route(lemma: str):
+        paradigms = analyzer.suitable_paradigms(lemma)
+        only_lv = request.args.get("language", "lv") == "lv"
+        if only_lv:
+            paradigms = [p for p in paradigms if p.language != "ltg"]
+        return jsonify(
+            [{"ID": p.id, "Description": p.name} for p in paradigms]
         )
 
     @app.route("/api/inflect_phrase/<path:phrase>")
-    def inflect_phrase(phrase: str):
-        return _not_implemented("inflect_phrase", "multi-word entity inflection pending port")
+    def inflect_phrase_route(phrase: str):
+        return jsonify(inflect_phrase(phrase, analyzer=analyzer, inflector=inflector))
 
     @app.route("/api/normalize_phrase/<path:phrase>")
-    def normalize_phrase(phrase: str):
-        return _not_implemented("normalize_phrase", "multi-word entity normalisation pending port")
+    def normalize_phrase_route(phrase: str):
+        return jsonify(normalize_phrase(phrase, analyzer=analyzer, inflector=inflector))
+
+    @app.route("/api/inflect_people/json/<path:query>")
+    def inflect_people_route(query: str):
+        return jsonify(inflect_people(query, analyzer=analyzer, inflector=inflector))
+
+    # ----- valency lookups (NOT in upstream open-source morphology) ---------
+    # api.tezaurs.lv `/verbs` and `/neverbs` proxy a separate valency lexicon
+    # (see https://github.com/PeterisP/morphology — not present in that repo).
+    # We expose the documented response shape with an explanatory note.
+
+    @app.route("/api/verbs/<path:query>")
+    @app.route("/api/neverbs/<path:query>")
+    def valency(query: str):
+        return jsonify(
+            {
+                "error": "out_of_scope",
+                "message": (
+                    "Valency frames live in a separate non-open-source service "
+                    "layer at api.tezaurs.lv. The vardene engine intentionally "
+                    "scopes to the morphology library and does not bundle "
+                    "valency data."
+                ),
+                "tags": ["Nom", "Gen", "Dat", "Acc", "Loc", "V1", "V2", "V3",
+                         "Inf", "S", "TR", "Adv"],
+            }
+        )
 
     # ----- meta -------------------------------------------------------------
 

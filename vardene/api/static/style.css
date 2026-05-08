@@ -219,10 +219,37 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   border-radius: 3px;
 }
 
-.pending {
-  margin: 0.5rem 0 0;
-  padding-left: 1.2rem;
+.phrase-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95em;
+}
+
+.phrase-table th, .phrase-table td {
+  text-align: left;
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.phrase-table th {
+  font-weight: 600;
   color: var(--muted);
+}
+
+.phrase-table .case {
+  color: var(--muted);
+  font-weight: 500;
+  width: 8rem;
+}
+
+.phrase-component {
+  margin-top: 1.25rem;
+}
+
+.phrase-component h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.05em;
 }
 
 .error {
