@@ -61,7 +61,8 @@ def _pick_head(wfs: list[Wordform | None]) -> int:
     """Index of the head token. Rightmost noun, else rightmost analysed token,
     else last index."""
     for i in range(len(wfs) - 1, -1, -1):
-        if wfs[i] is not None and _is_head_candidate(wfs[i]):
+        wf = wfs[i]
+        if wf is not None and _is_head_candidate(wf):
             return i
     for i in range(len(wfs) - 1, -1, -1):
         if wfs[i] is not None:

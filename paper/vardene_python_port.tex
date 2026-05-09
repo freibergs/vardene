@@ -11,6 +11,8 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 \geometry{margin=2.5cm}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, backgrounds}
 
 \hypersetup{
   colorlinks=true,
@@ -237,7 +239,60 @@ it, the upstream 1{,}622-entry abbreviation list is honoured and the
 tokenizer matches \texttt{api.tezaurs.lv} byte-for-byte on every
 canonical test case.
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  node distance=4mm and 5mm,
+  every node/.style={align=center},
+  port/.style={draw, rounded corners=2pt, minimum height=8mm,
+               minimum width=23mm, fill=gray!8},
+  pyonly/.style={draw, rounded corners=2pt, minimum height=8mm,
+                 minimum width=23mm, fill=red!10, draw=red!60!black},
+  data/.style={draw, dashed, rounded corners=2pt, minimum height=8mm,
+               minimum width=18mm, fill=blue!5},
+  arrow/.style={-{Latex[length=1.5mm]}, semithick},
+  dasharrow/.style={-{Latex[length=1.5mm]}, dashed, semithick}
+]
+
+\node[port] (text)  {Latvian text};
+\node[port, right=of text] (split) {Splitting};
+\node[port, right=of split] (eng)   {Analyzer};
+\node[pyonly, below=4mm of eng]  (disamb) {Disambiguator\\stack};
+\node[pyonly, left=of disamb]    (over)   {Per-form\\overrides};
+\node[pyonly, left=of over]      (post)   {Preposition\\post-pass};
+\node[port, below=4mm of post]   (out)    {Tagged\\sentence};
+\node[port, above=4mm of eng]    (inf)    {Inflector};
+\node[data, right=of inf]        (forms)  {All forms};
+
+\draw[arrow] (text) -- (split);
+\draw[arrow] (split) -- (eng);
+\draw[arrow] (eng) -- (disamb);
+\draw[arrow] (disamb) -- (over);
+\draw[arrow] (over) -- (post);
+\draw[arrow] (post) -- (out);
+\draw[dasharrow] (eng) -- (inf);
+\draw[dasharrow] (inf) -- (forms);
+
+\node[draw=red!60!black, fit=(disamb)(over)(post),
+      inner sep=2.2mm, rounded corners, dashed] (pylayer) {};
+\node[red!60!black, anchor=north east, font=\scriptsize\itshape] at (pylayer.north east)
+  { Python-only };
+
+\end{tikzpicture}
+\caption{Analysis pipeline. Solid path: tokenisation through final
+sentence tagging. Dashed path (top-right): forward generation, the
+inverse of analysis. The dashed red region is the Python-native layer
+not present in either upstream Java repository
+(\texttt{PeterisP/morphology} or \texttt{LUMII-AILab/Webservices}); it
+contributes the published-tag-accuracy gap of $+3.13$\,pp over the
+per-POS classifier baseline.}
+\label{fig:pipeline}
+\end{figure}
+
 \subsection{Disambiguator (Python-only addition)}\label{sec:disamb}
+
+Figure~\ref{fig:pipeline} traces an input through the system.
 
 The Java repository's \texttt{Analyzer} produces the candidate set; downstream
 disambiguation lives in \texttt{LVTagger}. We add a three-stage stack inside

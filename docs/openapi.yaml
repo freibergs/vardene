@@ -1,0 +1,442 @@
+openapi: 3.1.0
+info:
+  title: Vārdene
+  version: 0.1.0
+  summary: Latvian morphological analysis HTTP API
+  description: |
+    Vārdene is a Python port of the LU MII Latvian morphology engine
+    ([PeterisP/morphology](https://github.com/PeterisP/morphology)) and its HTTP service layer
+    ([LUMII-AILab/Webservices](https://github.com/LUMII-AILab/Webservices)). This OpenAPI document
+    describes the 16 routes exposed by `python -m vardene.api`. All routes return raw UTF-8 JSON.
+  license:
+    name: GPL-3.0-or-later
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  contact:
+    name: Rihards Aleksandrs Freibergs
+    url: https://github.com/freibergs/vardene
+
+servers:
+  - url: http://127.0.0.1:5000
+    description: Local development server (`python -m vardene.api`)
+  - url: http://api.tezaurs.lv:8182
+    description: Reference upstream Java service (LU MII, version 2.5.15)
+
+tags:
+  - name: analysis
+    description: Per-word and per-sentence morphological analysis
+  - name: tokenisation
+    description: FSA-driven tokeniser
+  - name: inflection
+    description: Forward generation — lemma → all forms
+  - name: phrase
+    description: Multi-word phrase declension and personal-name inflection
+  - name: paradigm
+    description: Paradigm-suitability lookup
+  - name: valency
+    description: Valency-tag annotation tool support
+  - name: meta
+    description: Health and metadata
+
+paths:
+  /api/analyze/{word}:
+    get:
+      tags: [analysis]
+      summary: Single-word morphological analysis (LV attribute names)
+      parameters:
+        - in: path
+          name: word
+          required: true
+          schema: { type: string }
+          example: kaķis
+      responses:
+        "200":
+          description: All candidate readings ranked by Statistics.estimate
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalyseResponse" }
+
+  /api/analyze/en/{word}:
+    get:
+      tags: [analysis]
+      summary: Same as /analyze/{word} but with English attribute names
+      parameters:
+        - in: path
+          name: word
+          required: true
+          schema: { type: string }
+          example: kaķis
+      responses:
+        "200":
+          description: Wordforms with English attribute keys (Part of speech, Gender, Case, …)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalyseResponse" }
+
+  /api/analyzesentence/{query}:
+    get:
+      tags: [analysis]
+      summary: Per-token analysis with all candidate readings
+      parameters:
+        - in: path
+          name: query
+          required: true
+          schema: { type: string }
+          example: "Māte sēd uz galda."
+      responses:
+        "200":
+          description: Each token with the full set of candidate readings (no top-1 collapse)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SentenceResponse" }
+
+  /api/morphotagger/{query}:
+    get:
+      tags: [analysis]
+      summary: Sentence-level disambiguation (top reading per token)
+      parameters:
+        - in: path
+          name: query
+          required: true
+          schema: { type: string }
+          example: "Māte sēd uz galda."
+      responses:
+        "200":
+          description: One best reading per token after CRF + Viterbi + corpus overrides
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MorphotaggerResponse" }
+
+  /api/tokenize/{query}:
+    get:
+      tags: [tokenisation]
+      summary: Tokenise text via the FSA Splitting state machine
+      parameters:
+        - in: path
+          name: query
+          required: true
+          schema: { type: string }
+          example: "Māte sēd uz galda."
+      responses:
+        "200":
+          description: List of token strings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokeniseResponse" }
+  /api/tokenize:
+    post:
+      tags: [tokenisation]
+      summary: Tokenise text supplied in the request body
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text: { type: string }
+              required: [text]
+      responses:
+        "200":
+          description: List of token strings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokeniseResponse" }
+
+  /api/v1/inflections/{lemma}:
+    get:
+      tags: [inflection]
+      summary: All inflected forms of a lemma
+      parameters:
+        - in: path
+          name: lemma
+          required: true
+          schema: { type: string }
+          example: rakt
+        - in: query
+          name: paradigm
+          schema: { type: string }
+          description: Force a specific paradigm (e.g. `noun-2b`, `verb-1`)
+        - in: query
+          name: stem1
+          schema: { type: string }
+          description: Verb-1 infinitive stem
+        - in: query
+          name: stem2
+          schema: { type: string }
+          description: Verb-1 present stem
+        - in: query
+          name: stem3
+          schema: { type: string }
+          description: Verb-1 past stem
+      responses:
+        "200":
+          description: Forms array
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InflectionsResponse" }
+
+  /api/inflect/{format}/{lemma}:
+    get:
+      tags: [inflection]
+      summary: Format-selectable inflection
+      parameters:
+        - in: path
+          name: format
+          required: true
+          schema: { type: string, enum: [json] }
+        - in: path
+          name: lemma
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Forms array
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InflectionsResponse" }
+
+  /api/inflect/{format}/{lang}/{lemma}:
+    get:
+      tags: [inflection]
+      summary: With language filter
+      parameters:
+        - in: path
+          name: format
+          required: true
+          schema: { type: string, enum: [json] }
+        - in: path
+          name: lang
+          required: true
+          schema: { type: string, enum: [lv, ltg] }
+        - in: path
+          name: lemma
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Forms in the requested language only
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InflectionsResponse" }
+
+  /api/suitable_paradigm/{lemma}:
+    get:
+      tags: [paradigm]
+      summary: Paradigms that could generate `{lemma}`, sorted by frequency
+      parameters:
+        - in: path
+          name: lemma
+          required: true
+          schema: { type: string }
+          example: kaķis
+      responses:
+        "200":
+          description: Array of {ID, Description}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ID: { type: integer }
+                    Description: { type: string }
+
+  /api/inflect_phrase/{phrase}:
+    get:
+      tags: [phrase]
+      summary: Multi-word noun-phrase declension table
+      parameters:
+        - in: path
+          name: phrase
+          required: true
+          schema: { type: string }
+          example: sarkanā māja
+        - in: query
+          name: category
+          schema: { type: string, enum: [person, org, loc] }
+      responses:
+        "200":
+          description: Object keyed by Locījums; for category=person also includes Dzimte
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: { type: string }
+
+  /api/normalize_phrase/{phrase}:
+    get:
+      tags: [phrase]
+      summary: Lemmatised (Nominatīvs) form of a phrase
+      parameters:
+        - in: path
+          name: phrase
+          required: true
+          schema: { type: string }
+          example: sarkano māju
+        - in: query
+          name: category
+          schema: { type: string, enum: [person, org, loc] }
+      responses:
+        "200":
+          description: A single string — the normalised phrase
+          content:
+            application/json:
+              schema: { type: string }
+
+  /api/inflect_people/json/{name}:
+    get:
+      tags: [phrase]
+      summary: Full declension of a personal name (each component × 12 forms)
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+          example: Jānis Bērziņš
+        - in: query
+          name: gender
+          schema: { type: string, enum: [m, f] }
+      responses:
+        "200":
+          description: Array of components, each a list of 12 inflected-form objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      Vārds: { type: string }
+                      Locījums: { type: string }
+                      Skaitlis: { type: string }
+                      Dzimte: { type: string }
+                      Deklinācija: { type: string }
+
+  /api/verbs/{query}:
+    get:
+      tags: [valency]
+      summary: Valency-tag annotation, verb-biased reading
+      description: Returns the small set of valency tags (`V1`/`V2`/`V3`/`Inf`, case codes, `Adv`, `S`) the upstream verb-valency annotation tool consumes.
+      parameters:
+        - in: path
+          name: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Array of tag strings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+
+  /api/neverbs/{query}:
+    get:
+      tags: [valency]
+      summary: Same as /verbs but with non-verb-biased reading
+      parameters:
+        - in: path
+          name: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Array of tag strings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+
+  /api/health:
+    get:
+      tags: [meta]
+      summary: Liveness probe
+      responses:
+        "200":
+          description: Server is up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  engine: { type: string, example: vardene }
+                  lexicon_size: { type: integer, example: 411831 }
+
+components:
+  schemas:
+    Wordform:
+      type: object
+      properties:
+        token: { type: string, description: "Surface form (input as analysed)" }
+        lemma: { type: string, description: "Canonical lemma" }
+        tag: { type: string, description: "Position-tag string (e.g. ncfsn5)" }
+        paradigm: { type: string }
+        attributes:
+          type: object
+          additionalProperties: { type: string }
+          description: "LV (or EN) attribute names (Vārdšķira, Locījums, Skaitlis, …)"
+
+    AnalyseResponse:
+      type: object
+      properties:
+        word: { type: string }
+        wordforms:
+          type: array
+          items: { $ref: "#/components/schemas/Wordform" }
+
+    SentenceToken:
+      type: object
+      properties:
+        token: { type: string }
+        wordforms:
+          type: array
+          items: { $ref: "#/components/schemas/Wordform" }
+
+    SentenceResponse:
+      type: object
+      properties:
+        query: { type: string }
+        tokens:
+          type: array
+          items: { $ref: "#/components/schemas/SentenceToken" }
+
+    MorphotaggerToken:
+      type: object
+      properties:
+        token: { type: string }
+        best:
+          oneOf:
+            - { $ref: "#/components/schemas/Wordform" }
+            - { type: "null" }
+
+    MorphotaggerResponse:
+      type: object
+      properties:
+        query: { type: string }
+        tokens:
+          type: array
+          items: { $ref: "#/components/schemas/MorphotaggerToken" }
+
+    TokeniseResponse:
+      type: object
+      properties:
+        query: { type: string }
+        tokens:
+          type: array
+          items: { type: string }
+
+    InflectionsResponse:
+      type: object
+      properties:
+        lemma: { type: string }
+        paradigm: { type: string, nullable: true }
+        language: { type: string, example: lv }
+        forms:
+          type: array
+          items: { $ref: "#/components/schemas/Wordform" }

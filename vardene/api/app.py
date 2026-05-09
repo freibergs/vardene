@@ -158,15 +158,14 @@ def create_app() -> Flask:
         stem2 = request.args.get("stem2")
         stem3 = request.args.get("stem3")
         if paradigm is not None:
-            attrs: dict[str, str] = {}
-            if stem1 or stem2 or stem3:
-                # Verb-1 explicit stems — populate via paradigm-typed inflection.
-                if stem1:
-                    attrs["stem1"] = stem1
-                if stem2:
-                    attrs["stem2"] = stem2
-                if stem3:
-                    attrs["stem3"] = stem3
+            from vardene.attributes import AttributeValues
+            attrs = AttributeValues()
+            if stem1:
+                attrs.add("stem1", stem1)
+            if stem2:
+                attrs.add("stem2", stem2)
+            if stem3:
+                attrs.add("stem3", stem3)
             forms = inflector.inflect_from_paradigm(query, paradigm, attrs)
         else:
             forms = inflector.inflect(query)
