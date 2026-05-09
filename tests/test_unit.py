@@ -679,6 +679,7 @@ class TestMijasExtended:
         # NotImplementedError (they are surfaced loudly so missing cases
         # never silently produce empty stem variants).
         import pytest
+
         from vardene.mijas import mija_variants
         with pytest.raises(NotImplementedError, match="not yet ported"):
             list(mija_variants("rakt", 999))
