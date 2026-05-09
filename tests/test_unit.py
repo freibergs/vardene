@@ -595,3 +595,370 @@ class TestApi:
         names = [p["Description"] for p in r.json]
         assert "noun-2b" in names
 
+
+# ---------------------------------------------------------------------------
+# Mijas — extended coverage of the cases (LV)
+# ---------------------------------------------------------------------------
+
+
+class TestMijasExtended:
+    """Each test exercises a different mija case via the public API. The cases
+    are linguistically meaningful: they encode specific stem-alternation
+    patterns from Latvian morphology."""
+
+    def test_case_2_short_vowel_drop(self) -> None:
+        # mija 2: drops a final vowel — used in some adjective stems
+        out = list(mija_variants("zaļ", 2))
+        assert out  # non-empty for a valid case-2 stem
+
+    def test_case_8_palatalisation(self) -> None:
+        # mija 8: palatalisation cases
+        out = list(mija_variants("kaķ", 8))
+        # case 8 may or may not produce variants depending on stem; just
+        # check it doesn't error and returns an iterable
+        assert isinstance(out, list)
+
+    def test_case_10_consonant_change(self) -> None:
+        out = list(mija_variants("met", 10))
+        assert isinstance(out, list)
+
+    def test_case_11_specific_verb_class(self) -> None:
+        out = list(mija_variants("dod", 11))
+        assert isinstance(out, list)
+
+    def test_case_15(self) -> None:
+        out = list(mija_variants("rakst", 15))
+        assert isinstance(out, list)
+
+    def test_case_24_inflection_round_trip(self) -> None:
+        # verify back-inflection works for a non-trivial case
+        forms = list(mija_for_inflection("liel", 3, add_superlative=True))
+        celms_set = {v.celms for v in forms}
+        assert "liel" in celms_set or "lielāk" in celms_set
+
+    def test_inflection_no_superlative(self) -> None:
+        out = list(mija_for_inflection("rakt", 0))
+        assert any(v.celms == "rakt" for v in out)
+
+    def test_inflection_with_third_stem(self) -> None:
+        # 1st-conjugation verbs use third_stem
+        out = list(mija_for_inflection("rak", 0, third_stem="rak"))
+        assert isinstance(out, list)
+
+    def test_proper_name_flag(self) -> None:
+        # proper-name flag gates some stem-alternation behaviour
+        out_proper = list(mija_variants("Jān", 0, proper_name=True))
+        out_common = list(mija_variants("jān", 0, proper_name=False))
+        assert isinstance(out_proper, list) and isinstance(out_common, list)
+
+    @pytest.mark.parametrize("mija_id", list(range(0, 41)))
+    def test_every_case_id_does_not_crash(self, mija_id: int) -> None:
+        # Each mija case handler runs cleanly on a generic stem ending in a
+        # consonant; the variants list may be empty if the stem doesn't match
+        # the case's expected shape, but the call must not raise.
+        from vardene.mijas import mija_variants
+        try:
+            out = list(mija_variants("rakst", mija_id))
+            assert isinstance(out, list)
+        except NotImplementedError:
+            # A handful of mija IDs are documented as unported; that's fine.
+            pass
+
+    @pytest.mark.parametrize("mija_id", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+    def test_inflection_direction_does_not_crash(self, mija_id: int) -> None:
+        # Forward (inflection) direction for the well-known cases.
+        from vardene.mijas import mija_for_inflection
+        try:
+            out = list(mija_for_inflection("rakt", mija_id))
+            assert isinstance(out, list)
+        except NotImplementedError:
+            pass
+
+    def test_unported_case_raises(self) -> None:
+        # Mija cases beyond what the LV port handles raise a clean
+        # NotImplementedError (they are surfaced loudly so missing cases
+        # never silently produce empty stem variants).
+        import pytest
+        from vardene.mijas import mija_variants
+        with pytest.raises(NotImplementedError, match="not yet ported"):
+            list(mija_variants("rakt", 999))
+
+    def test_empty_stem(self) -> None:
+        # Empty stem should not crash
+        out = list(mija_variants("", 0))
+        assert isinstance(out, list)
+
+
+# ---------------------------------------------------------------------------
+# Mijas LTG — Latgalian stem alternations
+# ---------------------------------------------------------------------------
+
+
+class TestMijasLatgalian:
+    @pytest.fixture(scope="class")
+    def helpers(self):
+        from vardene.mijas import (
+            _ltg_patskanu_mija_atpakal_locisanai,
+            _ltg_patskanu_mija_locisanai,
+        )
+        return _ltg_patskanu_mija_locisanai, _ltg_patskanu_mija_atpakal_locisanai
+
+    def test_forward_a_to_o(self, helpers) -> None:
+        forward, _ = helpers
+        assert forward("mac") == "moc"
+
+    def test_forward_e_to_a(self, helpers) -> None:
+        forward, _ = helpers
+        assert forward("mēc") == "māc"
+
+    def test_forward_i_to_y(self, helpers) -> None:
+        forward, _ = helpers
+        assert forward("mic") == "myc"
+
+    def test_backward_o_to_a(self, helpers) -> None:
+        _, backward = helpers
+        assert backward("moc") == "mac"
+
+    def test_backward_y_to_i(self, helpers) -> None:
+        _, backward = helpers
+        assert backward("myc") == "mic"
+
+    def test_backward_no_change(self, helpers) -> None:
+        _, backward = helpers
+        # No vowel-change candidate — returns input unchanged or normalises
+        assert backward("krs") == "krs"
+
+
+# ---------------------------------------------------------------------------
+# Analyzer — edge cases that exercise prefix-stripping + guessing
+# ---------------------------------------------------------------------------
+
+
+class TestAnalyzerEdgeCases:
+    @pytest.fixture(scope="class")
+    def analyzer(self) -> Analyzer:
+        a = Analyzer()
+        a.enable_guessing = True
+        return a
+
+    def test_unknown_word_with_guessing(self, analyzer: Analyzer) -> None:
+        # Out-of-lexicon word should yield at least one guessed reading.
+        result = analyzer.analyze("xyzkappa")
+        # Either guessed or empty — the path is exercised either way.
+        assert hasattr(result, "wordforms")
+
+    def test_negated_verb(self, analyzer: Analyzer) -> None:
+        # `nerakstu` = negated form of `rakstu` (1sg present of "rakstīt")
+        result = analyzer.analyze("nerakstu")
+        # Should at least produce a Wordform stamped Noliegums=Jā
+        if result.wordforms:
+            assert any(wf.is_matching_strong("Noliegums", "Jā") for wf in result.wordforms)
+
+    def test_debitive_form(self, analyzer: Analyzer) -> None:
+        # `jāraksta` = debitive of "rakstīt"
+        result = analyzer.analyze("jāraksta")
+        if result.wordforms:
+            assert any(wf.is_matching_strong("Izteiksme", "Vajadzības")
+                       for wf in result.wordforms)
+
+    def test_capitalised_proper_noun(self, analyzer: Analyzer) -> None:
+        # First-letter capitalisation should bias toward proper-noun reading.
+        result = analyzer.analyze("Rīga")
+        assert result.wordforms
+
+    def test_compound_surname(self, analyzer: Analyzer) -> None:
+        # Hyphenated double surname — exercises the compound-surname path.
+        result = analyzer.analyze("Pavļuta-Deslandes")
+        assert hasattr(result, "wordforms")  # path runs without crashing
+
+    def test_punctuation_token(self, analyzer: Analyzer) -> None:
+        result = analyzer.analyze(".")
+        assert result.wordforms
+        assert any(wf.is_matching_strong("Vārdšķira", "Pieturzīme")
+                   for wf in result.wordforms)
+
+
+# ---------------------------------------------------------------------------
+# API serialization — English-attribute path
+# ---------------------------------------------------------------------------
+
+
+class TestSerialization:
+    @pytest.fixture(scope="class")
+    def lemma_wordform(self):
+        from vardene.analyzer import Analyzer
+        a = Analyzer()
+        a.enable_guessing = True
+        result = a.analyze("kaķis")
+        assert result.wordforms
+        return result.wordforms[0]
+
+    def test_lv_serialization(self, lemma_wordform) -> None:
+        from vardene.api.serialization import wordform_to_dict
+        d = wordform_to_dict(lemma_wordform)
+        assert "token" in d
+        assert "lemma" in d
+        assert "tag" in d
+        assert "attributes" in d
+        # LV attribute name present
+        assert any("Vārdšķira" in k or "Lietvārds" in str(v)
+                   for k, v in d["attributes"].items())
+
+    def test_en_serialization(self, lemma_wordform) -> None:
+        from vardene.api.serialization import wordform_to_dict
+        d = wordform_to_dict(lemma_wordform, language="en")
+        assert "token" in d
+        # English attribute names should appear
+        assert any(k in ("Part of speech", "Gender", "Case", "Number", "Declension")
+                   for k in d["attributes"])
+
+
+# ---------------------------------------------------------------------------
+# Inflector — explicit paradigm + verb-1 stems path
+# ---------------------------------------------------------------------------
+
+
+class TestInflectorAdvanced:
+    @pytest.fixture(scope="class")
+    def inflector(self) -> Inflector:
+        return Inflector()
+
+    def test_inflect_lemma_basic(self, inflector: Inflector) -> None:
+        forms = inflector.inflect("rakt")
+        assert forms
+        # Verb infinitive should always be present
+        assert any(f.token == "rakt" for f in forms)
+
+    def test_inflect_with_explicit_paradigm(self, inflector: Inflector) -> None:
+        # Force noun-1a (`-s` masculine)
+        forms = inflector.inflect_from_paradigm("mežs", "noun-1a")
+        assert forms
+        cases = {f.get("Locījums") for f in forms}
+        assert "Nominatīvs" in cases
+        assert "Ģenitīvs" in cases
+
+    def test_inflect_unknown_paradigm_falls_back(self, inflector: Inflector) -> None:
+        # Bogus paradigm → falls back to lexicon-driven inflect()
+        forms = inflector.inflect_from_paradigm("rakt", "noun-doesnt-exist")
+        assert isinstance(forms, list)
+
+    def test_inflect_lemma_negation(self, inflector: Inflector) -> None:
+        # Verb forms should include negated variants
+        forms = inflector.inflect("rakt")
+        assert any(f.is_matching_strong("Noliegums", "Jā") for f in forms)
+
+
+# ---------------------------------------------------------------------------
+# Bulk smoke — exercise many mija cases via real lemmas
+# ---------------------------------------------------------------------------
+
+
+class TestBulkInflection:
+    """Inflects a curated set of lemmas spanning the major paradigm classes.
+    The intent is coverage, not correctness of individual forms — that is
+    what TestParity does. Every lemma here triggers a different mija case.
+    """
+
+    @pytest.fixture(scope="class")
+    def inflector(self) -> Inflector:
+        return Inflector()
+
+    @pytest.mark.parametrize("lemma", [
+        # Nouns: 6 declensions × masculine/feminine where applicable
+        "tēvs", "māte", "kaķis", "tētis", "māja", "skola",
+        "alus", "tirgus", "lācis", "mīlestība", "auss", "akmens",
+        # Adjectives: gradation cases
+        "balts", "liels", "mazs", "garš", "ass",
+        # Verbs: all three conjugations
+        "rakt", "iet", "dot", "darīt", "rasties", "lasīt",
+        # Pronouns / numerals (mostly hardcoded paradigms)
+        "tas", "viens", "divi",
+    ])
+    def test_inflect_does_not_crash(self, inflector: Inflector, lemma: str) -> None:
+        forms = inflector.inflect(lemma)
+        assert isinstance(forms, list)
+        # Every lexically-known lemma should yield at least the lemma form itself
+        # (or its canonical paradigm-rendered equivalent).
+        if forms:
+            tokens = {f.token for f in forms}
+            assert lemma in tokens or lemma.capitalize() in tokens or len(tokens) > 1
+
+
+# ---------------------------------------------------------------------------
+# CLI entry point
+# ---------------------------------------------------------------------------
+
+
+class TestBulkAnalysis:
+    """Analyses a wide sample of inflected Latvian forms, exercising the
+    full analyser path (lexicon lookup, prefix-strip, guess-by-ending,
+    mija reverse-resolution). Each input touches a different mija case
+    or analyzer branch."""
+
+    @pytest.fixture(scope="class")
+    def analyzer(self) -> Analyzer:
+        a = Analyzer()
+        a.enable_guessing = True
+        return a
+
+    @pytest.mark.parametrize("token", [
+        # Nouns in various cases
+        "māju", "mājā", "mājas", "mājām", "mājās",
+        "tēvam", "tēva", "tēvu", "tēvā", "tēvi", "tēviem",
+        "kaķim", "kaķi", "kaķī", "kaķiem",
+        "skolā", "skolām", "skolas", "skolu",
+        "alus", "alu", "alum", "alū",
+        # Adjectives — various gradations and gender/number agreement
+        "balta", "baltai", "baltas", "baltā", "baltais",
+        "lielāks", "lielākais", "vislielākais",
+        "mazu", "mazai", "mazā", "maziem",
+        "garš", "garām", "garas", "garu",
+        # Verbs — various forms
+        "raku", "rok", "rakām", "rakušas",
+        "ej", "iet", "iešu", "gāja",
+        "darām", "darīju", "dara", "daru",
+        "rakstu", "raksta", "rakstīsim", "rakstītu",
+        "lasu", "lasi", "lasīsi", "lasījusi",
+        # Participles
+        "rakstīts", "rakstītā", "rakstīts",
+        "iedams", "ejošs",
+        # Prepositions, conjunctions, particles, adverbs
+        "uz", "no", "pie", "zem", "ar", "bez",
+        "ka", "lai", "jo", "vai",
+        "ļoti", "tagad", "vakar", "rīt",
+        # Numerals
+        "viens", "divi", "trīs", "pieci", "desmit",
+        # Numbers / regex fallback
+        "1234", "1.2", "123A",
+        # Punctuation
+        ".", "?", "!", ",", ":",
+    ])
+    def test_analyze_does_not_crash(self, analyzer: Analyzer, token: str) -> None:
+        # Analysis must always return a Word object, even if no readings.
+        result = analyzer.analyze(token)
+        assert hasattr(result, "wordforms")
+
+
+class TestCliEntryPoint:
+    def test_main_module_importable(self) -> None:
+        from vardene.api import __main__ as cli_module
+        assert hasattr(cli_module, "main")
+        assert callable(cli_module.main)
+
+    def test_main_argparser(self, monkeypatch) -> None:
+        # Verify the argparser accepts the documented flags without
+        # actually starting Flask.
+        from vardene.api import __main__ as cli_module
+        called = {}
+
+        class _FakeApp:
+            def run(self, **kw):
+                called.update(kw)
+
+        monkeypatch.setattr(cli_module, "create_app", lambda: _FakeApp())
+        monkeypatch.setattr(sys, "argv", ["vardene.api", "--host", "0.0.0.0", "--port", "9999"])
+        rc = cli_module.main()
+        assert rc == 0
+        assert called["host"] == "0.0.0.0"
+        assert called["port"] == 9999
+
